@@ -1,0 +1,11 @@
+﻿################################################################################
+# This .gitignore file was automatically created by Microsoft(R) Visual Studio.
+################################################################################
+
+/.vs/Mos65/v16
+/.vs/Mos65/v15
+/Bin/Debug/x64
+/Obj/Debug/x64
+/Bin/Release/x64
+/Obj/Release/x64
+/Mos65.plog
