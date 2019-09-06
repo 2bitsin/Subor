@@ -1,6 +1,5 @@
 
-SUBOR
-################
+# SUBOR
 
 This is first semi successful attempt at writting a NES emulator.
 Does not support sound yet, and only does mapper 0 :)
