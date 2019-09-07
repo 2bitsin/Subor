@@ -2,9 +2,9 @@
 // PVS-Studio Static Code Analyzer for C, C++, C#, and Java: http://www.viva64.com
 #pragma once
 
-#include "Types.hpp"
-#include "Memory.hpp"
-#include "Bitfield.hpp"
+#include "utils/Types.hpp"
+#include "core/Memory.hpp"
+#include "utils/Bitfield.hpp"
 #include <cstdio>
 #include <cassert>
 #include <functional>
@@ -86,7 +86,7 @@ struct RicohCPU
 	void reset ();
 
 	RicohCPU (State state = { })
-		: q (std::move (state))
+	: q (std::move (state))
 	{ }
 
 private:

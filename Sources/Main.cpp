@@ -1,7 +1,9 @@
 // This is a personal academic project. Dear PVS-Studio, please check it.
 // PVS-Studio Static Code Analyzer for C, C++, C#, and Java: http://www.viva64.com
-#include "Console.hpp"
-#include "Nestest.hpp"
+#include "core/Console.hpp"
+#include "test/Nestest.hpp"
+#include "utils/Bitfield.hpp"
+
 #include <cassert>
 #include <cmath>
 #include <chrono>
@@ -9,6 +11,7 @@
 #include <optional>
 #include <fstream>
 #include <iostream>
+#include <filesystem>
 #include <unordered_map>
 
 #define SDL_MAIN_HANDLED
@@ -134,20 +137,33 @@ int main (std::size_t argc, const ccptr_t<char> argv)
 			: InputProxy::Passtrough),
 		argv [1] + ".input"s);
 
+	SDL_AudioSpec want{}, have{};
+	want.freq			= 48000;
+	want.channels = 2;
+	want.format		= AUDIO_F32;
+	want.samples	= 400;
+	want.callback = nullptr;
+	want.userdata = nullptr;
 
 	SDL_Init (SDL_INIT_EVERYTHING);
 	std::atexit (SDL_Quit);
+
 
 	const auto q = SDL_WINDOWPOS_CENTERED;
 	auto window = SDL_CreateWindow (nullptr, q, q, 3u*console->width (), 3u*console->height (), 0u);
 	auto buffer = SDL_GetWindowSurface (window);
 	auto screen = SDL_CreateRGBSurfaceWithFormat (0u, console->width (), console->height (), 0u, SDL_PIXELFORMAT_ARGB8888);
-
+	auto audiod = SDL_OpenAudioDevice(nullptr, 0, &want, &have, 1);
+	if (!audiod)
+		std::printf("Failed to open audio device, sound disabled!\n");
+	SDL_PauseAudioDevice(audiod, 0);
 	using namespace std::chrono;
 	auto dt = 0us;
 
+	console->rateOfSampling(have.freq);	
 	auto xctrl = SDL_GameControllerOpen (0);
 
+	int fctr = 0;
 	for (;;)
 	{
 		auto t0 = high_resolution_clock::now ();
@@ -172,11 +188,19 @@ int main (std::size_t argc, const ccptr_t<char> argv)
 
 		input.next (*console);
 		SDL_LockSurface (screen);
-		console->frame ([screen] (auto x, auto y, auto c) {
-			auto dst = (dword*)screen->pixels;
-			assert (int(x) < screen->w && int(y) < screen->h && x >= 0 && y >= 0);
-			dst[(screen->pitch >> 2)*y + x] = c;
-		});
+		console->frame 
+		(	[screen] (auto x, auto y, auto c) {
+				auto dst = (dword*)screen->pixels;
+				assert (int(x) < screen->w && int(y) < screen->h && x >= 0 && y >= 0);
+				dst[(screen->pitch >> 2)*y + x] = c;
+			}, 
+			[audiod](auto&& buff) {
+				auto len = (Uint32)(buff.size() * sizeof(buff[0]));
+				//if (SDL_GetQueuedAudioSize(audiod) > len*10)
+				//	return;
+				SDL_QueueAudio(audiod, (std::uint8_t*)buff.data(), len);
+			});
+
 		SDL_UnlockSurface (screen);
 		SDL_BlitScaled (screen, nullptr, buffer, nullptr);
 		SDL_UpdateWindowSurface (window);
@@ -195,17 +219,19 @@ int main (std::size_t argc, const ccptr_t<char> argv)
 				continue;
 			}
 			t1 = high_resolution_clock::now ();
-		}
-		while (t1 < t0 + (16ms * !!xctrl));
+		} while (t1 < t0 + (16666666ns * !!xctrl));
+
 		if (event.type == SDL_QUIT)
 			break;
 		
 	}
 
+
 	if (xctrl != nullptr)
 		SDL_GameControllerClose (xctrl);
+	SDL_CloseAudioDevice(audiod);
 	SDL_FreeSurface (screen);
 	SDL_DestroyWindow (window);
-
+	
 	return 0;
 }

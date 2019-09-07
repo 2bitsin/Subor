@@ -2,8 +2,8 @@
 // PVS-Studio Static Code Analyzer for C, C++, C#, and Java: http://www.viva64.com
 #pragma once
 
-#include "Types.hpp"
-#include "Memory.hpp"
+#include "utils/Types.hpp"
+#include "core/Memory.hpp"
 #include <array>
 
 template <MemoryType _Perm, dword _Bottom, dword _Top, dword _Size = _Top - _Bottom>

@@ -2,7 +2,7 @@
 // PVS-Studio Static Code Analyzer for C, C++, C#, and Java: http://www.viva64.com
 #pragma once
 
-#include "Types.hpp"
+#include "utils/Types.hpp"
 
 namespace nestest
 {

@@ -15,94 +15,106 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="sources\Main.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="sources\Nestest.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="sources\RicohCpu.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="sources\NestestMain.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="sources\NestestLog.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="sources\NestestPrg.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="sources\NestestChr.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="sources\Ines.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="sources\MapperNROM.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Sources\Palette.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
+    <ClInclude Include="Sources\audio\AudioChannel.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Sources\audio\NoiseChannel.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Sources\audio\TriangleChannel.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Sources\audio\PulseChannel.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Sources\audio\RicohApu.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Sources\audio\DeltaChannel.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Sources\utils\Bitarray.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Sources\utils\BitCommon.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Sources\utils\Bitfield.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Sources\utils\Bitshifter.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Sources\utils\Image.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Sources\video\RicohPpu.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Sources\video\OAMemory.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Sources\video\Palette.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Sources\core\RicohCpuImpl.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Sources\core\RicohCpu.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Sources\core\StaticMemory.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Sources\core\Memory.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Sources\test\Nestest.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Sources\utils\Types.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Sources\mapper\Mapper.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Sources\mapper\MapperNROM.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Sources\fileio\Ines.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Sources\core\Console.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="sources\Nestest.hpp">
+    <ClCompile Include="Sources\Main.cpp">
       <Filter>Source Files</Filter>
-    </ClInclude>
-    <ClInclude Include="sources\Types.hpp">
+    </ClCompile>
+    <ClCompile Include="Sources\video\Palette.cpp">
       <Filter>Source Files</Filter>
-    </ClInclude>
-    <ClInclude Include="sources\RicohCpuImpl.hpp">
+    </ClCompile>
+    <ClCompile Include="Sources\test\Nestest.cpp">
       <Filter>Source Files</Filter>
-    </ClInclude>
-    <ClInclude Include="sources\RicohCpu.hpp">
+    </ClCompile>
+    <ClCompile Include="Sources\test\NestestChr.cpp">
       <Filter>Source Files</Filter>
-    </ClInclude>
-    <ClInclude Include="sources\Memory.hpp">
+    </ClCompile>
+    <ClCompile Include="Sources\test\NestestLog.cpp">
       <Filter>Source Files</Filter>
-    </ClInclude>
-    <ClInclude Include="sources\StaticMemory.hpp">
+    </ClCompile>
+    <ClCompile Include="Sources\test\NestestMain.cpp">
       <Filter>Source Files</Filter>
-    </ClInclude>
-    <ClInclude Include="sources\Mapper.hpp">
+    </ClCompile>
+    <ClCompile Include="Sources\test\NestestPrg.cpp">
       <Filter>Source Files</Filter>
-    </ClInclude>
-    <ClInclude Include="sources\Ines.hpp">
+    </ClCompile>
+    <ClCompile Include="Sources\mapper\MapperNROM.cpp">
       <Filter>Source Files</Filter>
-    </ClInclude>
-    <ClInclude Include="sources\MapperNROM.hpp">
+    </ClCompile>
+    <ClCompile Include="Sources\fileio\Ines.cpp">
       <Filter>Source Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Sources\RicohApu.hpp">
-      <Filter>Source Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Sources\Console.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Sources\Bitfield.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Sources\Bitshifter.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Sources\Bitcommon.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Sources\Bitarray.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Sources\Image.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Sources\Palette.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Sources\OAMemory.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Sources\RicohPPU.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
+    </ClCompile>
   </ItemGroup>
 </Project>

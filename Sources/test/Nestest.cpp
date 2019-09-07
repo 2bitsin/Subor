@@ -1,7 +1,7 @@
 // This is a personal academic project. Dear PVS-Studio, please check it.
 // PVS-Studio Static Code Analyzer for C, C++, C#, and Java: http://www.viva64.com
-#include "Nestest.hpp"
-#include "StaticMemory.hpp"
+#include "test/Nestest.hpp"
+#include "core/StaticMemory.hpp"
 #include <iterator>
 
 using namespace nestest;

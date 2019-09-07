@@ -2,9 +2,9 @@
 // PVS-Studio Static Code Analyzer for C, C++, C#, and Java: http://www.viva64.com
 #pragma once
 
-#include "Types.hpp"
-#include "Memory.hpp"
-#include "INes.hpp"
+#include "utils/Types.hpp"
+#include "core/Memory.hpp"
+#include "fileio/INes.hpp"
 
 #include <memory>
 

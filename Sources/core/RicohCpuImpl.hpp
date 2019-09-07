@@ -32,7 +32,6 @@ inline qword RicohCPU::runUntil (_Host&& m, i64 ticks_)
 	return q.time;
 }
 
-
 template <typename _Host>
 inline bool RicohCPU::step (_Host&& m, std::size_t s)
 {
@@ -1177,4 +1176,11 @@ void RicohCPU::reset ()
 
 	if constexpr (_Type == kHardReset)
 		q = State{ };
+}
+
+inline void RicohCPU::raise(byte bits)
+{
+	static constexpr auto m = ResetBit | InterruptBit | NonMaskableBit;
+	assert(!(bits & ~m));
+	q.mode.bits |= (bits & m);
 }

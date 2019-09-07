@@ -2,17 +2,20 @@
 // PVS-Studio Static Code Analyzer for C, C++, C#, and Java: http://www.viva64.com
 #pragma once
 
-#include "RicohCpu.hpp"
-#include "RicohPPU.hpp"
-#include "StaticMemory.hpp"
-#include "RicohApu.hpp"
-#include "MapperNROM.hpp"
+#include "core/RicohCpu.hpp"
+#include "video/RicohPPU.hpp"
+#include "core/StaticMemory.hpp"
+#include "audio/RicohApu.hpp"
+#include "mapper/MapperNROM.hpp"
 
 
 struct Console
 {
 	using Memory = StaticMemory<kReadWriteMemory, 0u, 0x2000u, 0x800u>;
 	using VideoMemory = StaticMemory<kReadWriteMemory, 0x2000u, 0x3000u>;
+
+	static constexpr auto _CPU_Cps = 1789773;
+	static constexpr auto _PPU_Cps = 3 * _CPU_Cps;
 
 	double time{ 0.0 };
 	RicohCPU cpu;
@@ -49,12 +52,24 @@ struct Console
 		vmm.tick<_Operation> (*this, ppuMirror (addr), data);
 	}
 
-	template <typename _Writter>
-	void frame (_Writter&& write)
+	template <typename _VideoSink, typename _AudioSink>
+	void frame (_VideoSink&& video, _AudioSink&& audio)
 	{
 		while (!ppu.ready ())
 			cpu.step (*this, 1u);
-		ppu.grabFrame (std::forward<_Writter>(write));
+		ppu.grabFrame (std::forward<_VideoSink>(video));
+		apu.grabFrame (std::forward<_AudioSink>(audio));
+	}
+
+	template <typename _Sink>
+	auto audio(_Sink&& sink)
+	{
+		return apu.grabFrame(std::forward<_Sink>(sink));
+	}
+
+	auto rateOfSampling(int sr)
+	{
+		return apu.rateOfSampling(sr);
 	}
 
 	word ppuMirror (word addr) const

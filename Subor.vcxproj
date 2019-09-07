@@ -19,37 +19,41 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="sources\Ines.cpp" />
-    <ClCompile Include="sources\Main.cpp" />
-    <ClCompile Include="sources\Nestest.cpp" />
-    <ClCompile Include="sources\NestestChr.cpp" />
-    <ClCompile Include="sources\NestestLog.cpp" />
-    <ClCompile Include="sources\NestestMain.cpp" />
-    <ClCompile Include="sources\NestestPrg.cpp" />
-    <ClCompile Include="sources\MapperNROM.cpp" />
-    <ClCompile Include="Sources\Palette.cpp" />
-    <ClCompile Include="sources\RicohCpu.cpp" />
+    <ClInclude Include="Sources\audio\AudioChannel.hpp" />
+    <ClInclude Include="Sources\audio\RicohApu.hpp" />
+    <ClInclude Include="Sources\utils\Bitarray.hpp" />
+    <ClInclude Include="Sources\utils\BitCommon.hpp" />
+    <ClInclude Include="Sources\utils\Bitfield.hpp" />
+    <ClInclude Include="Sources\utils\Bitshifter.hpp" />
+    <ClInclude Include="Sources\core\Console.hpp" />
+    <ClInclude Include="Sources\audio\DeltaChannel.hpp" />
+    <ClInclude Include="Sources\utils\Image.hpp" />
+    <ClInclude Include="Sources\fileio\Ines.hpp" />
+    <ClInclude Include="Sources\mapper\Mapper.hpp" />
+    <ClInclude Include="Sources\mapper\MapperNROM.hpp" />
+    <ClInclude Include="Sources\core\Memory.hpp" />
+    <ClInclude Include="Sources\test\Nestest.hpp" />
+    <ClInclude Include="Sources\audio\NoiseChannel.hpp" />
+    <ClInclude Include="Sources\video\OAMemory.hpp" />
+    <ClInclude Include="Sources\video\Palette.hpp" />
+    <ClInclude Include="Sources\audio\PulseChannel.hpp" />
+    <ClInclude Include="Sources\core\RicohCpu.hpp" />
+    <ClInclude Include="Sources\core\RicohCpuImpl.hpp" />
+    <ClInclude Include="Sources\video\RicohPpu.hpp" />
+    <ClInclude Include="Sources\core\StaticMemory.hpp" />
+    <ClInclude Include="Sources\audio\TriangleChannel.hpp" />
+    <ClInclude Include="Sources\utils\Types.hpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Sources\Bitarray.hpp" />
-    <ClInclude Include="Sources\Bitcommon.hpp" />
-    <ClInclude Include="Sources\Bitfield.hpp" />
-    <ClInclude Include="Sources\Bitshifter.hpp" />
-    <ClInclude Include="Sources\Image.hpp" />
-    <ClInclude Include="sources\Ines.hpp" />
-    <ClInclude Include="sources\Mapper.hpp" />
-    <ClInclude Include="Sources\Console.hpp" />
-    <ClInclude Include="sources\Memory.hpp" />
-    <ClInclude Include="sources\MapperNROM.hpp" />
-    <ClInclude Include="Sources\OAMemory.hpp" />
-    <ClInclude Include="Sources\Palette.hpp" />
-    <ClInclude Include="Sources\RicohApu.hpp" />
-    <ClInclude Include="Sources\RicohPPU.hpp" />
-    <ClInclude Include="sources\StaticMemory.hpp" />
-    <ClInclude Include="sources\RicohCpu.hpp" />
-    <ClInclude Include="sources\Nestest.hpp" />
-    <ClInclude Include="sources\RicohCpuImpl.hpp" />
-    <ClInclude Include="sources\Types.hpp" />
+    <ClCompile Include="Sources\fileio\Ines.cpp" />
+    <ClCompile Include="Sources\Main.cpp" />
+    <ClCompile Include="Sources\mapper\MapperNROM.cpp" />
+    <ClCompile Include="Sources\test\Nestest.cpp" />
+    <ClCompile Include="Sources\test\NestestChr.cpp" />
+    <ClCompile Include="Sources\test\NestestLog.cpp" />
+    <ClCompile Include="Sources\test\NestestMain.cpp" />
+    <ClCompile Include="Sources\test\NestestPrg.cpp" />
+    <ClCompile Include="Sources\video\Palette.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
@@ -105,18 +109,22 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <OutDir>$(SolutionDir)\Bin\$(Configuration)\$(PlatformTarget)\</OutDir>
     <IntDir>$(SolutionDir)\Obj\$(Configuration)\$(PlatformTarget)\</IntDir>
+    <IncludePath>$(SolutionDir)Sources;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <OutDir>$(SolutionDir)\Bin\$(Configuration)\$(PlatformTarget)\</OutDir>
     <IntDir>$(SolutionDir)\Obj\$(Configuration)\$(PlatformTarget)\</IntDir>
+    <IncludePath>$(SolutionDir)Sources;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <OutDir>$(SolutionDir)\Bin\$(Configuration)\$(PlatformTarget)\</OutDir>
     <IntDir>$(SolutionDir)\Obj\$(Configuration)\$(PlatformTarget)\</IntDir>
+    <IncludePath>$(SolutionDir)Sources;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <OutDir>$(SolutionDir)\Bin\$(Configuration)\$(PlatformTarget)\</OutDir>
     <IntDir>$(SolutionDir)\Obj\$(Configuration)\$(PlatformTarget)\</IntDir>
+    <IncludePath>$(SolutionDir)Sources;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>

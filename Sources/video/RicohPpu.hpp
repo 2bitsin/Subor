@@ -1,11 +1,13 @@
+// This is a personal academic project. Dear PVS-Studio, please check it.
+// PVS-Studio Static Code Analyzer for C, C++, C#, and Java: http://www.viva64.com
 #pragma once
 
-#include "Types.hpp"
-#include "Bitfield.hpp"
-#include "Bitarray.hpp"
-#include "Image.hpp"
-#include "OAMemory.hpp"
-#include "Palette.hpp"
+#include "utils/Types.hpp"
+#include "utils/Bitfield.hpp"
+#include "utils/Bitarray.hpp"
+#include "utils/Image.hpp"
+#include "video/OAMemory.hpp"
+#include "video/Palette.hpp"
 
 #include <cstdio>
 
@@ -117,8 +119,8 @@ struct RicohPPU
 	constexpr auto height () const { return ctVerticalPixels; }
 	bool ready () const { return sFrameReady; }
 
-	template <typename _Writter>
-	void grabFrame (_Writter&& write)
+	template <typename _VideoSink>
+	void grabFrame (_VideoSink&& write)
 	{
 		auto& src = sPixels [(sFrame + 1u)&1u];
 		for (auto y = 0u; y < ctVerticalPixels; ++y)
@@ -256,7 +258,7 @@ struct RicohPPU
 				if (sRegisterLatch ^= 1)
 					bits::unpack<3, 5> (
 						sRegBuffer,
-						/* rVidScroll */sXFine,
+						sXFine,
 						sScroll.xCoarse);
 				else
 					bits::unpack<3, 5> (
