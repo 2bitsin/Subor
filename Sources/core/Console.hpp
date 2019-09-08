@@ -67,11 +67,6 @@ struct Console
 		return apu.grabFrame(std::forward<_Sink>(sink));
 	}
 
-	auto rateOfSampling(int sr)
-	{
-		return apu.rateOfSampling(sr);
-	}
-
 	word ppuMirror (word addr) const
 	{
 		return mmc.ppuMirror (addr);

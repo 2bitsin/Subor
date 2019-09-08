@@ -3,6 +3,6 @@
 #include "AudioChannel.hpp"
 
 struct DeltaChannel
-: public AudioChannel 
+: public AudioChannel<byte, 0, 127>
 {
 };

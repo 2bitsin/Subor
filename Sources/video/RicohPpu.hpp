@@ -10,6 +10,15 @@
 #include "video/Palette.hpp"
 
 #include <cstdio>
+#include <chrono>
+
+namespace __ppu_detail__
+{
+	using std::chrono::duration_cast;
+	using std::chrono::nanoseconds;
+	using std::chrono::seconds;
+	static constexpr auto _1s2ns = duration_cast<nanoseconds>(seconds(1));
+}
 
 struct RicohPPU
 {
@@ -71,8 +80,11 @@ struct RicohPPU
 		Bitfield<2, 6> objIndex;
 	};
 
+
 #pragma pack(pop)
 
+	static constexpr const auto ctFramesPerSecond = 60u;
+	static constexpr const auto ctFrameLengthInNs = __ppu_detail__::_1s2ns / ctFramesPerSecond;
 	static constexpr const auto ctHorizontalTicks = 341u;
 	static constexpr const auto ctVerticalTicks = 262u;
 	static constexpr const auto ctVblankScanline = 241u;

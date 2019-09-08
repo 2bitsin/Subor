@@ -39,7 +39,7 @@
     <ClInclude Include="Sources\audio\PulseChannel.hpp" />
     <ClInclude Include="Sources\core\RicohCpu.hpp" />
     <ClInclude Include="Sources\core\RicohCpuImpl.hpp" />
-    <ClInclude Include="Sources\video\RicohPpu.hpp" />
+    <ClInclude Include="Sources\video\RicohPPU.hpp" />
     <ClInclude Include="Sources\core\StaticMemory.hpp" />
     <ClInclude Include="Sources\audio\TriangleChannel.hpp" />
     <ClInclude Include="Sources\utils\Types.hpp" />

@@ -2,7 +2,7 @@
 #include "AudioChannel.hpp"
 
 struct TriangleChannel
-:	public AudioChannel
+:	public AudioChannel<byte, 0, 15>
 {
 
 };
