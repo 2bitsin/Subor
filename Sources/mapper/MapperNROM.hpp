@@ -4,7 +4,8 @@
 
 #include "Mapper.hpp"
 
-struct MapperNROM: Mapper<MapperNROM>
+struct MapperNROM
+:	public Mapper<MapperNROM>
 {
 	MapperNROM (const INes& iNes);
 	MapperNROM ();

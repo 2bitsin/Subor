@@ -87,6 +87,9 @@
     <ClInclude Include="Sources\video\RicohPPU.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Sources\core\CoreConfig.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Sources\Main.cpp">

@@ -2,6 +2,7 @@
 // PVS-Studio Static Code Analyzer for C, C++, C#, and Java: http://www.viva64.com
 #pragma once
 
+#include "core/CoreConfig.hpp"
 #include "utils/Types.hpp"
 #include "utils/Bitfield.hpp"
 #include "utils/Bitarray.hpp"
@@ -12,15 +13,8 @@
 #include <cstdio>
 #include <chrono>
 
-namespace __ppu_detail__
-{
-	using std::chrono::duration_cast;
-	using std::chrono::nanoseconds;
-	using std::chrono::seconds;
-	static constexpr auto _1s2ns = duration_cast<nanoseconds>(seconds(1));
-}
-
 struct RicohPPU
+:	public CoreConfig
 {
 #pragma pack(push, 1)
 	union VideoAddress
@@ -82,16 +76,6 @@ struct RicohPPU
 
 
 #pragma pack(pop)
-
-	static constexpr const auto ctFramesPerSecond = 60u;
-	static constexpr const auto ctFrameLengthInNs = __ppu_detail__::_1s2ns / ctFramesPerSecond;
-	static constexpr const auto ctHorizontalTicks = 341u;
-	static constexpr const auto ctVerticalTicks = 262u;
-	static constexpr const auto ctVblankScanline = 241u;
-	static constexpr const auto ctTotalTicks = ctHorizontalTicks * ctVerticalTicks;
-	static constexpr const auto ctHorizontalPixels = 256u;
-	static constexpr const auto ctVerticalPixels = 240u;
-	static constexpr const auto ctNmiTimeout = 15u;
 
 	Image<dword, ctHorizontalPixels, ctVerticalPixels> sPixels [2u];
 	Palette sPalette{ { 0 } };

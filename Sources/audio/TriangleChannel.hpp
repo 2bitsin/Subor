@@ -1,9 +1,10 @@
 #pragma once
 #include "AudioChannel.hpp"
 
+template <word _BaseAddress>
 struct TriangleChannel
-:	public AudioChannel<byte, 0, 15>
+:	public AudioChannel
 {
-
+	
 };
 

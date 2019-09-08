@@ -21,6 +21,7 @@
   <ItemGroup>
     <ClInclude Include="Sources\audio\AudioChannel.hpp" />
     <ClInclude Include="Sources\audio\RicohApu.hpp" />
+    <ClInclude Include="Sources\core\CoreConfig.hpp" />
     <ClInclude Include="Sources\utils\Bitarray.hpp" />
     <ClInclude Include="Sources\utils\BitCommon.hpp" />
     <ClInclude Include="Sources\utils\Bitfield.hpp" />

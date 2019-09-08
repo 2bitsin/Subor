@@ -2,6 +2,8 @@
 // PVS-Studio Static Code Analyzer for C, C++, C#, and Java: http://www.viva64.com
 #pragma once
 
+#include "utils/Types.hpp"
+
 enum MemoryType: byte
 {
 	kReadableMemory = 0x1,

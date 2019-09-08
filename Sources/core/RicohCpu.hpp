@@ -2,14 +2,16 @@
 // PVS-Studio Static Code Analyzer for C, C++, C#, and Java: http://www.viva64.com
 #pragma once
 
-#include "utils/Types.hpp"
 #include "core/Memory.hpp"
+#include "core/CoreConfig.hpp"
+#include "utils/Types.hpp"
 #include "utils/Bitfield.hpp"
 #include <cstdio>
 #include <cassert>
 #include <functional>
 
 struct RicohCPU
+:	public CoreConfig
 {
 	static constexpr byte NonMaskableBit = 0x01u;
 	static constexpr byte ResetBit = 0x02u;
