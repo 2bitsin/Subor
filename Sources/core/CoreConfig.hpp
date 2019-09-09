@@ -32,5 +32,6 @@ struct CoreConfig
 	static constexpr const auto ctCPUTicksPerFrame = (ctTotalTicks - 0.5) / 3.0;
 	static constexpr const auto ctCPUTicksPerSample = ctCPUTicksPerFrame/ctSamplesPerFrame;
 	static constexpr const auto ctSamplingClockDivider = qword((1.0/ctCPUTicksPerSample) * 0x100000000ull);
+	static constexpr const auto ctSequencerClockDivider = qword((ctCPUTicksPerSecond/240.0) * 0x100000000ull);
 	static constexpr const auto ctSampleTimeDelta = 1.0 / ctSamplingRate;
 };

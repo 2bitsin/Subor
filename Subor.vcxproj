@@ -19,7 +19,6 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Sources\audio\AudioChannel.hpp" />
     <ClInclude Include="Sources\audio\RicohApu.hpp" />
     <ClInclude Include="Sources\core\CoreConfig.hpp" />
     <ClInclude Include="Sources\utils\Bitarray.hpp" />
@@ -27,22 +26,18 @@
     <ClInclude Include="Sources\utils\Bitfield.hpp" />
     <ClInclude Include="Sources\utils\Bitshifter.hpp" />
     <ClInclude Include="Sources\core\Console.hpp" />
-    <ClInclude Include="Sources\audio\DeltaChannel.hpp" />
     <ClInclude Include="Sources\utils\Image.hpp" />
     <ClInclude Include="Sources\fileio\Ines.hpp" />
     <ClInclude Include="Sources\mapper\Mapper.hpp" />
     <ClInclude Include="Sources\mapper\MapperNROM.hpp" />
     <ClInclude Include="Sources\core\Memory.hpp" />
     <ClInclude Include="Sources\test\Nestest.hpp" />
-    <ClInclude Include="Sources\audio\NoiseChannel.hpp" />
     <ClInclude Include="Sources\video\OAMemory.hpp" />
     <ClInclude Include="Sources\video\Palette.hpp" />
-    <ClInclude Include="Sources\audio\PulseChannel.hpp" />
     <ClInclude Include="Sources\core\RicohCpu.hpp" />
     <ClInclude Include="Sources\core\RicohCpuImpl.hpp" />
     <ClInclude Include="Sources\video\RicohPPU.hpp" />
     <ClInclude Include="Sources\core\StaticMemory.hpp" />
-    <ClInclude Include="Sources\audio\TriangleChannel.hpp" />
     <ClInclude Include="Sources\utils\Types.hpp" />
   </ItemGroup>
   <ItemGroup>
@@ -130,15 +125,15 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
-      <Optimization>Custom</Optimization>
+      <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpplatest</LanguageStandard>
       <AdditionalOptions>/await %(AdditionalOptions)</AdditionalOptions>
       <BasicRuntimeChecks>Default</BasicRuntimeChecks>
-      <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
+      <InlineFunctionExpansion>Default</InlineFunctionExpansion>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
+      <FavorSizeOrSpeed>Neither</FavorSizeOrSpeed>
       <EnableFiberSafeOptimizations>true</EnableFiberSafeOptimizations>
       <WholeProgramOptimization>false</WholeProgramOptimization>
     </ClCompile>
@@ -149,15 +144,15 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
-      <Optimization>Custom</Optimization>
+      <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpplatest</LanguageStandard>
       <AdditionalOptions>/await %(AdditionalOptions)</AdditionalOptions>
       <BasicRuntimeChecks>Default</BasicRuntimeChecks>
-      <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
+      <InlineFunctionExpansion>Default</InlineFunctionExpansion>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
+      <FavorSizeOrSpeed>Neither</FavorSizeOrSpeed>
       <OmitFramePointers>false</OmitFramePointers>
       <EnableFiberSafeOptimizations>true</EnableFiberSafeOptimizations>
       <WholeProgramOptimization>false</WholeProgramOptimization>

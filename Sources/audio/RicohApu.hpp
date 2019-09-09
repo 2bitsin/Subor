@@ -6,10 +6,6 @@
 #include "core/CoreConfig.hpp"
 #include "utils/Types.hpp"
 #include "video/RicohPPU.hpp"
-#include "audio/TriangleChannel.hpp"
-#include "audio/PulseChannel.hpp"
-#include "audio/NoiseChannel.hpp"
-#include "audio/DeltaChannel.hpp"
 
 #include <vector>
 #include <tuple>
@@ -25,7 +21,7 @@ struct RicohAPU
 	template <MemoryOperation _Operation, typename _Host, typename _Data>
 	auto tick (_Host& host, word addr, _Data&& data)
 	{
-		tickInternal<_Operation> (host, addr, data);
+		tickUpdate<_Operation> (host, addr, data);
 		if (addr >= 0x4000u && addr < 0x4200u)
 		{
 			addr -= 0x4000u;
@@ -34,16 +30,10 @@ struct RicohAPU
 			if constexpr (_Operation == kPeek)
 				data = latch;
 			if constexpr (_Operation == kPoke)
-				latch = byte(data);
+				latch = byte (data);
 
 			switch (addr)
 			{
-			case 0x15:
-				if constexpr (_Operation == kPoke)
-					pokeStatus (data);
-				if constexpr (_Operation == kPeek)
-					peekStatus (data);
-				break;
 			case 0x16:
 				if constexpr (_Operation == kPoke)
 					inputStrobe (data);
@@ -51,8 +41,6 @@ struct RicohAPU
 					inputRead<0> (data);
 				break;
 			case 0x17:
-				if constexpr (_Operation == kPoke)
-					pokeFrameCycle(data);
 				if constexpr (_Operation == kPeek)
 					inputRead<1> (data);
 				break;
@@ -64,10 +52,6 @@ struct RicohAPU
 	template <ResetType _Type>
 	void reset ()
 	{
-		trich.reset ();
-		sq0ch.reset ();
-		sq1ch.reset ();
-		noich.reset ();
 	}
 
 	template <typename... Args>
@@ -89,63 +73,13 @@ struct RicohAPU
 
 private:
 
-	template<typename _Data>
-	void pokeFrameCycle(_Data&& data)
+	void mix_audio (float sq0, float sq1, float tri, float noi, float dmc)
 	{
-		_.irq_disable = !!(byte(data) & 0x40u);
-		_.frame_cycle = !!(byte(data) & 0x80u);
-	}
-
-	template<typename _Data>
-	void pokeStatus (_Data&& data)
-	{
-		sq0ch.lcEnable (!!(byte(data) & 0x01u));
-		sq1ch.lcEnable (!!(byte(data) & 0x02u));
-		trich.lcEnable (!!(byte(data) & 0x04u));
-		noich.lcEnable (!!(byte(data) & 0x08u));
-		dmcch.lcEnable (!!(byte(data) & 0x10u));
-	}
-
-	template<typename _Data>
-	void peekStatus (_Data&& data)
-	{
-		data = bits::pack<1, 1, 1, 1, 1, 1, 1, 1> (
-			sq0ch.lcStatus () ? 1u : 0u,
-			sq1ch.lcStatus () ? 1u : 0u,
-			trich.lcStatus () ? 1u : 0u,
-			noich.lcStatus () ? 1u : 0u,
-			dmcch.lcStatus () ? 1u : 0u,
-			0u,
-			dmcch.irq () ? 1u : 0u,
-			_.irq_raised ? 1u : 0u);
-	}
-
-	template<int _Port, typename _Value>
-	void inputRead (_Value&& data)
-	{
-		data = (data & 0xe0) | (input_shift [_Port] & 1u);
-		if (!(input_latch & 1u))
-			input_shift [_Port] >>= 1u;
-	}
-
-	template<typename _Value>
-	void inputStrobe (_Value&& data)
-	{
-		for (auto i = 0; i < std::size (input_shift); ++i)
-		{
-			input_latch = (byte)data;
-			if (input_latch & 1u)
-				input_shift [i] = input_state [i];
-		}
-	}
-
-	void mixAudio ()
-	{
-		auto _sq0 = 15.0f * sq0ch.value ();
-		auto _sq1 = 15.0f * sq1ch.value ();
-		auto _tri = 15.0f * trich.value ();
-		auto _noi = 15.0f * noich.value ();
-		auto _dmc = 127.0f * dmcch.value ();
+		auto _sq0 = 15.0f  * sq0;
+		auto _sq1 = 15.0f  * sq1;
+		auto _tri = 15.0f  * tri;
+		auto _noi = 15.0f  * noi;
+		auto _dmc = 127.0f * dmc;
 
 		float g0 = 0.0f;
 		if (_tri || _noi || _dmc)
@@ -162,84 +96,15 @@ private:
 			g1 = 95.88f / g1;
 		}
 
-		g0 = g0 + g1;
-		buffer.emplace_back (g0, g0);
+		return g0 + g1;		
 	}
 
-	template <MemoryOperation _Operation, typename _Host, typename _Value>
-	auto tickInternal (_Host& host, word addr, _Value&& data)
-	{
-		trich.tick<_Operation> (host, addr, data, _.active_tick);
-		sq0ch.tick<_Operation> (host, addr, data, _.active_tick);
-		sq1ch.tick<_Operation> (host, addr, data, _.active_tick);
-		noich.tick<_Operation> (host, addr, data, _.active_tick);
-		dmcch.tick<_Operation> (host, addr, data, _.active_tick);
-		tickSequencer();
-		clkdiv += ctSamplingClockDivider;
-		if (clkdiv >= 0x100000000ull)
-		{
-			clkdiv &= 0xffffffffull;
-			mixAudio ();
-		}
-		_.active_tick = ~_.active_tick;
-	}
-
-	void tickChannelSequencer(byte mask)
-	{
-		sq0ch.tickSequencer(mask);
-		sq1ch.tickSequencer(mask);
-		trich.tickSequencer(mask);
-		noich.tickSequencer(mask);
-		dmcch.tickSequencer(mask);
-	}
-
-
-	template <typename _Host>
-	auto tickSequencer(_Host&& host)
-	{
-		static constexpr const auto e = AudioChannelBase::kTickEnvelope;
-		static constexpr const auto l = AudioChannelBase::kTickLength | AudioChannelBase::kTickSweep;
-
-		// if (_frame_tick?)
-		// {
-
-		switch(seq_step)
-		{
-			case 0: tickChannelSequencer(l|e); break;
-			case 1: tickChannelSequencer(l; break;
-			case 2: tickChannelSequencer(l|e); break; 
-			case 3: tickChannelSequencer(l); break;
-			case 4: tickChannelSequencer(0u); break;
-		}
-		seq_step = (seq_step + 1) % (4u + _.frame_cycle);	
-		// }
-	}
 
 private:
 	byte										latch{0u};
-
 	byte										input_state [4u] = {0, 0, 0, 0};
 	byte										input_shift [4u] = {0, 0, 0, 0};
 	byte										input_latch{0};
-
-	qword										clkdiv{0ull};
-	
-	byte										seq_step = 0u;
-
-	union
-	{
-		Bitfield<0, 1, 8>			irq_raised;
-		Bitfield<1, 1, 8>			frame_cycle;
-		Bitfield<2, 1, 8>			irq_disable;
-		Bitfield<3, 1, 8>			active_tick;
-		byte bits;
-	} _{0};
-
-	PulseChannel<0x4000>		sq0ch;
-	PulseChannel<0x4004>		sq1ch;
-	TriangleChannel<0x4008> trich;
-	NoiseChannel<0x400C>		noich;
-	DeltaChannel<0x4010>	  dmcch;
 
 	AudioBuffer							buffer;
 };

@@ -2,8 +2,8 @@
 #include "AudioChannel.hpp"
 
 template <word _BaseAddress>
-struct TriangleChannel
-:	public AudioChannel<TriangleChannel<_BaseAddress>>
+struct TrianChannel
+:	public AudioChannel<TrianChannel<_BaseAddress>>
 {
 	
 };
