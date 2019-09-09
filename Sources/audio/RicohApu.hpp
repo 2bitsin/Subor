@@ -20,8 +20,7 @@ struct RicohAPU
 
 	template <MemoryOperation _Operation, typename _Host, typename _Data>
 	auto tick (_Host& host, word addr, _Data&& data)
-	{
-		tickUpdate<_Operation> (host, addr, data);
+	{		
 		if (addr >= 0x4000u && addr < 0x4200u)
 		{
 			addr -= 0x4000u;
@@ -73,7 +72,26 @@ struct RicohAPU
 
 private:
 
-	void mix_audio (float sq0, float sq1, float tri, float noi, float dmc)
+	template<int _Port, typename _Value>
+	void inputRead (_Value&& data)
+	{
+		data = (data & 0xe0) | (input_shift [_Port] & 1u);
+		if (!(input_latch & 1u))
+			input_shift [_Port] >>= 1u;
+	}
+
+	template<typename _Value>
+	void inputStrobe (_Value&& data)
+	{
+		for (auto i = 0; i < std::size (input_shift); ++i)
+		{
+			input_latch = (byte)data;
+			if (input_latch & 1u)
+				input_shift [i] = input_state [i];
+		}
+	}
+
+	float mix_audio (float sq0, float sq1, float tri, float noi, float dmc)
 	{
 		auto _sq0 = 15.0f  * sq0;
 		auto _sq1 = 15.0f  * sq1;
