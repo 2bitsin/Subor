@@ -4,7 +4,7 @@
 
 template <word _BaseAddress>
 struct DeltaChannel
-: public AudioChannel
+: public AudioChannel<DeltaChannel<_BaseAddress>>
 {
 	auto irq () const
 	{

@@ -26,6 +26,12 @@ struct Bitshifter
 		return g;
 	}
 
+	template <std::size_t _Bits = 1u>
+	value_type rot_left (value_type q = 0)
+	{
+		return left<_Bits>(extract(_Size - _Bits, _Bits));
+	}
+
 	value_type left (value_type q, std::size_t _Bits)
 	{
 		assert (_Bits <= _Size);
@@ -45,6 +51,12 @@ struct Bitshifter
 		const value_type g = bits & m;
 		bits = ((bits >> _Bits) | ((q & m) << (_Size - _Bits))) & Mask;
 		return g;
+	}
+
+	template <std::size_t _Bits = 1u>
+	value_type rot_right (value_type q = 0)
+	{
+		return right<_Bits>(extract(0u, _Bits));
 	}
 
 	value_type right (value_type q, std::size_t _Bits)

@@ -3,7 +3,7 @@
 
 template <word _BaseAddress>
 struct TriangleChannel
-:	public AudioChannel
+:	public AudioChannel<TriangleChannel<_BaseAddress>>
 {
 	
 };

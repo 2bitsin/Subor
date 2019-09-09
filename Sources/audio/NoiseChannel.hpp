@@ -3,6 +3,6 @@
 
 template <word _BaseAddress>
 struct NoiseChannel
-: public AudioChannel
+: public AudioChannel<NoiseChannel<_BaseAddress>>
 {
 };

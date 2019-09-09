@@ -25,6 +25,7 @@ struct RicohAPU
 	template <MemoryOperation _Operation, typename _Host, typename _Data>
 	auto tick (_Host& host, word addr, _Data&& data)
 	{
+		tickInternal<_Operation> (host, addr, data);
 		if (addr >= 0x4000u && addr < 0x4200u)
 		{
 			addr -= 0x4000u;
@@ -57,7 +58,6 @@ struct RicohAPU
 				break;
 			}
 		}
-		tickInternal<_Operation> (host, addr, data);
 		return kSuccess;
 	}
 
@@ -169,18 +169,50 @@ private:
 	template <MemoryOperation _Operation, typename _Host, typename _Value>
 	auto tickInternal (_Host& host, word addr, _Value&& data)
 	{
-		trich.tick<_Operation> (host, addr, data);
-		sq0ch.tick<_Operation> (host, addr, data);
-		sq1ch.tick<_Operation> (host, addr, data);
-		noich.tick<_Operation> (host, addr, data);
-		dmcch.tick<_Operation> (host, addr, data);
-
+		trich.tick<_Operation> (host, addr, data, _.active_tick);
+		sq0ch.tick<_Operation> (host, addr, data, _.active_tick);
+		sq1ch.tick<_Operation> (host, addr, data, _.active_tick);
+		noich.tick<_Operation> (host, addr, data, _.active_tick);
+		dmcch.tick<_Operation> (host, addr, data, _.active_tick);
+		tickSequencer();
 		clkdiv += ctSamplingClockDivider;
 		if (clkdiv >= 0x100000000ull)
 		{
 			clkdiv &= 0xffffffffull;
 			mixAudio ();
 		}
+		_.active_tick = ~_.active_tick;
+	}
+
+	void tickChannelSequencer(byte mask)
+	{
+		sq0ch.tickSequencer(mask);
+		sq1ch.tickSequencer(mask);
+		trich.tickSequencer(mask);
+		noich.tickSequencer(mask);
+		dmcch.tickSequencer(mask);
+	}
+
+
+	template <typename _Host>
+	auto tickSequencer(_Host&& host)
+	{
+		static constexpr const auto e = AudioChannelBase::kTickEnvelope;
+		static constexpr const auto l = AudioChannelBase::kTickLength | AudioChannelBase::kTickSweep;
+
+		// if (_frame_tick?)
+		// {
+
+		switch(seq_step)
+		{
+			case 0: tickChannelSequencer(l|e); break;
+			case 1: tickChannelSequencer(l; break;
+			case 2: tickChannelSequencer(l|e); break; 
+			case 3: tickChannelSequencer(l); break;
+			case 4: tickChannelSequencer(0u); break;
+		}
+		seq_step = (seq_step + 1) % (4u + _.frame_cycle);	
+		// }
 	}
 
 private:
@@ -191,12 +223,15 @@ private:
 	byte										input_latch{0};
 
 	qword										clkdiv{0ull};
+	
+	byte										seq_step = 0u;
 
 	union
 	{
 		Bitfield<0, 1, 8>			irq_raised;
 		Bitfield<1, 1, 8>			frame_cycle;
 		Bitfield<2, 1, 8>			irq_disable;
+		Bitfield<3, 1, 8>			active_tick;
 		byte bits;
 	} _{0};
 
