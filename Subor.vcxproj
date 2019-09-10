@@ -19,13 +19,16 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Sources\audio\RicohApu.hpp" />
+    <ClInclude Include="Sources\audio\AudioBuffer.hpp" />
+    <ClInclude Include="Sources\audio\RicohAPU.hpp" />
     <ClInclude Include="Sources\core\CoreConfig.hpp" />
+    <ClInclude Include="Sources\input\InputPort.hpp" />
     <ClInclude Include="Sources\utils\Bitarray.hpp" />
     <ClInclude Include="Sources\utils\BitCommon.hpp" />
     <ClInclude Include="Sources\utils\Bitfield.hpp" />
     <ClInclude Include="Sources\utils\Bitshifter.hpp" />
     <ClInclude Include="Sources\core\Console.hpp" />
+    <ClInclude Include="Sources\utils\ClockDivider.hpp" />
     <ClInclude Include="Sources\utils\Image.hpp" />
     <ClInclude Include="Sources\fileio\Ines.hpp" />
     <ClInclude Include="Sources\mapper\Mapper.hpp" />

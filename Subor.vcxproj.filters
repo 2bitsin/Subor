@@ -15,9 +15,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Sources\audio\RicohApu.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Sources\utils\Bitarray.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -73,6 +70,18 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Sources\core\CoreConfig.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Sources\input\InputPort.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Sources\utils\ClockDivider.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Sources\audio\RicohAPU.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Sources\audio\AudioBuffer.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

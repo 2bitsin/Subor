@@ -5,7 +5,9 @@
 #include "core/Memory.hpp"
 #include "core/CoreConfig.hpp"
 #include "utils/Types.hpp"
+#include "input/InputPort.hpp"
 #include "video/RicohPPU.hpp"
+#include "audio/AudioBuffer.hpp"
 
 #include <vector>
 #include <tuple>
@@ -13,14 +15,14 @@
 struct RicohAPU
 	: public CoreConfig
 {
-	using AudioBuffer = std::vector<std::pair<float, float>>;
 
 	RicohAPU ()
+	:	_buffer(ctSamplesPerFrame)
 	{}
 
 	template <MemoryOperation _Operation, typename _Host, typename _Data>
 	auto tick (_Host& host, word addr, _Data&& data)
-	{		
+	{
 		if (addr >= 0x4000u && addr < 0x4200u)
 		{
 			addr -= 0x4000u;
@@ -35,13 +37,13 @@ struct RicohAPU
 			{
 			case 0x16:
 				if constexpr (_Operation == kPoke)
-					inputStrobe (data);
+					_input.write (data);
 				if constexpr (_Operation == kPeek)
-					inputRead<0> (data);
+					_input.read<0> (data);
 				break;
 			case 0x17:
 				if constexpr (_Operation == kPeek)
-					inputRead<1> (data);
+					_input.read<1> (data);
 				break;
 			}
 		}
@@ -50,53 +52,29 @@ struct RicohAPU
 
 	template <ResetType _Type>
 	void reset ()
-	{
-	}
-
-	template <typename... Args>
-	void input (Args&& ... values)
-	{
-		byte new_state [4u] = {values...};
-		input_state [0] = new_state [0];
-		input_state [1] = new_state [1];
-		input_state [2] = new_state [2];
-		input_state [3] = new_state [3];
-	}
+	{}
 
 	template <typename _Sink>
 	void grabFrame (_Sink&& sink)
 	{
-		sink (buffer);
-		buffer.clear ();
+		sink (_buffer);
+		_buffer.clear ();
+	}
+
+	template <typename... _Args>
+	auto input(_Args&& ... args)
+	{
+		return _input.set(std::forward<_Args>(args)...);
 	}
 
 private:
 
-	template<int _Port, typename _Value>
-	void inputRead (_Value&& data)
+	float mix (float sq0, float sq1, float tri, float noi, float dmc)
 	{
-		data = (data & 0xe0) | (input_shift [_Port] & 1u);
-		if (!(input_latch & 1u))
-			input_shift [_Port] >>= 1u;
-	}
-
-	template<typename _Value>
-	void inputStrobe (_Value&& data)
-	{
-		for (auto i = 0; i < std::size (input_shift); ++i)
-		{
-			input_latch = (byte)data;
-			if (input_latch & 1u)
-				input_shift [i] = input_state [i];
-		}
-	}
-
-	float mix_audio (float sq0, float sq1, float tri, float noi, float dmc)
-	{
-		auto _sq0 = 15.0f  * sq0;
-		auto _sq1 = 15.0f  * sq1;
-		auto _tri = 15.0f  * tri;
-		auto _noi = 15.0f  * noi;
+		auto _sq0 = 15.0f * sq0;
+		auto _sq1 = 15.0f * sq1;
+		auto _tri = 15.0f * tri;
+		auto _noi = 15.0f * noi;
 		auto _dmc = 127.0f * dmc;
 
 		float g0 = 0.0f;
@@ -114,15 +92,13 @@ private:
 			g1 = 95.88f / g1;
 		}
 
-		return g0 + g1;		
+		return g0 + g1;
 	}
 
 
 private:
-	byte										latch{0u};
-	byte										input_state [4u] = {0, 0, 0, 0};
-	byte										input_shift [4u] = {0, 0, 0, 0};
-	byte										input_latch{0};
 
-	AudioBuffer							buffer;
+	byte latch{0u};
+	InputPort	_input;
+	AudioBuffer<float> _buffer;
 };
