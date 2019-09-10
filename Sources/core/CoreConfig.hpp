@@ -31,4 +31,5 @@ struct CoreConfig
 	static constexpr const auto ctSamplesPerFrame = ctSamplingRate / ctFramesPerSecond;
 	static constexpr const auto ctCPUTicksPerFrame = (ctTotalTicks - 0.5) / 3.0;
 	static constexpr const auto ctSampleTimeDelta = 1.0 / ctSamplingRate;
+	static constexpr const auto ctSEQTicksPerSecond = 240ull;
 };

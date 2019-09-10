@@ -11,7 +11,6 @@ struct InputPort
 			input_state [i] = new_state [i];
 	}
 
-
 	template<int _Port, typename _Value>
 	void read (_Value&& data)
 	{
@@ -30,7 +29,7 @@ struct InputPort
 				input_shift [i] = input_state [i];
 		}
 	}
-
+private:
 	byte input_state [4u] = {0, 0, 0, 0};
 	byte input_shift [4u] = {0, 0, 0, 0};
 	byte input_latch{0};

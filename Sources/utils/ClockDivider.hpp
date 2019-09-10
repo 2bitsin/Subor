@@ -10,7 +10,7 @@ struct ClockDivider
 {
 private:
 	static inline constexpr auto t = (_OutputClock * _Precision) / _InputClock;
-	using value_type = decltype(t);
+	using value_type = std::remove_const_t<decltype(t)>;
 	value_type _value;
 
 public:

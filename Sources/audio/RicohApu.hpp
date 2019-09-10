@@ -5,6 +5,7 @@
 #include "core/Memory.hpp"
 #include "core/CoreConfig.hpp"
 #include "utils/Types.hpp"
+#include "utils/ClockDivider.hpp"
 #include "input/InputPort.hpp"
 #include "video/RicohPPU.hpp"
 #include "audio/AudioBuffer.hpp"
@@ -12,12 +13,49 @@
 #include <vector>
 #include <tuple>
 
+struct Mixer
+{
+	float mix (float sq0, float sq1, float tri, float noi, float dmc)
+	{
+		auto _sq0 = 15.0f * sq0;
+		auto _sq1 = 15.0f * sq1;
+		auto _tri = 15.0f * tri;
+		auto _noi = 15.0f * noi;
+		auto _dmc = 127.0f * dmc;
+
+		float g0 = 0.0f;
+		if (_tri || _noi || _dmc)
+		{
+			g0 = (_tri / 8227.0f) + (_noi / 12241.0f) + (_dmc / 22638.0f);
+			g0 = 1.0f / g0 + 100.0f;
+			g0 = 159.79f / g0;
+		}
+
+		float g1 = 0.0f;
+		if (_sq0 || _sq1)
+		{
+			g1 = (8128.0f / (_sq0 + _sq1)) + 100.0f;
+			g1 = 95.88f / g1;
+		}
+		return g0 + g1;
+	}
+
+	void update()
+	{}
+};
+
+struct Sequencer
+{
+	void update()
+	{}
+};
+
 struct RicohAPU
-	: public CoreConfig
+: public CoreConfig
 {
 
 	RicohAPU ()
-	:	_buffer(ctSamplesPerFrame)
+	: _buffer (ctSamplesPerFrame)
 	{}
 
 	template <MemoryOperation _Operation, typename _Host, typename _Data>
@@ -47,6 +85,13 @@ struct RicohAPU
 				break;
 			}
 		}
+
+		if (_clock_sampler.tick ())
+			_mix.update ();
+
+		if (_clock_sequencer.tick ())
+			_seq.update ();
+
 		return kSuccess;
 	}
 
@@ -62,43 +107,18 @@ struct RicohAPU
 	}
 
 	template <typename... _Args>
-	auto input(_Args&& ... args)
+	auto input (_Args&& ... args)
 	{
-		return _input.set(std::forward<_Args>(args)...);
+		return _input.set (std::forward<_Args> (args)...);
 	}
-
-private:
-
-	float mix (float sq0, float sq1, float tri, float noi, float dmc)
-	{
-		auto _sq0 = 15.0f * sq0;
-		auto _sq1 = 15.0f * sq1;
-		auto _tri = 15.0f * tri;
-		auto _noi = 15.0f * noi;
-		auto _dmc = 127.0f * dmc;
-
-		float g0 = 0.0f;
-		if (_tri || _noi || _dmc)
-		{
-			g0 = (_tri / 8227.0f) + (_noi / 12241.0f) + (_dmc / 22638.0f);
-			g0 = 1.0f / g0 + 100.0f;
-			g0 = 159.79f / g0;
-		}
-
-		float g1 = 0.0f;
-		if (_sq0 || _sq1)
-		{
-			g1 = (8128.0f / (_sq0 + _sq1)) + 100.0f;
-			g1 = 95.88f / g1;
-		}
-
-		return g0 + g1;
-	}
-
 
 private:
 
 	byte latch{0u};
+	ClockDivider<ctCPUTicksPerSecond, ctSamplingRate> _clock_sampler;
+	ClockDivider<ctCPUTicksPerSecond, ctSEQTicksPerSecond> _clock_sequencer;
 	InputPort	_input;
 	AudioBuffer<float> _buffer;
+	Mixer _mix;
+	Sequencer _seq;
 };

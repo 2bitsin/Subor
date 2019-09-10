@@ -11,12 +11,16 @@ namespace detail
 	struct sample
 	:	protected std::tuple<_Value_type, _Value_type>
 	{
+	private:
+		using v = _Value_type;
+	public:
+
 		sample(_Value_type m = _Value_type{0})
-		:	std::tuple(m, m)
+		:	std::tuple<v, v>(m, m)
 		{}
 
 		sample(_Value_type l, _Value_type r)
-		:	std::tuple(l, r)
+		:	std::tuple<v, v>(l, r)
 		{}
 
 		auto&& lhs() const { return std::get<0>(*this); }
