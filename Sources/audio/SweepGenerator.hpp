@@ -10,17 +10,41 @@ struct SweepGenerator
 	void load(byte _val)
 	{
 		_param.bits = _val;
+		_rload = true;
 	}
 
 	void tick(word& _period)
 	{
-		if (!_param.n)
+		if (_rload)
 		{
-			_period <<= byte(_param.s + 1u);
+			if (_param.e && !_ckdiv)
+				update (_period);
+			_rload = false;
+			_ckdiv = byte(_param.p);
+		}
+		else if (_ckdiv > 0u)
+		{
+			--_ckdiv;
 		}
 		else
 		{
-			_period >>= byte(_param.s + 1u);
+			if (_param.e)
+				update (_period);
+			_ckdiv = _param.p;
+		}
+	}
+
+protected:
+	void update(word& _period)
+	{
+		auto dt = _period >> byte(_param.s);
+		if (!_param.n)
+			_period += dt;
+		else
+		{
+			_period -= dt;
+			if (_AlternateCarry)
+				--_period;
 		}
 	}
 
