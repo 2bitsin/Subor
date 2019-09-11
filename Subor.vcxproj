@@ -20,7 +20,10 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Sources\audio\AudioBuffer.hpp" />
+    <ClInclude Include="Sources\audio\EnvelopeGenerator.hpp" />
+    <ClInclude Include="Sources\audio\LengthCounter.hpp" />
     <ClInclude Include="Sources\audio\RicohAPU.hpp" />
+    <ClInclude Include="Sources\audio\SweepGenerator.hpp" />
     <ClInclude Include="Sources\core\CoreConfig.hpp" />
     <ClInclude Include="Sources\input\InputPort.hpp" />
     <ClInclude Include="Sources\utils\Bitarray.hpp" />

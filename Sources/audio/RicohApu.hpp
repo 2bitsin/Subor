@@ -86,10 +86,10 @@ struct RicohAPU
 			}
 		}
 
-		if (_clock_sampler.tick ())
+		if (_clock_mix.tick ())
 			_mix.update ();
 
-		if (_clock_sequencer.tick ())
+		if (_clock_seq.tick ())
 			_seq.update ();
 
 		return kSuccess;
@@ -115,10 +115,10 @@ struct RicohAPU
 private:
 
 	byte latch{0u};
-	ClockDivider<ctCPUTicksPerSecond, ctSamplingRate> _clock_sampler;
-	ClockDivider<ctCPUTicksPerSecond, ctSEQTicksPerSecond> _clock_sequencer;
+	ClockDivider<ctCPUTicksPerSecond, ctSamplingRate> _clock_mix;
+	ClockDivider<ctCPUTicksPerSecond, ctSEQTicksPerSecond> _clock_seq;
 	InputPort	_input;
 	AudioBuffer<float> _buffer;
-	Mixer _mix;
 	Sequencer _seq;
+	Mixer _mix;
 };
