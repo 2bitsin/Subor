@@ -8,59 +8,37 @@
 #include "utils/ClockDivider.hpp"
 #include "input/InputPort.hpp"
 #include "video/RicohPPU.hpp"
+#include "audio/Sequencer.hpp"
 #include "audio/AudioBuffer.hpp"
+#include "audio/AudioChannel.hpp"
+#include "audio/Mixer.hpp"
+#include "audio/PulseChannel.hpp"
 
 #include <vector>
 #include <tuple>
 
-struct Mixer
-{
-	float mix (float sq0, float sq1, float tri, float noi, float dmc)
-	{
-		auto _sq0 = 15.0f * sq0;
-		auto _sq1 = 15.0f * sq1;
-		auto _tri = 15.0f * tri;
-		auto _noi = 15.0f * noi;
-		auto _dmc = 127.0f * dmc;
-
-		float g0 = 0.0f;
-		if (_tri || _noi || _dmc)
-		{
-			g0 = (_tri / 8227.0f) + (_noi / 12241.0f) + (_dmc / 22638.0f);
-			g0 = 1.0f / g0 + 100.0f;
-			g0 = 159.79f / g0;
-		}
-
-		float g1 = 0.0f;
-		if (_sq0 || _sq1)
-		{
-			g1 = (8128.0f / (_sq0 + _sq1)) + 100.0f;
-			g1 = 95.88f / g1;
-		}
-		return g0 + g1;
-	}
-
-	void update()
-	{}
-};
-
-struct Sequencer
-{
-	void update()
-	{}
-};
-
 struct RicohAPU
 : public CoreConfig
 {
-
-	RicohAPU ()
-	: _buffer (ctSamplesPerFrame)
+	RicohAPU ()		
 	{}
 
 	template <MemoryOperation _Operation, typename _Host, typename _Data>
 	auto tick (_Host& host, word addr, _Data&& data)
 	{
+		if (_clock_osc.tick ())
+		{
+			_sq0ch.step<0b0001>(); 
+			_sq1ch.step<0b0001>();
+			_trich.step<0b0001>();
+			_noich.step<0b0001>();
+			_dmcch.step<0b0001>();
+		}
+		if (_clock_mix.tick ())
+			_mix.step (_sq0ch, _sq1ch, _trich, _noich, _dmcch);
+		if (_clock_seq.tick ())
+			_seq.step (_sq0ch, _sq1ch, _trich, _noich, _dmcch);
+
 		if (addr >= 0x4000u && addr < 0x4200u)
 		{
 			addr -= 0x4000u;
@@ -70,6 +48,12 @@ struct RicohAPU
 				data = latch;
 			if constexpr (_Operation == kPoke)
 				latch = byte (data);
+
+			_sq0ch.tick<_Operation>(addr, data); 
+			_sq1ch.tick<_Operation>(addr, data);
+			_trich.tick<_Operation>(addr, data);
+			_noich.tick<_Operation>(addr, data);
+			_dmcch.tick<_Operation>(addr, data);
 
 			switch (addr)
 			{
@@ -85,13 +69,6 @@ struct RicohAPU
 				break;
 			}
 		}
-
-		if (_clock_mix.tick ())
-			_mix.update ();
-
-		if (_clock_seq.tick ())
-			_seq.update ();
-
 		return kSuccess;
 	}
 
@@ -102,8 +79,7 @@ struct RicohAPU
 	template <typename _Sink>
 	void grabFrame (_Sink&& sink)
 	{
-		sink (_buffer);
-		_buffer.clear ();
+		_mix.grab(sink);
 	}
 
 	template <typename... _Args>
@@ -117,8 +93,15 @@ private:
 	byte latch{0u};
 	ClockDivider<ctCPUTicksPerSecond, ctSamplingRate> _clock_mix;
 	ClockDivider<ctCPUTicksPerSecond, ctSEQTicksPerSecond> _clock_seq;
+	ClockDivider<ctCPUTicksPerSecond, ctCPUTicksPerSecond / 2> _clock_osc;
 	InputPort	_input;
-	AudioBuffer<float> _buffer;
 	Sequencer _seq;
+	PulseChannel<0> _sq0ch;
+	PulseChannel<1> _sq1ch;
+
+	AudioChannel _noich;
+	AudioChannel _dmcch;
+	AudioChannel _trich;
+
 	Mixer _mix;
 };

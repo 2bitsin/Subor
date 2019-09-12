@@ -9,9 +9,11 @@ template <int _ChannelNum>
 struct PulseChannel
 {
 
-	template <typename _Data>
+	template <MemoryOperation _Operation, typename _Data>
 	void tick(word addr, _Data&& data)
 	{
+		if (_Operation == kPeek)
+			return;
 		switch (addr)
 		{		
 		case 4*_ChannelNum+0:
@@ -26,7 +28,7 @@ struct PulseChannel
 			}
 		case 4*_ChannelNum+1:
 			{
-				_sweep.load(data);
+				_sweep.load(byte(data));
 				break;
 			}
 		case 4*_ChannelNum+2:
@@ -37,17 +39,17 @@ struct PulseChannel
 		case 4*_ChannelNum+3:
 			{
 				auto [htime, lenct] 
-					= bit::unpack_as_tuple<3, 5>(data);
+					= bits::unpack_as_tuple<3, 5>(data);
 				_lengc.load(lenct);
 				_envlp.start();
 				_timer = (_timer & 0x00ff) | (word(byte(data)) << 8u);
 				break;
 			}
-			//byte(data);
 		}
 	}
 	
-	void step(dword clk)
+	template <byte clk>
+	void step()
 	{
 		if (clk & 0b0001)
 		{
@@ -70,12 +72,25 @@ struct PulseChannel
 
 	byte value() const
 	{
-		return 0;
+		if (!_enabl)
+			return 0;
+		if (!_lengc.value())
+			return 0;
+		if (_timer < 8u || _timer > 0x7ff)
+			return 0;
+		if (!_value)
+			return 0;
+		return _envlp.level();
 	}
 
 	void enable(bool val)
 	{
 		_enabl = val;
+	}
+
+	void status() const
+	{
+		return _lengc.value() != 0u;
 	}
 
 private:
