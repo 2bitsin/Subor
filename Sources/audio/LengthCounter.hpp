@@ -31,15 +31,18 @@ struct LengthCounter
 		return value () != 0u && !_disable;
 	}
 
-	template <byte _Offset = 0u, byte _Length = 8u>
 	void load (word value)
 	{
-		static constexpr auto _Mask = ((1u << _Length) - 1u) << _Offset;
-		_value = ((value << _Offset) & _Mask) | (_value & ~_Mask);
+		_value = _lut[value & 0x1f];
 	}
 
 private:
-	word _value{0u};
+	byte _value{0u};
 	bool _halt{false};
 	bool _disable{false};
+
+	static inline constexpr const byte _lut[] = {
+	 10,254, 20,  2, 40,  4, 80,  6, 160,  8, 60, 10, 14, 12, 26, 14,
+   12, 16, 24, 18, 48, 20, 96, 22, 192, 24, 72, 26, 16, 28, 32, 30
+	};
 };

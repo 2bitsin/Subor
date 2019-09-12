@@ -22,6 +22,8 @@
     <ClInclude Include="Sources\audio\AudioBuffer.hpp" />
     <ClInclude Include="Sources\audio\EnvelopeGenerator.hpp" />
     <ClInclude Include="Sources\audio\LengthCounter.hpp" />
+    <ClInclude Include="Sources\audio\PulseChannel.hpp" />
+    <ClInclude Include="Sources\audio\PulseGenerator.hpp" />
     <ClInclude Include="Sources\audio\RicohAPU.hpp" />
     <ClInclude Include="Sources\audio\SweepGenerator.hpp" />
     <ClInclude Include="Sources\core\CoreConfig.hpp" />

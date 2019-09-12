@@ -19,7 +19,7 @@ struct EnvelopeGenerator
 		_loopc = v;
 	}
 
-	void ctvol(bool v)
+	void cvol(bool v)
 	{
 		_ctvol = v;
 	}
