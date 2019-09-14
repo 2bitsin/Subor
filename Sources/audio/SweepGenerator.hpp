@@ -13,7 +13,8 @@ struct SweepGenerator
 		_rload = true;
 	}
 
-	void tick(word& _period)
+	template <typename _Period>
+	void tick(_Period&& _period)
 	{
 		if (_rload)
 		{
@@ -35,17 +36,15 @@ struct SweepGenerator
 	}
 
 protected:
-	void update(word& _period)
+	template <typename _Period>
+	void update(_Period&& _period)
 	{
-		auto dt = _period >> byte(_param.s);
-		if (!_param.n)
-			_period += dt;
-		else
-		{
-			_period -= dt;
-			if (_AlternateCarry)
-				--_period;
-		}
+		auto dt = _period.value() >> byte(_param.s);
+		auto va = _param.n 
+			?(int(_period.value()) - int(dt) - _AlternateCarry? 1 : 0)
+			:(int(_period.value()) + int(dt));
+		va = std::clamp(va, 0, 0x7ff);		
+		_period.load(word (va));
 	}
 
 private:

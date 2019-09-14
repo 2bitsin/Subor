@@ -1,106 +1,88 @@
 #pragma once
 
+#include "AudioChannel.hpp"
 #include "PulseGenerator.hpp"
+#include "PeriodCounter.hpp"
 #include "LengthCounter.hpp"
 #include "EnvelopeGenerator.hpp"
 #include "SweepGenerator.hpp"
 
 template <int _ChannelNum>
 struct PulseChannel
+	: public AudioChannel
 {
+	using super = AudioChannel;
 
 	template <MemoryOperation _Operation, typename _Data>
-	void tick(word addr, _Data&& data)
+	void tick (word addr, _Data&& data)
 	{
 		if (_Operation == kPeek)
 			return;
 		switch (addr)
-		{		
-		case 4*_ChannelNum+0:
+		{
+		case 4 * _ChannelNum + 0:
 			{
-				auto [volper, cstvol, lencth, dutycy] 
-					= bits::unpack_as_tuple<4, 1, 1, 2>(data);
-				_envlp.load(volper);
-				_envlp.cvol(cstvol);
-				_envlp.loop(cstvol);
-				_lengc.halt(lencth);
-				_pulse.load(dutycy);
+				auto [volper, cstvol, lencth, dutycy]
+					= bits::unpack_as_tuple<4, 1, 1, 2> (data);
+				_envlp.load (volper);
+				_envlp.cvol (cstvol);
+				_envlp.loop (cstvol);
+				_lengc.halt (lencth);
+				_pulse.load (dutycy);
 				break;
 			}
-		case 4*_ChannelNum+1:
+		case 4 * _ChannelNum + 1:
 			{
-				_sweep.load(data);
+				_sweep.load (data);
 				break;
 			}
-		case 4*_ChannelNum+2:
+		case 4 * _ChannelNum + 2:
 			{
-				_timer = bits::splice<0u, 8u>(_timer, data);
+				_timer.load<0u, 8u> (data);
 				break;
 			}
-		case 4*_ChannelNum+3:
+		case 4 * _ChannelNum + 3:
 			{
-				auto [htime, lenct] 
-					= bits::unpack_as_tuple<3, 5>(data);
-				_lengc.load(lenct);
-				_envlp.start();
-				_timer = bits::splice<8u, 8u>(_timer, htime);
+				auto [htime, lenct]
+					= bits::unpack_as_tuple<3, 5> (data);
+				_lengc.load (lenct);
+				_envlp.start ();
+				_timer.load<8u, 8u> (htime);
 				break;
 			}
 		}
 	}
-	
+
 	template <byte clk>
-	void step()
+	void step ()
 	{
 		if (clk & 0b0001)
-		{
-			if (_ckdiv > 0)
-				--_ckdiv;
-			else
-			{
-				_ckdiv = _timer;
-				_value = _pulse.tick();
-			}
-		}
-
+			if (_timer.step ())
+				_value = _pulse.tick ();
 		if (clk & 0b0010)
-			_envlp.tick();
+			_envlp.tick ();
 		if (clk & 0b0100)
-			_sweep.tick(_timer);
+			_sweep.tick (_timer);
 		if (clk & 0b1000)
-			_lengc.tick();
+			_lengc.tick ();
 	}
 
-	byte value() const
+	byte value () const
 	{
-		if (!_enabl)
+		if (!enabled ())
 			return 0;
-		if (!_lengc.value())
+		if (!status ())
 			return 0;
-		if (_timer < 8u || _timer > 0x7ff)
+		if (!_timer.valid ())
 			return 0;
-		if (!_value)
+		if (!super::value ())
 			return 0;
-		return _envlp.level();
-	}
-
-	void enable(bool val)
-	{
-		_enabl = val;
-	}
-
-	auto status() const
-	{
-		return _lengc.value() != 0u;
+		return _envlp.level ();
 	}
 
 private:
-	byte _value {0};
-	word _ckdiv {0};
-	word _timer {0};
-	bool _enabl {true};
+	PeriodCounter<8, 0x7ff> _timer;
 	PulseGenerator _pulse;
 	EnvelopeGenerator _envlp;
 	SweepGenerator<_ChannelNum != 0> _sweep;
-	LengthCounter _lengc;
 };

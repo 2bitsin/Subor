@@ -21,6 +21,11 @@ struct PulseGenerator
 		_.tick = 0;
 	}
 
+	void reset()
+	{
+		_.tick = 0;
+	}
+
 private:
 	union
 	{

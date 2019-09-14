@@ -26,14 +26,15 @@ struct RicohAPU
 	template <MemoryOperation _Operation, typename _Host, typename _Data>
 	auto tick (_Host& host, word addr, _Data&& data)
 	{
+		_trich.step<0b0001> ();
 		if (_clock_osc.tick ())
 		{
 			_sq0ch.step<0b0001> ();
 			_sq1ch.step<0b0001> ();
-			_trich.step<0b0001> ();
 			_noich.step<0b0001> ();
 			_dmcch.step<0b0001> ();
 		}
+
 		if (_clock_mix.tick ())
 			_mix.step (_sq0ch, _sq1ch, _trich, _noich, _dmcch);
 		if (_clock_seq.tick ())
