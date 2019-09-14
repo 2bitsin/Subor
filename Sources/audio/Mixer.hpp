@@ -7,7 +7,7 @@ struct Mixer
 	: public CoreConfig
 {
 	template
-		<	typename _SQ0,
+	<	typename _SQ0,
 		typename _SQ1,
 		typename _TRI,
 		typename _NOI,

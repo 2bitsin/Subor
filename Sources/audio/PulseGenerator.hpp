@@ -10,7 +10,7 @@ struct PulseGenerator
 	auto tick()
 	{
 		std::size_t d = _.duty;
-		std::size_t t = _.tick;
+		std::size_t t = _.tick;		
 		--_.tick;
 		return _lut[d*8u + t];
 	}

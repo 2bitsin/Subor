@@ -65,7 +65,7 @@ struct RicohCPU
 		Word addr{ 0 };
 		Word tmp0{ 0 };
 		Word tmp1{ 0 };
-		Word rDma{ 0 };
+		Word rDma{ 0 };		
 	};
 
 	static constexpr const State kTestState = State{ 7, { 0xC000 }, 0, 0, 0, 0xfd, 0x24, 0 };
@@ -82,7 +82,8 @@ struct RicohCPU
 	auto&& state () { return q; }
 	auto&& state () const { return q; }
 
-	void raise (byte bits);
+	void setSignal (byte bits);
+	void clrSignal (byte bits);
 
 	template <ResetType>
 	void reset ();

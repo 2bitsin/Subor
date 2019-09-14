@@ -88,7 +88,7 @@ struct PulseChannel
 		_enabl = val;
 	}
 
-	void status() const
+	auto status() const
 	{
 		return _lengc.value() != 0u;
 	}

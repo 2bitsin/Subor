@@ -18,9 +18,9 @@
 #include <tuple>
 
 struct RicohAPU
-: public CoreConfig
+	: public CoreConfig
 {
-	RicohAPU ()		
+	RicohAPU ()
 	{}
 
 	template <MemoryOperation _Operation, typename _Host, typename _Data>
@@ -28,16 +28,18 @@ struct RicohAPU
 	{
 		if (_clock_osc.tick ())
 		{
-			_sq0ch.step<0b0001>(); 
-			_sq1ch.step<0b0001>();
-			_trich.step<0b0001>();
-			_noich.step<0b0001>();
-			_dmcch.step<0b0001>();
+			_sq0ch.step<0b0001> ();
+			_sq1ch.step<0b0001> ();
+			_trich.step<0b0001> ();
+			_noich.step<0b0001> ();
+			_dmcch.step<0b0001> ();
 		}
 		if (_clock_mix.tick ())
 			_mix.step (_sq0ch, _sq1ch, _trich, _noich, _dmcch);
 		if (_clock_seq.tick ())
 			_seq.step (_sq0ch, _sq1ch, _trich, _noich, _dmcch);
+
+		host.irq (_seq.irq ());
 
 		if (addr >= 0x4000u && addr < 0x4200u)
 		{
@@ -49,21 +51,48 @@ struct RicohAPU
 			if constexpr (_Operation == kPoke)
 				latch = byte (data);
 
-			_sq0ch.tick<_Operation>(addr, data); 
-			_sq1ch.tick<_Operation>(addr, data);
-			_trich.tick<_Operation>(addr, data);
-			_noich.tick<_Operation>(addr, data);
-			_dmcch.tick<_Operation>(addr, data);
+			_sq0ch.tick<_Operation> (addr, latch);
+			_sq1ch.tick<_Operation> (addr, latch);
+			_trich.tick<_Operation> (addr, latch);
+			_noich.tick<_Operation> (addr, latch);
+			_dmcch.tick<_Operation> (addr, latch);
 
 			switch (addr)
 			{
+			case 0x15:
+				if constexpr (_Operation == kPoke)
+				{
+					auto [sq0e, sq1e, trie, noie, dmce, _]
+						= bits::unpack_as_tuple<1, 1, 1, 1, 1, 3> (latch);
+					_sq0ch.enable (sq0e);
+					_sq1ch.enable (sq1e);
+					_trich.enable (trie);
+					_noich.enable (noie);
+					_dmcch.enable (dmce);
+				}
+				if constexpr (_Operation == kPeek)
+				{
+					byte sq0e = !!_sq0ch.status();
+					byte sq1e = !!_sq1ch.status();
+					byte trie = !!_trich.status();
+					byte noie = !!_noich.status();
+					byte dmce = !!_dmcch.status();
+					data = bits::pack<1,1,1,1,1,1,1,1>(sq0e, sq1e, trie, noie, dmce, 0, _seq.irq_rr(), _dmcch.irq());
+				}
+				break;
 			case 0x16:
 				if constexpr (_Operation == kPoke)
-					_input.write (data);
+					_input.write (latch);
 				if constexpr (_Operation == kPeek)
 					_input.read<0> (data);
 				break;
 			case 0x17:
+				if constexpr (_Operation == kPoke)
+				{	
+					auto [_, i, m] = bits::unpack_as_tuple<6,1,1>(latch);
+					_seq.mode5(m);
+					_seq.irqdi(i);
+				}
 				if constexpr (_Operation == kPeek)
 					_input.read<1> (data);
 				break;
@@ -79,7 +108,7 @@ struct RicohAPU
 	template <typename _Sink>
 	void grabFrame (_Sink&& sink)
 	{
-		_mix.grab(sink);
+		_mix.grab (sink);
 	}
 
 	template <typename... _Args>

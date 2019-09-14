@@ -11,6 +11,23 @@ struct Sequencer
 		_mode5 = val;
 	}
 
+	void irqdi(bool val)
+	{
+		_irqen = !val;
+	}
+
+	bool irq_rr()	
+	{		
+		if (!_mode5 && !_cstep)
+			return _irqra;
+		return std::exchange(_irqra, false);
+	}
+
+	bool irq() const
+	{
+		return _irqra;
+	}
+
 	template <typename... _Channel>
 	void step (_Channel&& ... channel)
 	{
@@ -33,13 +50,19 @@ struct Sequencer
 			case 0: (channel.step<0b0010>(), ...); break;
 			case 1: (channel.step<0b1110>(), ...); break;
 			case 2: (channel.step<0b0010>(), ...); break;
-			case 3: (channel.step<0b1110>(), ...); break;
+			case 3: (channel.step<0b1110>(), ...); 
+				_irqra = _irqen; 
+				break;
 			}
 			_cstep = (_cstep + 1)%4;
 		}
 	}
 
+
 private:
-	byte _mode5{0};
+	bool _mode5{false};
+	bool _irqen{false};
+	bool _irqra{false};
 	byte _cstep{0};
+	
 };

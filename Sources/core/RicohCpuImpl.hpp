@@ -55,9 +55,10 @@ inline bool RicohCPU::step (_Host&& m, std::size_t s)
 			}
 			else if (q.mode.interrupt)
 			{
-				if (!(q.p.i))
-					q.addr.w = InterruptVec;
-				q.mode.interrupt = 0;
+				if (q.p.i)
+					goto _irqskip;
+				q.p.i = 1u;
+				q.addr.w = InterruptVec;
 			}
 			else if (q.mode.breakInsruction)
 			{
@@ -96,7 +97,9 @@ inline bool RicohCPU::step (_Host&& m, std::size_t s)
 			q.p.b = isBreak;
 			tick<kPeek> (m, q.addr.w, q.pc.l);
 			tick<kPeek> (m, q.addr.w + 1u, q.pc.h);
+			continue;
 		}
+	_irqskip:
 		tick<kPeek> (m, q.pc.w++, next);
 		switch (next)
 		{
@@ -1172,15 +1175,28 @@ void RicohCPU::reset ()
 {
 
 	if constexpr (_Type == kSoftReset)
-		raise (ResetBit);
+		setSignal (ResetBit);
 
 	if constexpr (_Type == kHardReset)
 		q = State{ };
 }
 
-inline void RicohCPU::raise(byte bits)
+inline void RicohCPU::setSignal(byte bits)
 {
-	static constexpr auto m = ResetBit | InterruptBit | NonMaskableBit;
-	assert(!(bits & ~m));
-	q.mode.bits |= (bits & m);
+	if (bits & ResetBit)
+		q.mode.reset = 1u;
+	if (bits & NonMaskableBit)
+		q.mode.nonMaskable = 1u;
+	if (bits & InterruptBit)
+		q.mode.interrupt = 1u;
+}
+
+inline void RicohCPU::clrSignal (byte bits)
+{
+	if (bits & ResetBit)
+		q.mode.reset = 0u;
+	if (bits & NonMaskableBit)
+		q.mode.nonMaskable = 0u;
+	if (bits & InterruptBit)
+		q.mode.interrupt = 0u;
 }

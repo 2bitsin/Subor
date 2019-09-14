@@ -12,8 +12,9 @@ MapperNROM::MapperNROM (const INes& iNes)
 	printf ("Mirroring = %d\n", iNes.mirroring);
 	if (iNes.mapperId != 0)
 		throw std::runtime_error ("Unsupported mapper");
-	for (auto i = 0u; i < sizeof (ppuBits_); ++i)
-		ppuBits_ [i] = iNes.chrBits [i % iNes.chrBits.size ()];
+	if (iNes.chrBits.size () > 0)
+		for (auto i = 0u; i < sizeof (ppuBits_); ++i)
+			ppuBits_ [i] = iNes.chrBits [i % iNes.chrBits.size ()];
 	for (auto i = 0u; i < 0x8000u; ++i)
 		cpuBits_ [0x2000u + i] = iNes.prgBits [i % iNes.prgBits.size ()];
 	if (!trainerPresent_)

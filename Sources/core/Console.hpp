@@ -92,6 +92,14 @@ struct Console
 	auto width () const { return ppu.width (); }
 	auto height () const { return ppu.height (); }
 
-	void nmi () { cpu.raise(cpu.NonMaskableBit); }
-	void irq () { cpu.raise(cpu.InterruptBit); }
+	void nmi () { cpu.setSignal(cpu.NonMaskableBit); }
+
+	void irq (bool q=true) 
+	{
+		if (q)
+			cpu.setSignal(cpu.InterruptBit); 
+		else
+			cpu.clrSignal(cpu.InterruptBit); 
+	}
+	
 }; 
