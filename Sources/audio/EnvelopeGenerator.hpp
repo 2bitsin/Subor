@@ -14,7 +14,7 @@ struct EnvelopeGenerator
 		_start = true;
 	}
 
-	void loopc(bool v)
+	void loop(bool v)
 	{
 		_loopc = v;
 	}

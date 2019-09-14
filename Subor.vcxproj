@@ -29,6 +29,7 @@
     <ClInclude Include="Sources\audio\RicohAPU.hpp" />
     <ClInclude Include="Sources\audio\Sequencer.hpp" />
     <ClInclude Include="Sources\audio\SweepGenerator.hpp" />
+    <ClInclude Include="Sources\audio\TriangleGenerator.hpp" />
     <ClInclude Include="Sources\core\CoreConfig.hpp" />
     <ClInclude Include="Sources\input\InputPort.hpp" />
     <ClInclude Include="Sources\utils\Bitarray.hpp" />

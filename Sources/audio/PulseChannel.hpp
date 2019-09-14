@@ -22,18 +22,19 @@ struct PulseChannel
 					= bits::unpack_as_tuple<4, 1, 1, 2>(data);
 				_envlp.load(volper);
 				_envlp.cvol(cstvol);
+				_envlp.loop(cstvol);
 				_lengc.halt(lencth);
 				_pulse.load(dutycy);
 				break;
 			}
 		case 4*_ChannelNum+1:
 			{
-				_sweep.load(byte(data));
+				_sweep.load(data);
 				break;
 			}
 		case 4*_ChannelNum+2:
 			{
-				_timer = (_timer & 0xff00) | byte(data);
+				_timer = bits::splice<0u, 8u>(_timer, data);
 				break;
 			}
 		case 4*_ChannelNum+3:
@@ -42,7 +43,7 @@ struct PulseChannel
 					= bits::unpack_as_tuple<3, 5>(data);
 				_lengc.load(lenct);
 				_envlp.start();
-				_timer = (_timer & 0x00ff) | (word(byte(data)) << 8u);
+				_timer = bits::splice<8u, 8u>(_timer, htime);
 				break;
 			}
 		}
