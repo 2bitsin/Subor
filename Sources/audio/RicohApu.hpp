@@ -14,6 +14,7 @@
 #include "audio/Mixer.hpp"
 #include "audio/PulseChannel.hpp"
 #include "audio/TriangleChannel.hpp"
+#include "audio/NoiseChannel.hpp"
 
 #include <vector>
 #include <tuple>
@@ -130,7 +131,7 @@ private:
 	PulseChannel<0> _sq0ch;
 	PulseChannel<1> _sq1ch;
 
-	AudioChannel _noich;
+	NoiseChannel _noich;
 	AudioChannel _dmcch;
 	TriangleChannel _trich;
 
