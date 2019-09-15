@@ -9,7 +9,7 @@
 template <MemoryType _Perm, dword _Bottom, dword _Top, dword _Size = _Top - _Bottom>
 struct StaticMemory
 {
-	template <MemoryOperation _Operation, typename _Host, typename _Value>
+	template <BusOperation _Operation, typename _Host, typename _Value>
 	auto tick (_Host&&, word addr, _Value&& data)
 	{
 		if constexpr (!(byte (_Perm) & _Operation))
@@ -18,17 +18,17 @@ struct StaticMemory
 			return kOpenBus;
 		addr -= _Bottom;
 		addr %= _Size;
-		if constexpr (_Operation == MemoryOperation::kPeek)
+		if constexpr (_Operation == BusOperation::kPeek)
 			data = bits [addr];
 		else
 			bits [addr] = (byte)data;
 		return kSuccess;
 	}
 
-	template <MemoryOperation _Operation, typename _Host, typename _Value>
+	template <BusOperation _Operation, typename _Host, typename _Value>
 	auto tick (_Host&&, word addr, _Value&& data) const
 	{
-		if constexpr (!(byte (_Perm) & _Operation) || _Operation != MemoryOperation::kPeek)
+		if constexpr (!(byte (_Perm) & _Operation) || _Operation != BusOperation::kPeek)
 			return kSuccess;
 		if (addr < _Bottom || addr >= _Top)
 			return kOpenBus;

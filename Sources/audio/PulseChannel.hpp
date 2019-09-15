@@ -13,7 +13,7 @@ struct PulseChannel
 {
 	using super = AudioChannel;
 
-	template <MemoryOperation _Operation, typename _Data>
+	template <BusOperation _Operation, typename _Data>
 	void tick (word addr, _Data&& data)
 	{
 		if (_Operation == kPeek)
@@ -38,7 +38,7 @@ struct PulseChannel
 			}
 		case 4 * _ChannelNum + 2:
 			{
-				_timer.load<0u, 8u> (data);
+				_timer.load<0, 8> (data);
 				break;
 			}
 		case 4 * _ChannelNum + 3:
@@ -47,24 +47,23 @@ struct PulseChannel
 					= bits::unpack_as_tuple<3, 5> (data);
 				_lengc.load (lenct);
 				_envlp.start ();
-				_timer.load<8u, 8u> (htime);
+				_timer.load<8, 8> (htime);
 				break;
 			}
 		}
 	}
 
-	template <byte clk>
+	template <byte _Clk>
 	void step ()
 	{
-		if (clk & 0b0001)
+		if (_Clk & kStepChannel)
 			if (_timer.step ())
-				_value = _pulse.tick ();
-		if (clk & 0b0010)
+				_value = _pulse.step ();
+		if (_Clk & kStepEnvelope)
 			_envlp.tick ();
-		if (clk & 0b0100)
+		if (_Clk & kStepSweeper)
 			_sweep.tick (_timer);
-		if (clk & 0b1000)
-			_lengc.tick ();
+		super::step<_Clk>();
 	}
 
 	byte value () const
@@ -81,7 +80,7 @@ struct PulseChannel
 	}
 
 private:
-	PeriodCounter<8, 0x7ff> _timer;
+	PeriodCounter<8, 0x800> _timer;
 	PulseGenerator _pulse;
 	EnvelopeGenerator _envlp;
 	SweepGenerator<_ChannelNum != 0> _sweep;

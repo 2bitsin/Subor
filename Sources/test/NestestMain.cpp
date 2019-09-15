@@ -44,19 +44,19 @@ static inline void AssertState (Q&& statelog, U&& state)
 
 struct Test
 {
-	template <MemoryOperation _Operation, typename _Slave, typename _Addr, typename _Value>
+	template <BusOperation _Operation, typename _Slave, typename _Addr, typename _Value>
 	auto tick (_Slave&& slave, _Addr addr, _Value&& data)
 	{
 		using namespace nestest;
 		switch (_Operation)
 		{
-		case MemoryOperation::kPoke:
+		case BusOperation::kPoke:
 			CPU_Poke (addr, (byte)data);
 			break;
-		case MemoryOperation::kPeek:
+		case BusOperation::kPeek:
 			data = CPU_Peek (addr);
 			break;
-		case MemoryOperation::kDummyPeek:
+		case BusOperation::kDummyPeek:
 		default:			
 			CPU_Peek (addr);
 			break;

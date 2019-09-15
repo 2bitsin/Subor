@@ -70,7 +70,7 @@ struct RicohCPU
 
 	static constexpr const State kTestState = State{ 7, { 0xC000 }, 0, 0, 0, 0xfd, 0x24, 0 };
 
-	template <MemoryOperation _Operation, typename _Host, typename _Value>
+	template <BusOperation _Operation, typename _Host, typename _Value>
 	auto tick (_Host&& master, word addr, _Value&& data);
 
 	template<typename _Host>

@@ -10,7 +10,7 @@ struct MapperNROM
 	MapperNROM (const INes& iNes);
 	MapperNROM ();
 
-	template <MemoryOperation _Operation, typename _Host, typename _Value>
+	template <BusOperation _Operation, typename _Host, typename _Value>
 	auto tick(_Host&&, word addr, _Value&& data) 
 	{
 		if (addr < 0x6000u)
@@ -38,7 +38,7 @@ struct MapperNROM
 		return kSuccess;
 	}
 
-	template <MemoryOperation _Operation, typename _Host, typename _Value>
+	template <BusOperation _Operation, typename _Host, typename _Value>
 	auto ppuTick(_Host&&, word addr, _Value&& data)
 	{
 		if (addr < 0x2000u)

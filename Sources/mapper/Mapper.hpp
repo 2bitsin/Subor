@@ -12,13 +12,13 @@
 template <typename _MapperImpl>
 struct Mapper
 {
-	template <MemoryOperation _Operation, typename _Host, typename _Value>
+	template <BusOperation _Operation, typename _Host, typename _Value>
 	auto tick (_Host&&, word addr, _Value&& data)
 	{
 		return kOpenBus;
 	}
 
-	template <MemoryOperation _Operation, typename _Host, typename _Value>
+	template <BusOperation _Operation, typename _Host, typename _Value>
 	auto ppuTick (_Host&&, word addr, _Value&& data)
 	{
 		return kOpenBus;

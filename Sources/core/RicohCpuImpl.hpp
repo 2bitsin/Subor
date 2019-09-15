@@ -2,7 +2,7 @@
 // PVS-Studio Static Code Analyzer for C, C++, C#, and Java: http://www.viva64.com
 #include "RicohCpu.hpp"
 
-template <MemoryOperation _Operation, typename _Host, typename _Value>
+template <BusOperation _Operation, typename _Host, typename _Value>
 inline auto RicohCPU::tick (_Host&& m, word addr, _Value&& data)
 {
 	byte discard = 0;

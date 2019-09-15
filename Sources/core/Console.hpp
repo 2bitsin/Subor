@@ -34,7 +34,7 @@ struct Console
 	,	mmc{ INes{ filePath } }
 	{}
 
-	template <MemoryOperation _Operation, typename _Slave, typename _Value>
+	template <BusOperation _Operation, typename _Slave, typename _Value>
 	auto tick (_Slave&& slave, word addr, _Value&& data)
 	{
 		++time;
@@ -45,7 +45,7 @@ struct Console
 		return kSuccess;
 	}
 
-	template <MemoryOperation _Operation, typename _Value>
+	template <BusOperation _Operation, typename _Value>
 	auto ppuTick (word addr, _Value&& data)
 	{
 		mmc.ppuTick<_Operation> (*this, addr, data);			

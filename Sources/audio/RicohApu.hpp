@@ -13,6 +13,7 @@
 #include "audio/AudioChannel.hpp"
 #include "audio/Mixer.hpp"
 #include "audio/PulseChannel.hpp"
+#include "audio/TriangleChannel.hpp"
 
 #include <vector>
 #include <tuple>
@@ -23,7 +24,7 @@ struct RicohAPU
 	RicohAPU ()
 	{}
 
-	template <MemoryOperation _Operation, typename _Host, typename _Data>
+	template <BusOperation _Operation, typename _Host, typename _Data>
 	auto tick (_Host& host, word addr, _Data&& data)
 	{
 		_trich.step<0b0001> ();
@@ -131,7 +132,7 @@ private:
 
 	AudioChannel _noich;
 	AudioChannel _dmcch;
-	AudioChannel _trich;
+	TriangleChannel _trich;
 
 	Mixer _mix;
 };

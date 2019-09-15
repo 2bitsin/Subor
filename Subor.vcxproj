@@ -30,6 +30,7 @@
     <ClInclude Include="Sources\audio\RicohAPU.hpp" />
     <ClInclude Include="Sources\audio\Sequencer.hpp" />
     <ClInclude Include="Sources\audio\SweepGenerator.hpp" />
+    <ClInclude Include="Sources\audio\TriangleChannel.hpp" />
     <ClInclude Include="Sources\audio\TriangleGenerator.hpp" />
     <ClInclude Include="Sources\core\CoreConfig.hpp" />
     <ClInclude Include="Sources\input\InputPort.hpp" />
@@ -149,6 +150,7 @@
       <FavorSizeOrSpeed>Neither</FavorSizeOrSpeed>
       <EnableFiberSafeOptimizations>true</EnableFiberSafeOptimizations>
       <WholeProgramOptimization>false</WholeProgramOptimization>
+      <EnableModules>true</EnableModules>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -169,6 +171,7 @@
       <OmitFramePointers>false</OmitFramePointers>
       <EnableFiberSafeOptimizations>true</EnableFiberSafeOptimizations>
       <WholeProgramOptimization>false</WholeProgramOptimization>
+      <EnableModules>true</EnableModules>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -187,6 +190,7 @@
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
       <OmitFramePointers>true</OmitFramePointers>
       <AdditionalOptions>/await %(AdditionalOptions)</AdditionalOptions>
+      <EnableModules>true</EnableModules>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -208,6 +212,7 @@
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
       <OmitFramePointers>true</OmitFramePointers>
       <AdditionalOptions>/await %(AdditionalOptions)</AdditionalOptions>
+      <EnableModules>true</EnableModules>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>

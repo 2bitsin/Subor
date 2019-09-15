@@ -189,7 +189,7 @@ struct RicohPPU
 		return ppuTick<kPoke> (m, addr, data);
 	}
 
-	template <MemoryOperation _Operation, typename _Host, typename _Value>
+	template <BusOperation _Operation, typename _Host, typename _Value>
 	auto ppuTick (_Host&& host, word addr, _Value&& data)
 	{
 		addr &= 0x3fff;
@@ -204,7 +204,7 @@ struct RicohPPU
 	}
 
 
-	template <MemoryOperation _Operation, typename _Host, typename _Value>
+	template <BusOperation _Operation, typename _Host, typename _Value>
 	auto tickRegister (_Host&& host, word addr, _Value&& data)
 	{
 		if constexpr (_Operation == kPoke)
@@ -291,7 +291,7 @@ struct RicohPPU
 
 	}
 
-	template <MemoryOperation _Operation, typename _Host, typename _Value>
+	template <BusOperation _Operation, typename _Host, typename _Value>
 	void tick (_Host&& host, word addr, _Value&& data)
 	{
 		if (addr >= 0x2000u && addr < 0x4000u)

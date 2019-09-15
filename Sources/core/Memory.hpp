@@ -12,7 +12,7 @@ enum MemoryType: byte
 	kReadWriteMemory = kReadableMemory|kWritableMemory,
 };
 
-enum MemoryOperation: byte
+enum BusOperation: byte
 {
 	kPeek = 0x1,
 	kPoke = 0x2,
