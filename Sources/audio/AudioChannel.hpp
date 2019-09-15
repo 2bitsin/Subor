@@ -28,12 +28,7 @@ struct AudioChannel
 
 	void enable (bool v)
 	{
-		_enabl = v;
-	}
-
-	auto enabled () const
-	{
-		return _enabl;
+		_lengc.disable(!v);
 	}
 
 	auto irq () const

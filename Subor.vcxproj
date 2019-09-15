@@ -24,6 +24,7 @@
     <ClInclude Include="Sources\audio\EnvelopeGenerator.hpp" />
     <ClInclude Include="Sources\audio\LengthCounter.hpp" />
     <ClInclude Include="Sources\audio\Mixer.hpp" />
+    <ClInclude Include="Sources\audio\NoiseChannel.hpp" />
     <ClInclude Include="Sources\audio\PeriodCounter.hpp" />
     <ClInclude Include="Sources\audio\PulseChannel.hpp" />
     <ClInclude Include="Sources\audio\PulseGenerator.hpp" />

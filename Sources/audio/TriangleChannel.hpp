@@ -66,8 +66,6 @@ struct TriangleChannel
 
 	byte value () const
 	{
-		if (!enabled ())
-			return 0;
 		if (!status ())
 			return 0;
 		if (!_lcntr)
