@@ -40,14 +40,14 @@ protected:
 	void update(_Period&& _period)
 	{
 		auto dt = _period.value() >> byte(_param.s);
-		//auto va = _param.n 
-		//	?(int(_period.value()) - int(dt) - _AlternateCarry? 1 : 0)
-		//	:(int(_period.value()) + int(dt));
-		//va = std::clamp(va, 0, 0x7ff);		
-
 		auto va = _param.n 
-			?(_period.value() - dt - _AlternateCarry? 1 : 0)
-			:(_period.value() + dt);
+			?(int(_period.value()) - int(dt) - (_AlternateCarry? 1 : 0))
+			:(int(_period.value()) + int(dt));
+		va = std::clamp(va, 0, 0x7ff);		
+
+		//auto va = _param.n 
+		//	?(_period.value() - dt - (_AlternateCarry? 1u : 0u))
+		//	:(_period.value() + dt);
 		
 		_period.load(word (va));
 	}

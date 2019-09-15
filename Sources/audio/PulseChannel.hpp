@@ -47,7 +47,7 @@ struct PulseChannel
 					= bits::unpack_as_tuple<3, 5> (data);
 				_lengc.load (lenct);
 				_envlp.start ();
-				_timer.load<8, 8> (htime);
+				_timer.load<8, 3> (htime);
 				break;
 			}
 		}
@@ -57,8 +57,9 @@ struct PulseChannel
 	void step ()
 	{
 		if (_Clk & kStepChannel)
-			if (_timer.step ())
-				_value = _pulse.step ();
+			if (status())
+				if (_timer.step ())
+					_value = _pulse.step ();
 		if (_Clk & kStepEnvelope)
 			_envlp.tick ();
 		if (_Clk & kStepSweeper)
@@ -80,7 +81,7 @@ struct PulseChannel
 	}
 
 private:
-	PeriodCounter<8, 0x800> _timer;
+	PeriodCounter<8, 0x7ff> _timer;
 	PulseGenerator _pulse;
 	EnvelopeGenerator _envlp;
 	SweepGenerator<_ChannelNum != 0> _sweep;

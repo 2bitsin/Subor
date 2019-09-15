@@ -36,7 +36,7 @@ struct TriangleChannel
 				auto [htime, lenct]
 					= bits::unpack_as_tuple<3, 5> (data);
 				_lengc.load (lenct);
-				_timer.load<8, 8> (htime);
+				_timer.load<8, 3> (htime);
 				_rflag = true;
 				break;
 			}

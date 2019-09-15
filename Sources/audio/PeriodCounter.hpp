@@ -3,7 +3,7 @@
 #include "utils/Types.hpp"
 #include "utils/BitCommon.hpp"
 
-template <auto _MinValid = 8u, auto _MaxValid = 0x7ffu>
+template <auto _MinValid = 8u, auto _MaxValid = 0x800u>
 struct PeriodCounter
 {
 	template <auto _Offset = 0u, auto _Size = 11u, typename _Value>

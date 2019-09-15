@@ -19,7 +19,6 @@ struct PulseGenerator
 	void load(byte d)
 	{
 		_.duty = d;
-		_.tick = 0;
 	}
 
 	void reset()

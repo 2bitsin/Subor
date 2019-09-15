@@ -14,6 +14,7 @@ struct Mixer
 		typename _DMC>
 		float mix (_SQ0&& sq0, _SQ1&& sq1, _TRI&& tri, _NOI&& noi, _DMC&& dmc)
 	{
+
 		float g0 = 0.0f;
 		if (tri || noi || dmc)
 		{
