@@ -4,12 +4,15 @@
 #include "core/StaticMemory.hpp"
 #include <iterator>
 
+
+#include "utils/Literals.hpp"
+
 using namespace nestest;
 
-extern const StaticMemory<kReadOnlyMemory, 0x8000u, 0x10000u, 16384u> PRG_ROM;
-extern const StaticMemory<kReadOnlyMemory, 0u, 8192u> CHR_ROM;
-StaticMemory<kReadWriteMemory, 0u, 0x2000u, 0x800u> RAM;
-StaticMemory<kReadWriteMemory, 0x6000u, 0x8000u> MPR_RAM;
+extern const StaticMemory<kReadOnlyMemory, 32_K, 64_K, 16_K> PRG_ROM;
+extern const StaticMemory<kReadOnlyMemory, 0_K, 8_K> CHR_ROM;
+StaticMemory<kReadWriteMemory, 0_K, 8_K, 2_K> RAM;
+StaticMemory<kReadWriteMemory, 24_K, 32_K> MPR_RAM;
 
 const byte header [16] = 
 {

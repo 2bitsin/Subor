@@ -1,10 +1,11 @@
 // This is a personal academic project. Dear PVS-Studio, please check it.
 // PVS-Studio Static Code Analyzer for C, C++, C#, and Java: http://www.viva64.com
 #include "core/StaticMemory.hpp"
+#include "utils/Literals.hpp"
 
-extern const StaticMemory<kReadOnlyMemory, 0x8000u, 0x10000u, 16384u> PRG_ROM;
+extern const StaticMemory<kReadOnlyMemory, 32_K, 64_K, 16_K> PRG_ROM;
 
-const StaticMemory<kReadOnlyMemory, 0x8000u, 0x10000u, 16384u> PRG_ROM  =
+const StaticMemory<kReadOnlyMemory, 32_K, 64_K, 16_K> PRG_ROM  =
 {{
 	0x4C, 0xF5, 0xC5, 0x60, 0x78, 0xD8, 0xA2, 0xFF, 0x9A, 0xAD, 0x02, 0x20, 0x10, 0xFB, 0xAD, 0x02,
 	0x20, 0x10, 0xFB, 0xA9, 0x00, 0x8D, 0x00, 0x20, 0x8D, 0x01, 0x20, 0x8D, 0x05, 0x20, 0x8D, 0x05,

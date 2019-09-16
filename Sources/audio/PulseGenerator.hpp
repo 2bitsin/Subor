@@ -9,7 +9,10 @@ struct PulseGenerator
 	
 	auto step()
 	{		
-		static const Bitarray<1, 8*4> _lut {0b11111100'00001111'00000011'00000001};
+		static const Bitarray<1, 8*4> _lut {
+			0b11111100'00001111'00000011'00000001
+		};
+
 		byte d = _.duty;
 		byte t = _.tick;		
 		--_.tick;

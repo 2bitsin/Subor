@@ -36,6 +36,7 @@
     <ClInclude Include="Sources\audio\TriangleGenerator.hpp" />
     <ClInclude Include="Sources\core\CoreConfig.hpp" />
     <ClInclude Include="Sources\input\InputPort.hpp" />
+    <ClInclude Include="Sources\mapper\MapperUxROM.hpp" />
     <ClInclude Include="Sources\utils\Bitarray.hpp" />
     <ClInclude Include="Sources\utils\BitCommon.hpp" />
     <ClInclude Include="Sources\utils\Bitfield.hpp" />
@@ -48,6 +49,7 @@
     <ClInclude Include="Sources\mapper\MapperNROM.hpp" />
     <ClInclude Include="Sources\core\Memory.hpp" />
     <ClInclude Include="Sources\test\Nestest.hpp" />
+    <ClInclude Include="Sources\utils\Literals.hpp" />
     <ClInclude Include="Sources\video\OAMemory.hpp" />
     <ClInclude Include="Sources\video\Palette.hpp" />
     <ClInclude Include="Sources\core\RicohCpu.hpp" />

@@ -7,6 +7,7 @@
 #include "utils/Bitfield.hpp"
 #include "utils/Bitarray.hpp"
 #include "utils/Image.hpp"
+#include "utils/Literals.hpp"
 #include "video/OAMemory.hpp"
 #include "video/Palette.hpp"
 

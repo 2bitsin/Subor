@@ -3,16 +3,17 @@
 #pragma once
 
 #include "core/RicohCpu.hpp"
-#include "video/RicohPPU.hpp"
 #include "core/StaticMemory.hpp"
+#include "video/RicohPPU.hpp"
 #include "audio/RicohApu.hpp"
 #include "mapper/MapperNROM.hpp"
+#include "utils/Literals.hpp"
 
 
 struct Console
 {
-	using Memory = StaticMemory<kReadWriteMemory, 0u, 0x2000u, 0x800u>;
-	using VideoMemory = StaticMemory<kReadWriteMemory, 0x2000u, 0x3000u>;
+	using Memory = StaticMemory<kReadWriteMemory, 0_K, 8_K, 2_K>;
+	using VideoMemory = StaticMemory<kReadWriteMemory, 8_K, 12_K>;
 
 	static constexpr auto _CPU_Cps = 1789773;
 	static constexpr auto _PPU_Cps = 3 * _CPU_Cps;

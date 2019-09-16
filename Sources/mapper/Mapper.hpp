@@ -5,6 +5,7 @@
 #include "utils/Types.hpp"
 #include "core/Memory.hpp"
 #include "fileio/INes.hpp"
+#include "utils/Literals.hpp"
 
 #include <memory>
 

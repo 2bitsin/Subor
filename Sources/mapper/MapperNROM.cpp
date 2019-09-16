@@ -1,6 +1,7 @@
 // This is a personal academic project. Dear PVS-Studio, please check it.
 // PVS-Studio Static Code Analyzer for C, C++, C#, and Java: http://www.viva64.com
 #include "MapperNROM.hpp"
+#include "utils/Literals.hpp"
 
 MapperNROM::MapperNROM (const INes& iNes)
 : trainerPresent_ (iNes.trainerPresent)
@@ -15,12 +16,12 @@ MapperNROM::MapperNROM (const INes& iNes)
 	if (iNes.chrBits.size () > 0)
 		for (auto i = 0u; i < sizeof (ppuBits_); ++i)
 			ppuBits_ [i] = iNes.chrBits [i % iNes.chrBits.size ()];
-	for (auto i = 0u; i < 0x8000u; ++i)
-		cpuBits_ [0x2000u + i] = iNes.prgBits [i % iNes.prgBits.size ()];
+	for (auto i = 0u; i < 32_K; ++i)
+		cpuBits_ [8_K + i] = iNes.prgBits [i % iNes.prgBits.size ()];
 	if (!trainerPresent_)
 		return;
-	for (auto i = 0u; i < 0x200u; ++i)
-		cpuBits_ [0x1e00u + i] = iNes.trainer [i % iNes.trainer.size ()];
+	for (auto i = 0u; i < 0.5_K; ++i)
+		cpuBits_ [7.5_K + i] = iNes.trainer [i % iNes.trainer.size ()];
 }
 
 MapperNROM::MapperNROM ()
