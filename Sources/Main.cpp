@@ -125,7 +125,10 @@ int main (std::size_t argc, const ccptr_t<char> argv)
 	//return nestest::NestestMain();
 	if (argc < 2)
 		throw std::runtime_error ("No arguments");
-	auto console = std::make_unique<Console> (argv [1] + ".nes"s);
+	auto console = std::make_unique<Console> ();
+
+	console->load(argv [1] + ".nes"s);
+
 	bool rerecordMode = argc >= 3 ? argv [2] == "r"s : false;
 	bool playbackMode = argc >= 3 ? argv [2] == "p"s : false;
 

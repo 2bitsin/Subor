@@ -1200,3 +1200,7 @@ inline void RicohCPU::clrSignal (byte bits)
 	if (bits & InterruptBit)
 		q.mode.interrupt = 0u;
 }
+
+inline RicohCPU::RicohCPU (State state)
+	: q (std::move (state))
+{}

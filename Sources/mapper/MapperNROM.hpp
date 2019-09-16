@@ -2,74 +2,66 @@
 // PVS-Studio Static Code Analyzer for C, C++, C#, and Java: http://www.viva64.com
 #pragma once
 
-#include "Mapper.hpp"
+#include "MapperBase.hpp"
+#include "utils/Literals.hpp"
 
 struct MapperNROM
-:	public Mapper<MapperNROM>
+	: public MapperBase<MapperNROM>
 {
-	MapperNROM (const INes& iNes);
-	MapperNROM ();
+	MapperNROM (const ProgramROM& iNes);
 
 	template <BusOperation _Operation, typename _Host, typename _Value>
-	auto tick(_Host&&, word addr, _Value&& data) 
+	auto tick (_Host&& host, word addr, _Value&& data)
 	{
-		if (addr < 0x6000u)
-			return kSuccess;
-		addr -= 0x6000u;
-		if (addr < 0x2000u)
+		if (addr < 24_K)
+			return;
+		if (addr < 32_K)
 		{
+			if (_hasTrainer && addr >= 31.5_K)
+			{
+				if constexpr (_Operation == kPeek)
+					data = _trainer [addr - 31.5_K];
+				return;
+			}
 			if constexpr (_Operation == kPeek)
-				if (trainerPresent_ && addr >= 0x1e00u)
-				{
-					data = cpuBits_ [addr];
-					return kSuccess;
-				}
-
-			if (ramSize_ < 1u)
-				return kSuccess;
-			if constexpr (_Operation == kPeek)
-				data = cpuBits_ [addr % ramSize_];
+				data = _ramBits [addr - 24_K];
 			if constexpr (_Operation == kPoke)
-				cpuBits_ [addr % ramSize_] = (byte)data;
-			return kSuccess;
+				_ramBits [addr - 24_K] = byte(data);
+			return;
 		}
 		if constexpr (_Operation == kPeek)
-			data = cpuBits_ [addr];	
-		return kSuccess;
+			data = _prgBits [addr - 32_K];
+		return;
 	}
 
 	template <BusOperation _Operation, typename _Host, typename _Value>
-	auto ppuTick(_Host&&, word addr, _Value&& data)
+	auto ppuTick (_Host&&, word addr, _Value&& data)
 	{
-		if (addr < 0x2000u)
+		if (addr < 8_K)
 		{
 			if constexpr (_Operation == kPeek)
-				data = ppuBits_[addr];
-			return kSuccess;
+				data = _chrBits [addr];
 		}
-		return kOpenBus;
 	}
-	
+
 	word ppuMirror (word addr) const;
 
 	template <ResetType _Type>
-	void reset()
+	void reset ()
 	{
 		if constexpr (_Type == kHardReset)
 		{
-			auto l = 0x2000u;
-			if (trainerPresent_)
-				l -= 0x200;
-			for(auto i = 0u; i < l; ++i)
-				cpuBits_[i] = 0;
+			std::fill (std::begin (_ramBits), std::end (_ramBits), 0x00u);
 		}
 	}
 
-	
 private:
-	Mirroring mirroring_;
-	word ramSize_;
-	bool trainerPresent_;
-	byte cpuBits_[0xA000u];
-	byte ppuBits_[0x2000u];
+	dword				_ramSize;
+	bool				_hasTrainer;
+	Mirroring		_mirroring;
+	byte				_ramBits [8_K];
+	byte				_prgBits [32_K];
+	byte				_chrBits [8_K];
+	byte				_trainer [0.5_K];
+
 };

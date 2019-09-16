@@ -88,9 +88,7 @@ struct RicohCPU
 	template <ResetType>
 	void reset ();
 
-	RicohCPU (State state = { })
-	: q (std::move (state))
-	{ }
+	RicohCPU (State state = {});
 
 private:
 	State q;

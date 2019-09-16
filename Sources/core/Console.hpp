@@ -6,7 +6,7 @@
 #include "core/StaticMemory.hpp"
 #include "video/RicohPPU.hpp"
 #include "audio/RicohApu.hpp"
-#include "mapper/MapperNROM.hpp"
+#include "mapper/Mapper.hpp"
 #include "utils/Literals.hpp"
 
 
@@ -18,39 +18,42 @@ struct Console
 	static constexpr auto _CPU_Cps = 1789773;
 	static constexpr auto _PPU_Cps = 3 * _CPU_Cps;
 
-	double time{ 0.0 };
+	double time{0.0};
 	RicohCPU cpu;
 	RicohPPU ppu;
 	RicohAPU apu;
 	Memory mem;
 	VideoMemory vmm;
-	MapperNROM mmc;
+	Mapper mmc;
 
-	Console (std::filesystem::path filePath)
-	:	cpu{ }
-	,	ppu{ }
-	,	apu{ }
-	,	mem{ }
-	,	vmm{ }
-	,	mmc{ INes{ filePath } }
+	Console ()
+	: cpu{}
+	, ppu{}
+	, apu{}
+	, mem{}
+	, vmm{}
+	, mmc{}
 	{}
+
+	void load (std::filesystem::path p);
 
 	template <BusOperation _Operation, typename _Slave, typename _Value>
 	auto tick (_Slave&& slave, word addr, _Value&& data)
 	{
 		++time;
+		mem.tick<_Operation> (*this, addr, data);
 		ppu.tick<_Operation> (*this, addr, data);
 		apu.tick<_Operation> (*this, addr, data);
-		mem.tick<_Operation> (*this, addr, data);			
 		mmc.tick<_Operation> (*this, addr, data);
+
 		return kSuccess;
 	}
 
 	template <BusOperation _Operation, typename _Value>
 	auto ppuTick (word addr, _Value&& data)
 	{
-		mmc.ppuTick<_Operation> (*this, addr, data);			
 		vmm.tick<_Operation> (*this, ppuMirror (addr), data);
+		mmc.ppuTick<_Operation> (*this, addr, data);
 	}
 
 	template <typename _VideoSink, typename _AudioSink>
@@ -58,49 +61,38 @@ struct Console
 	{
 		while (!ppu.ready ())
 			cpu.step (*this, 1u);
-		ppu.grabFrame (std::forward<_VideoSink>(video));
-		apu.grabFrame (std::forward<_AudioSink>(audio));
+		ppu.grabFrame (std::forward<_VideoSink> (video));
+		apu.grabFrame (std::forward<_AudioSink> (audio));
 	}
 
 	template <typename _Sink>
-	auto audio(_Sink&& sink)
+	auto audio (_Sink&& sink)
 	{
-		return apu.grabFrame(std::forward<_Sink>(sink));
+		return apu.grabFrame (std::forward<_Sink> (sink));
 	}
 
-	word ppuMirror (word addr) const
-	{
-		return mmc.ppuMirror (addr);
-	}
+	word ppuMirror (word addr) const;
 
 	template <ResetType _Type>
 	void reset ()
 	{
-		vmm.reset<_Type> ();
-		mem.reset<_Type> ();
-		mmc.reset<_Type> ();
 		cpu.reset<_Type> ();
+		mem.reset<_Type> ();
+		vmm.reset<_Type> ();
 		ppu.reset<_Type> ();
 		apu.reset<_Type> ();
+		mmc.reset<_Type> ();
 	}
 
 	template <typename... Args>
-	void input(Args&&...new_state)
+	void input (Args&& ...new_state)
 	{
-		apu.input(new_state...);
+		apu.input (new_state...);
 	}
 
-	auto width () const { return ppu.width (); }
-	auto height () const { return ppu.height (); }
+	word width () const;
+	word height () const;
+	void nmi ();
+	void irq (bool q = true);
 
-	void nmi () { cpu.setSignal(cpu.NonMaskableBit); }
-
-	void irq (bool q=true) 
-	{
-		if (q)
-			cpu.setSignal(cpu.InterruptBit); 
-		else
-			cpu.clrSignal(cpu.InterruptBit); 
-	}
-	
-}; 
+};

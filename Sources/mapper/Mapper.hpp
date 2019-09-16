@@ -1,49 +1,64 @@
-// This is a personal academic project. Dear PVS-Studio, please check it.
-// PVS-Studio Static Code Analyzer for C, C++, C#, and Java: http://www.viva64.com
 #pragma once
 
-#include "utils/Types.hpp"
-#include "core/Memory.hpp"
-#include "fileio/INes.hpp"
-#include "utils/Literals.hpp"
 
-#include <memory>
+#include "MapperNROM.hpp"
+#include "MapperUxROM.hpp"
 
+#include <variant>
 
-template <typename _MapperImpl>
 struct Mapper
 {
-	template <BusOperation _Operation, typename _Host, typename _Value>
-	auto tick (_Host&&, word addr, _Value&& data)
+	void load (const ProgramROM& ines);
+
+	template <BusOperation _Operation, typename _Host, typename _Data>
+	void tick (_Host&& host, word addr, _Data&& data)
 	{
-		return kOpenBus;
+		std::visit ([&] (auto&& _impl)
+		{
+			_impl.tick<_Operation> (host, addr, data);
+		}, _impl);
 	}
 
-	template <BusOperation _Operation, typename _Host, typename _Value>
-	auto ppuTick (_Host&&, word addr, _Value&& data)
+	template <BusOperation _Operation, typename _Host, typename _Data>
+	void ppuTick (_Host&& host, word addr, _Data&& data)
 	{
-		return kOpenBus;
+		std::visit ([&] (auto&& _impl)
+		{
+			_impl.ppuTick<_Operation> (host, addr, data);
+		}, _impl);
+	}
+
+	word ppuMirror (word addr) const
+	{
+		return std::visit ([&] (auto&& _impl)
+		{
+			return _impl.ppuMirror (addr);
+		}, _impl);
 	}
 
 	template <ResetType _Type>
 	void reset ()
-	{ }
-
-	static word basicMirror (Mirroring type, word addr)
 	{
-		switch (type)
+		std::visit ([&] (auto&& _impl)
 		{
-		case kHorizontal:
-			return addr&~0x400u;
-		case kVertical:
-			return addr&~0x800u;
-
-		default:
-		case kFourScreen:
-			return addr;
-		}
-		return addr;
-
+			_impl.reset<_Type> ();
+		}, _impl);
 	}
-};
 
+	Mapper ()
+	: _impl{MapperNULL{}}
+	{}
+
+private:
+
+	struct MapperNULL
+	: MapperBase<MapperNULL>
+	{};
+
+	using _Impl_type = std::variant
+	<	MapperNULL,
+		MapperNROM,
+		MapperUxROM>;
+
+	_Impl_type _impl;
+};

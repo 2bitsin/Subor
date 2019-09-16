@@ -36,6 +36,7 @@
     <ClInclude Include="Sources\audio\TriangleGenerator.hpp" />
     <ClInclude Include="Sources\core\CoreConfig.hpp" />
     <ClInclude Include="Sources\input\InputPort.hpp" />
+    <ClInclude Include="Sources\mapper\Mapper.hpp" />
     <ClInclude Include="Sources\mapper\MapperUxROM.hpp" />
     <ClInclude Include="Sources\utils\Bitarray.hpp" />
     <ClInclude Include="Sources\utils\BitCommon.hpp" />
@@ -44,8 +45,8 @@
     <ClInclude Include="Sources\core\Console.hpp" />
     <ClInclude Include="Sources\utils\ClockDivider.hpp" />
     <ClInclude Include="Sources\utils\Image.hpp" />
-    <ClInclude Include="Sources\fileio\Ines.hpp" />
-    <ClInclude Include="Sources\mapper\Mapper.hpp" />
+    <ClInclude Include="Sources\fileio\ProgramROM.hpp" />
+    <ClInclude Include="Sources\mapper\MapperBase.hpp" />
     <ClInclude Include="Sources\mapper\MapperNROM.hpp" />
     <ClInclude Include="Sources\core\Memory.hpp" />
     <ClInclude Include="Sources\test\Nestest.hpp" />
@@ -59,9 +60,12 @@
     <ClInclude Include="Sources\utils\Types.hpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Sources\fileio\Ines.cpp" />
+    <ClCompile Include="Sources\core\Console.cpp" />
+    <ClCompile Include="Sources\fileio\ProgramROM.cpp" />
     <ClCompile Include="Sources\Main.cpp" />
+    <ClCompile Include="Sources\mapper\Mapper.cpp" />
     <ClCompile Include="Sources\mapper\MapperNROM.cpp" />
+    <ClCompile Include="Sources\mapper\MapperUxROM.cpp" />
     <ClCompile Include="Sources\test\Nestest.cpp" />
     <ClCompile Include="Sources\test\NestestChr.cpp" />
     <ClCompile Include="Sources\test\NestestLog.cpp" />
