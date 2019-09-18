@@ -1,0 +1,2 @@
+#cmakedefine DEBUG_DATA_PATH
+#cmakedefine DEBUG_DATA_PATH "@DEBUG_DATA_PATH@/"s

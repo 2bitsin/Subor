@@ -21,6 +21,13 @@
 	#include <SDL2/SDL.h>
 #endif
 
+#if __has_include("Config.hpp")
+	#include "Config.hpp"
+#else
+	#define DEBUG_DATA_PATH ""s
+#endif
+
+
 template <typename T>
 using cptr_t = const T*;
 template <typename T>
@@ -129,7 +136,7 @@ int main (int argc, const ccptr_t<char> argv)
 		throw std::runtime_error ("No arguments");
 	auto console = std::make_unique<Console> ();
 
-	console->load(argv [1] + ".nes"s);
+	console->load(DEBUG_DATA_PATH + argv [1] + ".nes"s);
 
 	bool rerecordMode = argc >= 3 ? argv [2] == "r"s : false;
 	bool playbackMode = argc >= 3 ? argv [2] == "p"s : false;
@@ -140,7 +147,7 @@ int main (int argc, const ccptr_t<char> argv)
 		: (playbackMode
 			? InputProxy::Playback
 			: InputProxy::Passtrough),
-		argv [1] + ".input"s);
+		DEBUG_DATA_PATH + argv [1] + ".input"s);
 
 	SDL_AudioSpec want{}, have{};
 	want.freq			= RicohAPU::ctSamplingRate;
