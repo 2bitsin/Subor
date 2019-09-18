@@ -35,11 +35,11 @@ struct Sequencer
 		{
 			switch(_cstep)
 			{
-			case 0: (channel.step<0b1110>(), ...); break;
-			case 1: (channel.step<0b0010>(), ...); break;
-			case 2: (channel.step<0b1110>(), ...); break;
-			case 3: (channel.step<0b0010>(), ...); break;
-			case 4: (channel.step<0b0000>(), ...); break;
+			case 0: (channel.template step<0b1110>(), ...); break;
+			case 1: (channel.template step<0b0010>(), ...); break;
+			case 2: (channel.template step<0b1110>(), ...); break;
+			case 3: (channel.template step<0b0010>(), ...); break;
+			case 4: (channel.template step<0b0000>(), ...); break;
 			}
 			_cstep = (_cstep + 1)%5;
 		}
@@ -47,10 +47,10 @@ struct Sequencer
 		{
 			switch(_cstep)
 			{
-			case 0: (channel.step<0b0010>(), ...); break;
-			case 1: (channel.step<0b1110>(), ...); break;
-			case 2: (channel.step<0b0010>(), ...); break;
-			case 3: (channel.step<0b1110>(), ...); 
+			case 0: (channel.template step<0b0010>(), ...); break;
+			case 1: (channel.template step<0b1110>(), ...); break;
+			case 2: (channel.template step<0b0010>(), ...); break;
+			case 3: (channel.template step<0b1110>(), ...);
 				_irqra = _irqen; 
 				break;
 			}

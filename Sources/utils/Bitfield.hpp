@@ -21,7 +21,7 @@ struct Bitfield
 	:	Bitfield(0u)
 	{}
 
-	constexpr operator auto () const -> value_type
+	constexpr operator value_type () const 
 	{
 		return extract (_value);
 	}

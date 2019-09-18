@@ -2,6 +2,7 @@
 // PVS-Studio Static Code Analyzer for C, C++, C#, and Java: http://www.viva64.com
 #include "Nestest.hpp"
 #include <iterator>
+#include <stdexcept>
 
 using namespace nestest;
 

@@ -5,7 +5,8 @@
 #include "utils/Types.hpp"
 #include <memory>
 #include <cassert>
-#include <filesystem>
+#include <string>
+#include <vector>
 
 enum Mirroring: byte
 {
@@ -30,7 +31,7 @@ public:
 	ProgramROM ()
 	{}
 
-	ProgramROM (const std::filesystem::path& filePath)
+	ProgramROM (const std::string& filePath)
 	{
 		load (*this, filePath);
 	}
@@ -109,7 +110,7 @@ public:
 		return _mapperId;
 	}
 
-	static bool load (ProgramROM& iNes, const std::filesystem::path& filePath);
+	static bool load (ProgramROM& iNes, const std::string& filePath);
 
 protected:
 	template <std::size_t _Size, typename _Source, typename _Length>

@@ -136,7 +136,7 @@ struct RicohPPU
 	{
 		if constexpr (_Type == ResetType::kHardReset)
 		{
-			this->~RigohBBU ();
+			this->~RicohPPU ();
 			new (this) RicohPPU ();
 		}
 		if constexpr (_Type == ResetType::kSoftReset)
@@ -201,7 +201,7 @@ struct RicohPPU
 			if constexpr (_Operation == kPoke)
 				sPalette [addr & 0xffu] = data;
 		}
-		host.ppuTick<_Operation> (addr, data);
+		host.template ppuTick<_Operation> (addr, data);
 	}
 
 

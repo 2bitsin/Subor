@@ -21,11 +21,8 @@ namespace __bits_hidden__
 			return dword{_Value};
 		if constexpr (_Size > 32u && _Size <= 64u)
 			return qword{_Value};
-		if constexpr (_Size <  1u || _Size  > 64u)
-		{
-			static_assert(false, "Can't pick type bigger than 64bit or smaller then 1bit");
-			return;
-		}
+		static_assert(_Size > 0u, "Can't pick type bigger than smaller then 1bit");
+		static_assert(_Size <= 64u, "Can't pick type bigger than bigger then 64bits");
 	}
 
 	template <std::size_t _Size>
@@ -45,11 +42,8 @@ namespace __bits_hidden__
 			return dword{0xfffffffful >> (32 - _Size)};
 		if constexpr (_Size > 32u && _Size <= 64u)
 			return qword{0xffffffffffffffffull >> (64 - _Size)};
-		if constexpr (_Size <  1u || _Size  > 64u)
-		{
-			static_assert(false, "Can't pick type bigger than 64bit or smaller then 1bit");
-			return;
-		}
+		static_assert(_Size > 0u, "Can't pick type bigger than smaller then 1bit");
+		static_assert(_Size <= 64u, "Can't pick type bigger than bigger then 64bits");
 	}
 
 	template <byte _Offset, byte _Length>
@@ -128,7 +122,7 @@ namespace bits
 	constexpr auto extract(_Value value, std::size_t offset)
 	{
 		using value_type = decltype(__bits_hidden__::mask<0, _Length>());
-		static constexpr const auto m = __bits_hidden__::mask<0, _Length>();
+		constexpr const auto m = __bits_hidden__::mask<0, _Length>();
 		return value_type (value >> offset) & m;
 	}
 
@@ -136,7 +130,7 @@ namespace bits
 	constexpr auto extract(_Value value)
 	{
 		using value_type = decltype(__bits_hidden__::mask<0, _Length>());
-		static constexpr const auto m = __bits_hidden__::mask<0, _Length>();
+		constexpr const auto m = __bits_hidden__::mask<0, _Length>();
 		return value_type (value >> _Offset) & m;
 	}
 

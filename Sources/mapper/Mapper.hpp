@@ -15,7 +15,7 @@ struct Mapper
 	{
 		std::visit ([&] (auto&& _impl)
 		{
-			_impl.tick<_Operation> (host, addr, data);
+			_impl.template tick<_Operation> (host, addr, data);
 		}, _impl);
 	}
 
@@ -24,7 +24,7 @@ struct Mapper
 	{
 		std::visit ([&] (auto&& _impl)
 		{
-			_impl.ppuTick<_Operation> (host, addr, data);
+			_impl.template ppuTick<_Operation> (host, addr, data);
 		}, _impl);
 	}
 
@@ -41,7 +41,7 @@ struct Mapper
 	{
 		std::visit ([&] (auto&& _impl)
 		{
-			_impl.reset<_Type> ();
+			_impl.template reset<_Type> ();
 		}, _impl);
 	}
 

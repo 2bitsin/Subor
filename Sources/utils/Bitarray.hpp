@@ -55,21 +55,21 @@ struct Bitarray:
 		
 	auto left(value_type value = 0)
 	{
-		return super::left<_Size>(value);
+		return super::template left<_Size>(value);
 	}
 
 	auto right(value_type value = 0)
 	{
-		return super::right<_Size>(value);
+		return super::template right<_Size>(value);
 	}
 		
-	auto left(value_type value, std::size_t _Count)
+	auto left(value_type value, std::size_t cnt)
 	{
-		return super::left(value, _Count*_Size);
+		return super::left(value, cnt*_Size);
 	}
 
-	auto right(value_type value, std::size_t _Count)
+	auto right(value_type value, std::size_t cnt)
 	{
-		return super::right(value, _Count*_Size);
+		return super::right(value, cnt*_Size);
 	}
 };

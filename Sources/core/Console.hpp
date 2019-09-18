@@ -35,7 +35,7 @@ struct Console
 	, mmc{}
 	{}
 
-	void load (std::filesystem::path p);
+	void load (std::string p);
 
 	template <BusOperation _Operation, typename _Slave, typename _Value>
 	auto tick (_Slave&& slave, word addr, _Value&& data)

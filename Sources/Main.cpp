@@ -12,12 +12,14 @@
 #include <optional>
 #include <fstream>
 #include <iostream>
-#include <filesystem>
 #include <unordered_map>
 
 #define SDL_MAIN_HANDLED
-#include <SDL2/SDL.h>
-
+#if __has_include(<SDL.h>)
+	#include <SDL.h>
+#elif __has_include(<SDL2/SDL.h>)
+	#include <SDL2/SDL.h>
+#endif
 
 template <typename T>
 using cptr_t = const T*;
@@ -68,7 +70,7 @@ struct InputProxy
 	std::ofstream sink;
 	std::vector<Frame> frames{ };
 
-	InputProxy (Mode m, const std::filesystem::path& logPath = "")
+	InputProxy (Mode m, const std::string& logPath = "")
 	: mode{ m },
 		findex{ 0 }
 	{
@@ -113,12 +115,12 @@ struct InputProxy
 		auto&& frame = frames [findex];
 		m.input ((byte)frame.port [0].bits, (byte)frame.port [1].bits, byte{ }, byte{ });
 		if (frame.signals.reset)
-			m.reset<kSoftReset> ();
+			m.template reset<kSoftReset> ();
 		++findex;
 	}
 };
 
-int main (std::size_t argc, const ccptr_t<char> argv)
+int main (int argc, const ccptr_t<char> argv)
 {
 	using namespace std::chrono;
 	using namespace std::string_literals;

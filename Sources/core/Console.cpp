@@ -1,6 +1,6 @@
 #include "Console.hpp"
 
-void Console::load (std::filesystem::path p)
+void Console::load (std::string p)
 {
 	mmc.load (ProgramROM{p});
 }

@@ -5,11 +5,8 @@
 #include <fstream>
 #include <cassert>
 
-bool ProgramROM::load (ProgramROM& iNes, const std::filesystem::path& filePath)
+bool ProgramROM::load (ProgramROM& iNes, const std::string& filePath)
 {
-	using namespace std::filesystem;
-	if (!exists (filePath))
-		return false;
 	std::ifstream fst (filePath, std::ios::binary);
 	if (!fst.is_open ())
 		return false;
