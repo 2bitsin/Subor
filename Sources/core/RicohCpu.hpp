@@ -33,9 +33,32 @@ struct RicohCPU
 
 	struct State
 	{
-		long long time{ 0 };
-		Word pc{ 0xC000 };
-		byte a{ 0 }, x{ 0 }, y{ 0 }, s{ 0 };
+		constexpr State(
+			long long time = 0,
+			word pc = 0xc000,
+			byte a = 0,
+			byte x = 0,
+			byte y = 0,
+			byte s = 0,
+			byte p = 0x24u,
+			byte mode = 0x2u)
+		: 	time{time},
+			pc{pc},
+			a{a},
+			x{x},
+			y{y},
+			s{s},
+			p{p},
+			mode{mode},
+			addr{0},
+			tmp0{0},
+			tmp1{0},
+			rDma{0}
+		{}
+		
+		long long time;
+		Word pc;
+		byte a, x, y, s;
 		union
 		{
 			byte bits;
@@ -48,7 +71,7 @@ struct RicohCPU
 			Bitfield<6, 1> v;
 			Bitfield<7, 1> n;
 		}
-		p{ 0x24 };
+		p;
 
 		union
 		{
@@ -60,15 +83,15 @@ struct RicohCPU
 			Bitfield<4, 1> dmaStart;
 			Bitfield<5, 1> dmaCycle;
 		}
-		mode{ 0x02u };
+		mode;
 
-		Word addr{ 0 };
-		Word tmp0{ 0 };
-		Word tmp1{ 0 };
-		Word rDma{ 0 };		
+		Word addr;
+		Word tmp0;
+		Word tmp1;
+		Word rDma;
 	};
 
-	static constexpr const State kTestState = State{ 7, { 0xC000 }, 0, 0, 0, 0xfd, 0x24, 0 };
+	static inline const State kTestState = State{7, 0xC000, 0, 0, 0, 0xfd, 0x24, 0};
 
 	template <BusOperation _Operation, typename _Host, typename _Value>
 	auto tick (_Host&& master, word addr, _Value&& data);
@@ -88,7 +111,9 @@ struct RicohCPU
 	template <ResetType>
 	void reset ();
 
-	RicohCPU (State state = {});
+	RicohCPU (State state);
+	RicohCPU ():RicohCPU{State{}} {};
+
 
 private:
 	State q;

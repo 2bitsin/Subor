@@ -1178,7 +1178,7 @@ void RicohCPU::reset ()
 		setSignal (ResetBit);
 
 	if constexpr (_Type == kHardReset)
-		q = State{ };
+		new (&q) State{ };
 }
 
 inline void RicohCPU::setSignal(byte bits)
