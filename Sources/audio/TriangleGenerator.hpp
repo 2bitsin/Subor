@@ -7,10 +7,16 @@ struct TriangleGenerator
 {
 	byte step ()
 	{
-		auto v = t & 0x10 ? (15 - t & 0xf) : t & 0xf;
+		auto v = t & 0x10 ? (t & 0xf) : (15-t) & 0xf;
 		++t;	
 		return v;
 	}
+	
+	void reset()
+	{
+		t = 0;
+	}
+	
 private:
-	byte t;	
+	byte t{0};
 };

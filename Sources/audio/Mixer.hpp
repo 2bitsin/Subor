@@ -16,6 +16,11 @@ struct Mixer
 		typename _DMC>
 		float mix (_SQ0&& sq0, _SQ1&& sq1, _TRI&& tri, _NOI&& noi, _DMC&& dmc)
 	{
+		sq0 *= 0;
+		sq1 *= 0;
+		tri *= 1;
+		noi *= 0;
+		dmc *= 0;
 
 		float g0 = 0.0f;
 		if (tri || noi || dmc)
@@ -38,10 +43,9 @@ struct Mixer
 	void step (_Channel&&... ch)
 	{
 		auto s = mix((ch.value())...);
-		s = _lpf0.apply(s);
-		s = _hpf1.apply(s);
 		s = _hpf0.apply(s);
-
+		s = _hpf1.apply(s);
+		s = _lpf0.apply(s);
 		_buffer.emplace_back (s);
 	}
 
@@ -54,9 +58,9 @@ struct Mixer
 
 private:
 	AudioBuffer<float> _buffer{ctSamplesPerFrame};
-	HighPassFilter<float> _hpf0{90, ctSamplingRate};
-	HighPassFilter<float> _hpf1{440, ctSamplingRate};
-	LowPassFilter<float> _lpf0{14000, ctSamplingRate};
+	HighPassFilter<float, 2> _hpf0{90, ctSamplingRate, 1.0f};
+	HighPassFilter<float, 2> _hpf1{440, ctSamplingRate, 1.0f};
+	LowPassFilter<float, 2> _lpf0{14000, ctSamplingRate, 0.25f};
 
 
 };
