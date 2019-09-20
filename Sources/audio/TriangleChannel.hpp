@@ -47,7 +47,7 @@ struct TriangleChannel
 	void step ()
 	{
 		if (_Clk & kStepChannel)
-			if (status () && _lcntr != 0)
+			if ((status () && _lcntr != 0) || _value != 0)
 				if (_timer.step ())
 					_value = _trgen.step ();
 
@@ -66,9 +66,9 @@ struct TriangleChannel
 
 	byte value () const
 	{
-		if (!status ())
+		if (!status () && !_value)
 			return 0;
-		if (!_lcntr)
+		if (!_lcntr && !_value)
 			return 0;
 		if (!_timer.valid ())
 			return 0;
@@ -81,5 +81,5 @@ private:
 	bool _cflag{false};							// Control flag
 	bool _rflag{false};							// Linear counter reload flag
 	TriangleGenerator _trgen;				// Triangle generator
-	PeriodCounter<8, 0x7ff> _timer; // 11-bit period timer
+	PeriodCounter<0, 0x7ff> _timer; // 11-bit period timer
 };

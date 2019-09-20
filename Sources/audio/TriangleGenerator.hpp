@@ -12,11 +12,6 @@ struct TriangleGenerator
 		return v;
 	}
 	
-	void reset()
-	{
-		t = 0;
-	}
-	
 private:
 	byte t{0};
 };
