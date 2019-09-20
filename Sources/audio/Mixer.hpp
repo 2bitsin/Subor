@@ -1,10 +1,12 @@
 #pragma once
 
 #include "utils/Types.hpp"
+#include "audio/HighPassFilter.hpp"
+#include "audio/LowPassFilter.hpp"
 #include "core/CoreConfig.hpp"
 
 struct Mixer
-	: public CoreConfig
+: 	public CoreConfig
 {
 	template
 	<	typename _SQ0,
@@ -35,7 +37,12 @@ struct Mixer
 	template <typename... _Channel>
 	void step (_Channel&&... ch)
 	{
-		_buffer.emplace_back (mix((ch.value())...));
+		auto s = mix((ch.value())...);
+		s = _lpf0.apply(s);
+		s = _hpf1.apply(s);
+		s = _hpf0.apply(s);
+
+		_buffer.emplace_back (s);
 	}
 
 	template <typename _Sink>
@@ -47,4 +54,9 @@ struct Mixer
 
 private:
 	AudioBuffer<float> _buffer{ctSamplesPerFrame};
+	HighPassFilter<float> _hpf0{90, ctSamplingRate};
+	HighPassFilter<float> _hpf1{440, ctSamplingRate};
+	LowPassFilter<float> _lpf0{14000, ctSamplingRate};
+
+
 };
