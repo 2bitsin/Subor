@@ -52,9 +52,9 @@ struct Mixer
 
 private:
 	AudioBuffer<float> _buffer{ctSamplesPerFrame};
-	HighPassFilter<float, 2> _hpf0{90, ctSamplingRate, 1.0f};
-	HighPassFilter<float, 2> _hpf1{440, ctSamplingRate, 1.0f};
-	LowPassFilter<float, 2> _lpf0{14000, ctSamplingRate, 0.25f};
+	HighPassFilter<float, 1> _hpf0{90, ctSamplingRate};
+	HighPassFilter<float, 1> _hpf1{440, ctSamplingRate};
+	LowPassFilter<float, 2> _lpf0{14000, ctSamplingRate, 1.2f};
 
 
 };
