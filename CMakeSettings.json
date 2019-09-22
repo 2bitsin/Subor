@@ -1,0 +1,62 @@
+﻿{
+  "configurations": [
+    {
+      "name": "x64-Debug",
+      "generator": "Ninja",
+      "configurationType": "Debug",
+      "inheritEnvironments": [ "msvc_x64_x64" ],
+      "buildRoot": "${projectDir}\\out\\build\\${name}",
+      "installRoot": "${projectDir}\\out\\install\\${name}",
+      "cmakeCommandArgs": "",
+      "buildCommandArgs": "",
+      "ctestCommandArgs": "",
+      "variables": [
+        {
+          "name": "VCPKG_APPLOCAL_DEPS",
+          "value": "true",
+          "type": "BOOL"
+        },
+        {
+          "name": "VCPKG_TARGET_TRIPLET",
+          "value": "x64-windows",
+          "type": "STRING"
+        },
+        {
+          "name": "CMAKE_INSTALL_PREFIX",
+          "value": "C:/Users/alex/Desktop/projects/Subor/out/install/x64-Debug",
+          "type": "PATH"
+        }
+      ],
+      "cmakeToolchain": "C:\\Dev\\vcpkg\\scripts\\buildsystems\\vcpkg.cmake"
+    },
+    {
+      "name": "x64-Release",
+      "generator": "Ninja",
+      "configurationType": "Release",
+      "buildRoot": "${projectDir}\\out\\build\\${name}",
+      "installRoot": "${projectDir}\\out\\install\\${name}",
+      "cmakeCommandArgs": "",
+      "buildCommandArgs": "-v",
+      "ctestCommandArgs": "",
+      "inheritEnvironments": [ "msvc_x64_x64" ],
+      "variables": [
+        {
+          "name": "VCPKG_APPLOCAL_DEPS",
+          "value": "true",
+          "type": "BOOL"
+        },
+        {
+          "name": "VCPKG_TARGET_TRIPLET",
+          "value": "x64-windows",
+          "type": "STRING"
+        },
+        {
+          "name": "CMAKE_INSTALL_PREFIX",
+          "value": "C:/Users/alex/Desktop/projects/Subor/out/install/x64-Release",
+          "type": "PATH"
+        }
+      ],
+      "cmakeToolchain": "C:\\Dev\\vcpkg\\scripts\\buildsystems\\vcpkg.cmake"
+    }
+  ]
+}

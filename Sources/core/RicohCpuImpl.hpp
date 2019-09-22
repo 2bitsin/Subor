@@ -21,7 +21,7 @@ inline auto RicohCPU::tick (_Host&& m, word addr, _Value&& data)
 			return kSuccess;
 		}
 	}
-	m.template tick<_Operation> (*this, addr, data);
+	return	m.template tick<_Operation> (*this, addr, data);
 }
 
 template <typename _Host>

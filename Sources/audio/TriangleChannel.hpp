@@ -11,40 +11,43 @@ struct TriangleChannel
 {
 	using super = AudioChannel;
 
-	template <BusOperation _Operation, typename _Data>
-	void tick (word addr, _Data&& data)
+	template <BusOperation _Operation, typename _Host, typename _Data>
+	void tick (_Host&& host, word addr, _Data&& data)
 	{
 		if (_Operation == kPeek)
 			return;
-		switch (addr)
+		if (_Operation == kPoke)
 		{
-		case 0x8:
+			switch (addr)
 			{
-				auto [r, c] = bits::unpack_as_tuple<7, 1> (data);
-				_cflag = !!c;
-				_lengc.halt (_cflag);
-				_lcrel = r;
-				break;
-			}
-		case 0xA:
-			{
-				_timer.load<0, 8> (data);
-				break;
-			}
-		case 0xB:
-			{
-				auto [htime, lenct]
-					= bits::unpack_as_tuple<3, 5> (data);
-				_lengc.load (lenct);
-				_timer.load<8, 3> (htime);
-				_rflag = true;
-				break;
+			case 0x8:
+				{
+					auto [r, c] = bits::unpack_as_tuple<7, 1> (data);
+					_cflag = !!c;
+					_lengc.halt (_cflag);
+					_lcrel = r;
+					break;
+				}
+			case 0xA:
+				{
+					_timer.load<0, 8> (data);
+					break;
+				}
+			case 0xB:
+				{
+					auto [htime, lenct]
+						= bits::unpack_as_tuple<3, 5> (data);
+					_lengc.load (lenct);
+					_timer.load<8, 3> (htime);
+					_rflag = true;
+					break;
+				}
 			}
 		}
 	}
 
-	template <byte _Clk>
-	void step ()
+	template <byte _Clk, typename _Host>
+	void step (_Host&& host)
 	{
 		if (_Clk & kStepChannel)
 			if ((status () && _lcntr != 0) || _value != 0)
@@ -61,7 +64,7 @@ struct TriangleChannel
 			else if (_lcntr != 0u)
 				--_lcntr;
 		}
-		super::step<_Clk> ();
+		super::step<_Clk> (host);
 	}
 
 	byte value () const

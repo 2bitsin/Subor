@@ -15,20 +15,21 @@ namespace
 struct AudioChannel
 {
 
-	template <byte _Clk>
-	void step ()
+	template <byte _Clk, typename _Host>
+	void step (_Host&& host)
 	{
 		if (_Clk & kStepLength)
 			_lengc.tick ();
 	}
 
-	template <BusOperation _Operation, typename _Data>
-	void tick (word addr, _Data&& data)
+	template <BusOperation _Operation, typename _Host, typename _Data>
+	void tick (_Host&& host, word addr, _Data&& data)
 	{}
 
 	void enable (bool v)
 	{
 		_lengc.disable(!v);
+		_enabl = v;
 	}
 
 	auto irq () const
@@ -43,7 +44,8 @@ struct AudioChannel
 
 	auto status () const
 	{
-		return _lengc.value () != 0u;
+		return _lengc.value () != 0u //&& _enabl
+			;
 	}
 
 protected:

@@ -13,12 +13,15 @@
 #include <fstream>
 #include <iostream>
 #include <unordered_map>
+#include <map>
 
 #define SDL_MAIN_HANDLED
 #if __has_include(<SDL.h>)
 	#include <SDL.h>
 #elif __has_include(<SDL2/SDL.h>)
 	#include <SDL2/SDL.h>
+#else
+	#error SDL2 wasn't found in the include path
 #endif
 
 #if __has_include("Config.hpp")
@@ -127,16 +130,40 @@ struct InputProxy
 	}
 };
 
-int main (int argc, const ccptr_t<char> argv)
+template <typename _Envp, typename _Dest>
+void parse_env(_Envp envp, _Dest& dest)
+{
+	for(auto p = envp; *p; ++p)
+	{
+		std::string sp = *p;
+		auto eq = std::find(sp.begin(), sp.end(), '=');
+		if (eq == sp.end())
+			continue;
+		std::string k{sp.begin(), eq};
+		std::string v{eq+1, sp.end()};
+		dest.emplace(k, v);
+	}
+}
+
+
+int main (int argc, 
+	const ccptr_t<char> argv, 
+	const ccptr_t<char> envp)
 {
 	using namespace std::chrono;
 	using namespace std::string_literals;
 	//return nestest::NestestMain();
+
+	std::map<std::string, std::string> env;
+	parse_env(envp, env);
+	auto DEBUG_DataPath = "./Data"s;
+	if (env.count("DEBUG_DATA_PATH"s))
+		DEBUG_DataPath = env["DEBUG_DATA_PATH"s];
 	if (argc < 2)
-		throw std::runtime_error ("No arguments");
+		throw std::runtime_error ("No arguments"s);
 	auto console = std::make_unique<Console> ();
 
-	console->load(DEBUG_DATA_PATH + argv [1] + ".nes"s);
+	console->load(DEBUG_DataPath + argv [1] + ".nes"s);
 
 	bool rerecordMode = argc >= 3 ? argv [2] == "r"s : false;
 	bool playbackMode = argc >= 3 ? argv [2] == "p"s : false;
@@ -215,8 +242,6 @@ int main (int argc, const ccptr_t<char> argv)
 				dst[(screen->pitch >> 2)*y + x] = c;
 			}, 
 			[audiod] (auto&& buff) {
-				if (buff.size() < (RicohAPU::ctSamplesPerFrame * 0.8))
-					return;
 				auto len = (Uint32)(buff.size() * sizeof(buff[0]));
 				SDL_QueueAudio(audiod, (std::uint8_t*)buff.data(), len);
 			});
@@ -245,3 +270,4 @@ int main (int argc, const ccptr_t<char> argv)
 	
 	return 0;
 }
+

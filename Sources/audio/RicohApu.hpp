@@ -15,6 +15,7 @@
 #include "audio/PulseChannel.hpp"
 #include "audio/TriangleChannel.hpp"
 #include "audio/NoiseChannel.hpp"
+#include "audio/DMCChannel.hpp"
 
 #include <vector>
 #include <tuple>
@@ -28,19 +29,19 @@ struct RicohAPU
 	template <BusOperation _Operation, typename _Host, typename _Data>
 	auto tick (_Host& host, word addr, _Data&& data)
 	{
-		_trich.step<0b0001> ();
+		_trich.step<0b0001> (host);
 		if (_clock_osc.tick ())
 		{
-			_sq0ch.step<0b0001> ();
-			_sq1ch.step<0b0001> ();
-			_noich.step<0b0001> ();
-			_dmcch.step<0b0001> ();
+			_sq0ch.step<0b0001> (host);
+			_sq1ch.step<0b0001> (host);
+			_noich.step<0b0001> (host);
+			_dmcch.step<0b0001> (host);
 		}
 
 		if (_clock_mix.tick ())
-			_mix.step (_sq0ch, _sq1ch, _trich, _noich, _dmcch);
+			_mix.step (host, _sq0ch, _sq1ch, _trich, _noich, _dmcch);
 		if (_clock_seq.tick ())
-			_seq.step (_sq0ch, _sq1ch, _trich, _noich, _dmcch);
+			_seq.step (host, _sq0ch, _sq1ch, _trich, _noich, _dmcch);
 
 		host.irq (_seq.irq ());
 
@@ -54,11 +55,11 @@ struct RicohAPU
 			if constexpr (_Operation == kPoke)
 				latch = byte (data);
 
-			_sq0ch.tick<_Operation> (addr, latch);
-			_sq1ch.tick<_Operation> (addr, latch);
-			_trich.tick<_Operation> (addr, latch);
-			_noich.tick<_Operation> (addr, latch);
-			_dmcch.tick<_Operation> (addr, latch);
+			_sq0ch.tick<_Operation> (host, addr, latch);
+			_sq1ch.tick<_Operation> (host, addr, latch);
+			_trich.tick<_Operation> (host, addr, latch);
+			_noich.tick<_Operation> (host, addr, latch);
+			_dmcch.tick<_Operation> (host, addr, latch);
 
 			switch (addr)
 			{
@@ -132,7 +133,7 @@ private:
 	PulseChannel<1> _sq1ch;
 
 	NoiseChannel _noich;
-	AudioChannel _dmcch;
+	DMCChannel _dmcch;
 	TriangleChannel _trich;
 
 	Mixer _mix;

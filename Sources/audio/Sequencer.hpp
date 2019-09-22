@@ -28,18 +28,18 @@ struct Sequencer
 		return _irqra;
 	}
 
-	template <typename... _Channel>
-	void step (_Channel&& ... channel)
+	template <typename _Host, typename... _Channel>
+	void step (_Host&& host, _Channel&& ... channel)
 	{
 		if (_mode5)
 		{
 			switch(_cstep)
 			{
-			case 0: (channel.template step<0b1110>(), ...); break;
-			case 1: (channel.template step<0b0010>(), ...); break;
-			case 2: (channel.template step<0b1110>(), ...); break;
-			case 3: (channel.template step<0b0010>(), ...); break;
-			case 4: (channel.template step<0b0000>(), ...); break;
+			case 0: (channel.template step<0b1110>(host), ...); break;
+			case 1: (channel.template step<0b0010>(host), ...); break;
+			case 2: (channel.template step<0b1110>(host), ...); break;
+			case 3: (channel.template step<0b0010>(host), ...); break;
+			case 4: (channel.template step<0b0000>(host), ...); break;
 			}
 			_cstep = (_cstep + 1)%5;
 		}
@@ -47,10 +47,10 @@ struct Sequencer
 		{
 			switch(_cstep)
 			{
-			case 0: (channel.template step<0b0010>(), ...); break;
-			case 1: (channel.template step<0b1110>(), ...); break;
-			case 2: (channel.template step<0b0010>(), ...); break;
-			case 3: (channel.template step<0b1110>(), ...);
+			case 0: (channel.template step<0b0010>(host), ...); break;
+			case 1: (channel.template step<0b1110>(host), ...); break;
+			case 2: (channel.template step<0b0010>(host), ...); break;
+			case 3: (channel.template step<0b1110>(host), ...);
 				_irqra = _irqen; 
 				break;
 			}

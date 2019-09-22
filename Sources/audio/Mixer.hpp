@@ -33,8 +33,8 @@ struct Mixer
 		return g0 + g1;
 	}
 
-	template <typename... _Channel>
-	void step (_Channel&&... ch)
+	template <typename _Host,typename... _Channel>
+	void step (_Host&& host, _Channel&&... ch)
 	{
 		auto s = mix((ch.value())...);
 		s = _hpf0.apply(s);

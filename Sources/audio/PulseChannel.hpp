@@ -13,58 +13,61 @@ struct PulseChannel
 {
 	using super = AudioChannel;
 
-	template <BusOperation _Operation, typename _Data>
-	void tick (word addr, _Data&& data)
+	template <BusOperation _Operation, typename _Host, typename _Data>
+	void tick (_Host&& host, word addr, _Data&& data)
 	{
 		if (_Operation == kPeek)
 			return;
-		switch (addr)
+		if (_Operation == kPoke)
 		{
-		case 4 * _ChannelNum + 0:
+			switch (addr)
 			{
-				auto [volper, cstvol, lencth, dutycy]
-					= bits::unpack_as_tuple<4, 1, 1, 2> (data);
-				_envlp.load (volper);
-				_envlp.cvol (cstvol);
-				_envlp.loop (cstvol);
-				_lengc.halt (lencth);
-				_pulse.load (dutycy);
-				break;
-			}
-		case 4 * _ChannelNum + 1:
-			{
-				_sweep.load (data);
-				break;
-			}
-		case 4 * _ChannelNum + 2:
-			{
-				_timer.load<0, 8> (data);
-				break;
-			}
-		case 4 * _ChannelNum + 3:
-			{
-				auto [htime, lenct]
-					= bits::unpack_as_tuple<3, 5> (data);
-				_lengc.load (lenct);
-				_envlp.start ();
-				_timer.load<8, 3> (htime);
-				break;
+			case 4 * _ChannelNum + 0:
+				{
+					auto [volper, cstvol, lencth, dutycy]
+						= bits::unpack_as_tuple<4, 1, 1, 2> (data);
+					_envlp.load (volper);
+					_envlp.cvol (cstvol);
+					_envlp.loop (cstvol);
+					_lengc.halt (lencth);
+					_pulse.load (dutycy);
+					break;
+				}
+			case 4 * _ChannelNum + 1:
+				{
+					_sweep.load (data);
+					break;
+				}
+			case 4 * _ChannelNum + 2:
+				{
+					_timer.load<0, 8> (data);
+					break;
+				}
+			case 4 * _ChannelNum + 3:
+				{
+					auto [htime, lenct]
+						= bits::unpack_as_tuple<3, 5> (data);
+					_lengc.load (lenct);
+					_envlp.start ();
+					_timer.load<8, 3> (htime);
+					break;
+				}
 			}
 		}
 	}
 
-	template <byte _Clk>
-	void step ()
+	template <byte _Clk, typename _Host>
+	void step (_Host&& host)
 	{
 		if (_Clk & kStepChannel)
-			if (status())
+			if (status ())
 				if (_timer.step ())
 					_value = _pulse.step ();
 		if (_Clk & kStepEnvelope)
 			_envlp.tick ();
 		if (_Clk & kStepSweeper)
 			_sweep.tick (_timer);
-		super::step<_Clk>();
+		super::step<_Clk> (host);
 	}
 
 	byte value () const
