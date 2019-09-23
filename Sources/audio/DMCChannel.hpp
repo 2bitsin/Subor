@@ -42,9 +42,43 @@ struct DMCChannel
 
 	void enable (bool _enabl)
 	{
-		super::enable(_enabl);
+		super::enable (_enabl);
 		if (!_enabl)
 			_cleng = 0u;
+		else
+			if (!_cleng)
+				reset();
+	}
+
+	template <typename _Host>
+	void step_dma (_Host&& host)
+	{
+		assert (_cleng > 0u);
+
+		byte t{0};
+		if (!host.cpuInDmaMode ())
+		{
+			host.tick<kDummyPeek> (*this, _caddr, t);
+			host.tick<kDummyPeek> (*this, _caddr, t);
+		}
+		host.tick<kDummyPeek> (*this, _caddr, t);
+		host.tick<kPeek> (*this, _caddr, t);
+
+		_sbuff.value (t);
+		++_caddr;
+		--_cleng;
+		if (!_caddr)
+			_caddr = 0x8000u;
+		_cbits = 8u;
+		_irqon = _irqon || (_irqen && !_cleng);
+	}
+
+	template <typename _Host>
+	void step_output (_Host&& host)
+	{
+		const auto dval = _sbuff.right () ? +2 : -2;
+		_value = std::clamp ((int)_value + dval, 0, 127);
+		--_cbits;
 	}
 
 	template <byte _Clk, typename _Host>
@@ -52,49 +86,18 @@ struct DMCChannel
 	{
 		if constexpr (_Clk & kStepChannel)
 		{
-			if (super::_enabl)
+			if (_timer.step ())
 			{
-				if (_timer.step ())
+				if (!_cbits)
 				{
-					if (!_cleng)
-					{
+					if (_cleng > 0u)
+						step_dma (host);
+					else
 						if (_loopf)
 							reset ();
-					}
-					else
-					{
-						if (!_cbits)
-						{
-							if (_cleng > 0u)
-							{
-								byte t{0};
-								if (!host.cpuInDmaMode())
-								{
-									host.tick<kDummyPeek> (*this, _caddr, t);
-									host.tick<kDummyPeek> (*this, _caddr, t);
-								}
-								host.tick<kDummyPeek> (*this, _caddr, t);
-								host.tick<kPeek> (*this, _caddr, t);
-								_sbuff.value (t);
-								_cbits = 8u;
-								--_cleng;
-								++_caddr;
-								if (_caddr == 0x0u)
-									_caddr += 0x8000u;
-								if (!_cleng)
-									_irqon = true;
-							}
-						}
-						else
-						{
-							if (_sbuff.right ())
-								_value = std::clamp ((int)_value + 2, 0, 127);
-							else
-								_value = std::clamp ((int)_value - 2, 0, 127);
-							--_cbits;
-						}
-					}
-				}				
+				}
+				else
+					step_output (host);
 			}
 		}
 		super::step<_Clk> (host);
@@ -106,12 +109,12 @@ struct DMCChannel
 		_cleng = _wleng;
 	}
 
-	bool irq() const
+	bool irq () const
 	{
 		return _irqon;
 	}
 
-	bool irq_rr()
+	bool irq_rr ()
 	{
 		return std::exchange (_irqon, false);
 	}
