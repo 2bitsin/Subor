@@ -42,7 +42,7 @@ struct RicohCPU
 			byte s = 0,
 			byte p = 0x24u,
 			byte mode = 0x2u)
-		: 	time{time},
+		: time{time},
 			pc{pc},
 			a{a},
 			x{x},
@@ -114,7 +114,10 @@ struct RicohCPU
 	RicohCPU (State state);
 	RicohCPU ():RicohCPU{State{}} {};
 
-
+	bool inDmaMode() const
+	{
+		return q.mode.dmaCycle || q.mode.dmaStart;
+	}
 private:
 	State q;
 };

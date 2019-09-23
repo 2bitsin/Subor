@@ -32,7 +32,7 @@ struct AudioChannel
 		_enabl = v;
 	}
 
-	auto irq () const
+	auto irq ()
 	{
 		return false;
 	}
@@ -44,8 +44,7 @@ struct AudioChannel
 
 	auto status () const
 	{
-		return _lengc.value () != 0u //&& _enabl
-			;
+		return _lengc.value () != 0u;
 	}
 
 protected:

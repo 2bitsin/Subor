@@ -32,3 +32,8 @@ void Console::irq (bool q)
 	else
 		cpu.clrSignal (cpu.InterruptBit);
 }
+
+bool Console::cpuInDmaMode () const
+{
+	return cpu.inDmaMode ();
+}

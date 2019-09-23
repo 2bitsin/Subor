@@ -14,6 +14,7 @@ enum MemoryType: byte
 
 enum BusOperation: byte
 {
+	kNoOp = 0x0,
 	kPeek = 0x1,
 	kPoke = 0x2,
 	kDummyPeek = 0x4|kPeek,

@@ -43,7 +43,7 @@ struct RicohAPU
 		if (_clock_seq.tick ())
 			_seq.step (host, _sq0ch, _sq1ch, _trich, _noich, _dmcch);
 
-		host.irq (_seq.irq ());
+		host.irq (_seq.irq () || _dmcch.irq());
 
 		if (addr >= 0x4000u && addr < 0x4200u)
 		{
