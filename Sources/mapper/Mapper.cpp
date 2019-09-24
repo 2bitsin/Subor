@@ -1,4 +1,5 @@
 #include "Mapper.hpp"
+#include <stdexcept>
 
 void Mapper::load (const ProgramROM& ines)
 {
@@ -6,13 +7,16 @@ void Mapper::load (const ProgramROM& ines)
 	{
 		switch (ines.idMapper ())
 		{
+		case 1:
+			return MapperMMC1 (ines);
+		case 0:
+			return MapperNROM (ines);
 		case 2:
 		case 94:
 		case 180:
 			return MapperUxROM (ines);
-		case 0:
 		default:
-			return MapperNROM (ines);
+			throw std::runtime_error("Mapper unsupported!");
 		}
 	})();
 }

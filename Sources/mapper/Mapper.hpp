@@ -3,6 +3,7 @@
 
 #include "MapperNROM.hpp"
 #include "MapperUxROM.hpp"
+#include "MapperMMC1.hpp"
 
 #include <variant>
 
@@ -58,7 +59,8 @@ private:
 	using _Impl_type = std::variant
 	<	MapperNULL,
 		MapperNROM,
-		MapperUxROM>;
+		MapperUxROM,
+		MapperMMC1>;
 
 	_Impl_type _impl;
 };

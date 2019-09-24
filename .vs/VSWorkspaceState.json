@@ -4,8 +4,9 @@
     "\\Data",
     "\\Sources",
     "\\Sources\\audio",
-    "\\Sources\\core"
+    "\\Sources\\core",
+    "\\Sources\\fileio"
   ],
-  "SelectedNode": "\\Sources\\audio\\DMCChannel.hpp",
+  "SelectedNode": "\\CMakeLists.txt",
   "PreviewInSolutionExplorer": false
 }

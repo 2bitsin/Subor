@@ -45,7 +45,10 @@ struct MapperBase
 			return addr & ~0x400u;
 		case kVertical:
 			return addr & ~0x800u;
-
+		case kSingleLow:
+			return addr & ~0xC00u;
+		case kSingleHigh:
+			return (addr & ~0xC00u) + 0x400;
 		default:
 		case kFourScreen:
 			return addr;

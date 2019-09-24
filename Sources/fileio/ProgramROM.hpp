@@ -10,6 +10,8 @@
 
 enum Mirroring: byte
 {
+	kSingleLow,
+	kSingleHigh,
 	kFourScreen,
 	kHorizontal,
 	kVertical
