@@ -7,8 +7,8 @@ void Mapper::load (const ProgramROM& ines)
 	{
 		switch (ines.idMapper ())
 		{
-		case 1:
-			return MapperMMC1 (ines);
+		//case 1:
+		//	return MapperMMC1 (ines);
 		case 0:
 			return MapperNROM (ines);
 		case 2:

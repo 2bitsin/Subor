@@ -5,8 +5,9 @@
     "\\Sources",
     "\\Sources\\audio",
     "\\Sources\\core",
-    "\\Sources\\fileio"
+    "\\Sources\\fileio",
+    "\\Sources\\mapper"
   ],
-  "SelectedNode": "\\CMakeLists.txt",
+  "SelectedNode": "\\Sources\\mapper\\MapperMMC1.cpp",
   "PreviewInSolutionExplorer": false
 }
