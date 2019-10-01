@@ -73,6 +73,42 @@
         "tests/apu_test"
       ],
       "env": "DEBUG_DATA_PATH=${projectDir}\\Data\\"
+    },
+    {
+      "type": "default",
+      "project": "CMakeLists.txt",
+      "name": "launch with BM p",
+      "args": [
+        "bm p"
+      ],
+      "env": "DEBUG_DATA_PATH=${projectDir}\\Data\\"
+    },
+    {
+      "type": "default",
+      "project": "CMakeLists.txt",
+      "name": "launch with BF p",
+      "args": [
+        "bf p"
+      ],
+      "env": "DEBUG_DATA_PATH=${projectDir}\\Data\\"
+    },
+    {
+      "type": "default",
+      "project": "CMakeLists.txt",
+      "name": "launch with DK p",
+      "args": [
+        "dk p"
+      ],
+      "env": "DEBUG_DATA_PATH=${projectDir}\\Data\\"
+    },
+    {
+      "type": "default",
+      "project": "CMakeLists.txt",
+      "name": "launch with LR p",
+      "args": [
+        "lr p"
+      ],
+      "env": "DEBUG_DATA_PATH=${projectDir}\\Data\\"
     }
   ]
 }
