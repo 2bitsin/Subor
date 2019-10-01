@@ -42,7 +42,9 @@ inline bool RicohCPU::step (_Host&& m, std::size_t s)
 		word next = 0u;
 		bool cross = false;
 
-		if (q.mode.dmaStart)
+		if (q.mode.stall)
+			continue;
+		else if (q.mode.dmaStart)
 		{
 			tick<kDummyPeek> (m, q.rDma.w, next);
 			if (q.time & 1u)

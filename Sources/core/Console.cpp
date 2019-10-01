@@ -33,7 +33,7 @@ void Console::irq (bool q)
 		cpu.clrSignal (cpu.InterruptBit);
 }
 
-bool Console::cpuInDmaMode () const
+bool Console::isOamDma () const
 {
 	return cpu.inDmaMode ();
 }

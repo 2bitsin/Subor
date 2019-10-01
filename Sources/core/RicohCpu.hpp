@@ -79,8 +79,9 @@ struct RicohCPU
 			Bitfield<0, 1> nmi;
 			Bitfield<1, 1> rst;
 			Bitfield<2, 1> irq;
-			Bitfield<3, 1> dmaStart;
-			Bitfield<4, 1> dmaCycle;
+			Bitfield<3, 1> stall;
+			Bitfield<4, 1> dmaStart;
+			Bitfield<5, 1> dmaCycle;
 		}
 		mode;
 
@@ -124,6 +125,8 @@ struct RicohCPU
 	{
 		return q.mode.dmaCycle || q.mode.dmaStart;
 	}
+
+
 private:
 	State q;
 

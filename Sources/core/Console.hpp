@@ -27,12 +27,12 @@ struct Console
 	Mapper mmc;
 
 	Console ()
-		: cpu{}
-		, ppu{}
-		, apu{}
-		, mem{}
-		, vmm{}
-		, mmc{}
+	: cpu{}
+	, ppu{}
+	, apu{}
+	, mem{}
+	, vmm{}
+	, mmc{}
 	{}
 
 	void load (std::string p);
@@ -44,10 +44,8 @@ struct Console
 
 		++time;
 		mem.tick<_Operation> (*this, addr, data);
-		if constexpr (!std::is_same_v<slave_type, RicohPPU>)
-			ppu.tick<_Operation> (*this, addr, data);
-		if constexpr (!std::is_same_v<slave_type, RicohAPU>)
-			apu.tick<_Operation> (*this, addr, data);
+		ppu.tick<_Operation> (*this, addr, data);
+		apu.tick<_Operation> (*this, addr, data);
 		mmc.tick<_Operation> (*this, addr, data);
 		return kSuccess;
 	}
@@ -98,6 +96,6 @@ struct Console
 	void nmi ();
 	void irq (bool q = true);
 
-	bool cpuInDmaMode () const;
+	bool isOamDma () const;
 
 };

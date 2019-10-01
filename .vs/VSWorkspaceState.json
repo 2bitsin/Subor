@@ -1,14 +1,16 @@
 {
   "ExpandedNodes": [
     "",
-    "\\Data",
+    "\\out",
     "\\Sources",
-    "\\Sources\\audio",
     "\\Sources\\core",
     "\\Sources\\fileio",
     "\\Sources\\input",
-    "\\Sources\\mapper"
+    "\\Sources\\mapper",
+    "\\Sources\\test",
+    "\\Sources\\utils",
+    "\\Sources\\video"
   ],
-  "SelectedNode": "\\CMakeLists.txt",
+  "SelectedNode": "\\Sources\\video\\RicohPpu.hpp",
   "PreviewInSolutionExplorer": false
 }

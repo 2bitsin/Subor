@@ -56,7 +56,7 @@ struct DMCChannel
 		assert (_cleng > 0u);
 
 		byte t{0};
-		if (!host.cpuInDmaMode ())
+		if (!host.isOamDma ())
 		{
 			host.tick<kDummyPeek> (*this, _caddr, t);
 			host.tick<kDummyPeek> (*this, _caddr, t);
