@@ -109,6 +109,15 @@
         "lr p"
       ],
       "env": "DEBUG_DATA_PATH=${projectDir}\\Data\\"
+    },
+    {
+      "type": "default",
+      "project": "CMakeLists.txt",
+      "name": "launch with NESTEST",
+      "args": [
+        "tests/nestest"
+      ],
+      "env": "DEBUG_DATA_PATH=${projectDir}\\Data\\"
     }
   ]
 }

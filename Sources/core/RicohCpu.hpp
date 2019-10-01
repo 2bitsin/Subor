@@ -11,7 +11,7 @@
 #include <functional>
 
 struct RicohCPU
-:	public CoreConfig
+: public CoreConfig
 {
 	static constexpr byte NonMaskableBit = 0x01u;
 	static constexpr byte ResetBit = 0x02u;
@@ -33,7 +33,7 @@ struct RicohCPU
 
 	struct State
 	{
-		constexpr State(
+		constexpr State (
 			long long time = 0,
 			word pc = 0xc000,
 			byte a = 0,
@@ -42,7 +42,7 @@ struct RicohCPU
 			byte s = 0,
 			byte p = 0x24u,
 			byte mode = 0x2u)
-		: time{time},
+			: time{time},
 			pc{pc},
 			a{a},
 			x{x},
@@ -55,7 +55,7 @@ struct RicohCPU
 			tmp1{0},
 			rDma{0}
 		{}
-		
+
 		long long time;
 		Word pc;
 		byte a, x, y, s;
@@ -76,12 +76,11 @@ struct RicohCPU
 		union
 		{
 			byte bits;
-			Bitfield<0, 1> nonMaskable;
-			Bitfield<1, 1> reset;
-			Bitfield<2, 1> interrupt;
-			Bitfield<3, 1> breakInsruction;
-			Bitfield<4, 1> dmaStart;
-			Bitfield<5, 1> dmaCycle;
+			Bitfield<0, 1> nmi;
+			Bitfield<1, 1> rst;
+			Bitfield<2, 1> irq;
+			Bitfield<3, 1> dmaStart;
+			Bitfield<4, 1> dmaCycle;
 		}
 		mode;
 
@@ -102,8 +101,14 @@ struct RicohCPU
 	template <typename _Host>
 	bool step (_Host&& tick_, std::size_t count_ = 1u);
 
-	auto&& state () { return q; }
-	auto&& state () const { return q; }
+	auto&& state ()
+	{
+		return q;
+	}
+	auto&& state () const
+	{
+		return q;
+	}
 
 	void setSignal (byte bits);
 	void clrSignal (byte bits);
@@ -112,14 +117,24 @@ struct RicohCPU
 	void reset ();
 
 	RicohCPU (State state);
-	RicohCPU ():RicohCPU{State{}} {};
+	RicohCPU ():RicohCPU{State{}}
+	{};
 
-	bool inDmaMode() const
+	bool inDmaMode () const
 	{
 		return q.mode.dmaCycle || q.mode.dmaStart;
 	}
 private:
 	State q;
+
+	static inline const constexpr word vectors [] = 
+	{	
+		InterruptVec,
+		InterruptVec,
+		NonMaskableVec,
+		ResetVec,
+	};
+
 };
 
 #include "RicohCpuImpl.hpp"

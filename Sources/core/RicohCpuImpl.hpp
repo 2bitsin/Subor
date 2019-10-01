@@ -32,83 +32,61 @@ inline qword RicohCPU::runUntil (_Host&& m, i64 ticks_)
 	return q.time;
 }
 
+
 template <typename _Host>
 inline bool RicohCPU::step (_Host&& m, std::size_t s)
 {
+
 	for (auto i = 0u; i < s; ++i)
 	{
-		byte next = 0u;
+		word next = 0u;
 		bool cross = false;
-		bool isBreak = false;
-	_brk:
-		if (q.mode.bits > 0u)
-		{
-			if (q.mode.nonMaskable)
-			{
-				q.addr.w = NonMaskableVec;
-				q.mode.nonMaskable = 0;
-			}
-			else if (q.mode.reset)
-			{
-				q.addr.w = ResetVec;
-				q.mode.reset = 0;
-			}
-			else if (q.mode.interrupt)
-			{
-				if (q.p.i)
-					goto _irqskip;
-				q.p.i = 1u;
-				q.addr.w = InterruptVec;
-			}
-			else if (q.mode.breakInsruction)
-			{
-				q.addr.w = InterruptVec;
-				q.mode.breakInsruction = 0;
-				isBreak = true;
-			}
-			else if (q.mode.dmaStart)
-			{
-				tick<kDummyPeek> (m, q.rDma.w, next);
-				if (q.time & 1u)
-					tick<kDummyPeek> (m, q.rDma.w, next);
-				q.rDma.l = 0x0u;
-				q.mode.dmaStart = 0;
-				q.mode.dmaCycle = 1;
-				continue;
-			}
-			else if (q.mode.dmaCycle)
-			{
-				tick<kPeek> (m, q.rDma.w, next);
-				tick<kPoke> (m, 0x2004u, next);
-				if (!++q.rDma.l)
-					q.mode.dmaCycle = 0;
-				continue;
-			}
-			else
-			{
-				assert (q.mode.bits == 0u);
-			}
 
+		if (q.mode.dmaStart)
+		{
+			tick<kDummyPeek> (m, q.rDma.w, next);
+			if (q.time & 1u)
+				tick<kDummyPeek> (m, q.rDma.w, next);
+			q.rDma.l = 0x0u;
+			q.mode.dmaStart = 0;
+			q.mode.dmaCycle = 1;
+			continue;
+		}
+		else if (q.mode.dmaCycle)
+		{
+			tick<kPeek> (m, q.rDma.w, next);
+			tick<kPoke> (m, 0x2004u, next);
+			if (!++q.rDma.l)
+				q.mode.dmaCycle = 0;
+			continue;
+		}
+		else if (std::exchange(q.mode.nmi, 0u))
+			next = 0x200u;
+		else if (std::exchange(q.mode.rst, 0u))
+			next = 0x300u;
+		else if (q.mode.irq && !q.p.i)
+			next = 0x100u;
+		else
+			tick<kPeek> (m, q.pc.w++, next);
+
+		switch (next)
+		{
+		case 0x100:// IRQ			
+		case 0x200:// NMI			
+		case 0x300:// RST
+		case 0x000:// BRK
+			q.p.b = (next == 0x000u);
+			q.p.i = (next == 0x100u);
+			q.addr.w = vectors [next >> 8u];
 			tick<kDummyPeek> (m, q.pc.w, next);
 			tick<kDummyPeek> (m, q.pc.w, next);
 			tick<kPoke> (m, 0x100 + q.s--, q.pc.h);
 			tick<kPoke> (m, 0x100 + q.s--, q.pc.l);
 			tick<kPoke> (m, 0x100 + q.s--, q.p.bits);
-			q.p.b = isBreak;
 			tick<kPeek> (m, q.addr.w, q.pc.l);
 			tick<kPeek> (m, q.addr.w + 1u, q.pc.h);
-			continue;
-		}
-	_irqskip:
-		tick<kPeek> (m, q.pc.w++, next);
-		switch (next)
-		{
-			// BRK
-		case 0x00:
-			q.mode.breakInsruction = 1;
-			goto _brk;
-
-			// Implied
+			break;
+				// Implied
 		case 0x40:
 		case 0x60:
 		case 0x08:
@@ -420,7 +398,12 @@ inline bool RicohCPU::step (_Host&& m, std::size_t s)
 		}
 
 		switch (next)
-		{
+		{			
+		case 0x100:// IRQ			
+		case 0x200:// NMI			
+		case 0x300:// RST			
+		case 0x000:// BRK
+			break;
 			// JMP
 		case 0x4C:
 		case 0x6C:
@@ -1178,27 +1161,27 @@ void RicohCPU::reset ()
 		setSignal (ResetBit);
 
 	if constexpr (_Type == kHardReset)
-		new (&q) State{ };
+		new (&q) State{};
 }
 
-inline void RicohCPU::setSignal(byte bits)
+inline void RicohCPU::setSignal (byte bits)
 {
 	if (bits & ResetBit)
-		q.mode.reset = 1u;
+		q.mode.rst = 1u;
 	if (bits & NonMaskableBit)
-		q.mode.nonMaskable = 1u;
+		q.mode.nmi = 1u;
 	if (bits & InterruptBit)
-		q.mode.interrupt = 1u;
+		q.mode.irq = 1u;
 }
 
 inline void RicohCPU::clrSignal (byte bits)
 {
 	if (bits & ResetBit)
-		q.mode.reset = 0u;
+		q.mode.rst = 0u;
 	if (bits & NonMaskableBit)
-		q.mode.nonMaskable = 0u;
+		q.mode.nmi = 0u;
 	if (bits & InterruptBit)
-		q.mode.interrupt = 0u;
+		q.mode.irq = 0u;
 }
 
 inline RicohCPU::RicohCPU (State state)
