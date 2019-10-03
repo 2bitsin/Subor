@@ -25,15 +25,6 @@ inline auto RicohCPU::tick (_Host&& m, word addr, _Value&& data)
 }
 
 template <typename _Host>
-inline qword RicohCPU::runUntil (_Host&& m, i64 ticks_)
-{
-	while (q.time < ticks_)
-		step (m);
-	return q.time;
-}
-
-
-template <typename _Host>
 inline bool RicohCPU::step (_Host&& m, std::size_t s)
 {
 
@@ -73,20 +64,10 @@ inline bool RicohCPU::step (_Host&& m, std::size_t s)
 
 		switch (next)
 		{
+		case 0x000:// BRK
 		case 0x100:// IRQ			
 		case 0x200:// NMI			
 		case 0x300:// RST
-		case 0x000:// BRK
-			q.p.b = (next == 0x000u);
-			q.p.i = (next == 0x100u);
-			q.addr.w = vectors [next >> 8u];
-			tick<kDummyPeek> (m, q.pc.w, next);
-			tick<kDummyPeek> (m, q.pc.w, next);
-			tick<kPoke> (m, 0x100 + q.s--, q.pc.h);
-			tick<kPoke> (m, 0x100 + q.s--, q.pc.l);
-			tick<kPoke> (m, 0x100 + q.s--, q.p.bits);
-			tick<kPeek> (m, q.addr.w, q.pc.l);
-			tick<kPeek> (m, q.addr.w + 1u, q.pc.h);
 			break;
 				// Implied
 		case 0x40:
@@ -405,6 +386,16 @@ inline bool RicohCPU::step (_Host&& m, std::size_t s)
 		case 0x200:// NMI			
 		case 0x300:// RST			
 		case 0x000:// BRK
+			q.p.b = (next == 0x000u);
+			q.p.i = (next == 0x100u);
+			q.addr.w = vectors [next >> 8u];
+			tick<kDummyPeek> (m, q.pc.w, next);
+			tick<kDummyPeek> (m, q.pc.w, next);
+			tick<kPoke> (m, 0x100 + q.s--, q.pc.h);
+			tick<kPoke> (m, 0x100 + q.s--, q.pc.l);
+			tick<kPoke> (m, 0x100 + q.s--, q.p.bits);
+			tick<kPeek> (m, q.addr.w, q.pc.l);
+			tick<kPeek> (m, q.addr.w + 1u, q.pc.h);
 			break;
 			// JMP
 		case 0x4C:
@@ -1187,5 +1178,5 @@ inline void RicohCPU::clrSignal (byte bits)
 }
 
 inline RicohCPU::RicohCPU (State state)
-	: q (std::move (state))
+: q (std::move (state))
 {}

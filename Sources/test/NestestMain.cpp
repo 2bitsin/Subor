@@ -10,12 +10,12 @@ template <typename Q, typename U>
 static inline void AssertState (Q&& statelog, U&& state)
 {
 	bool isok;
-	isok = (statelog.regs.a	  == state.a)
+	isok=(statelog.regs.a		== state.a)
 		&& (statelog.regs.x	  == state.x)
 		&& (statelog.regs.y   == state.y)
 		&& (statelog.regs.p	  == state.p.bits)
 		&& (statelog.regs.sp  == state.s)
-		&& (statelog.addr	  == state.pc.w)
+		&& (statelog.addr			== state.pc.w)
 		&& (statelog.cpuclock == state.time)
 	;
 	if (isok != true)

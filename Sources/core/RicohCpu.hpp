@@ -11,7 +11,7 @@
 #include <functional>
 
 struct RicohCPU
-: public CoreConfig
+	: public CoreConfig
 {
 	static constexpr byte NonMaskableBit = 0x01u;
 	static constexpr byte ResetBit = 0x02u;
@@ -34,7 +34,7 @@ struct RicohCPU
 	struct State
 	{
 		constexpr State (
-			long long time = 0,
+			i64 time = 0,
 			word pc = 0xc000,
 			byte a = 0,
 			byte x = 0,
@@ -42,7 +42,7 @@ struct RicohCPU
 			byte s = 0,
 			byte p = 0x24u,
 			byte mode = 0x2u)
-			: time{time},
+		: time{time},
 			pc{pc},
 			a{a},
 			x{x},
@@ -96,9 +96,6 @@ struct RicohCPU
 	template <BusOperation _Operation, typename _Host, typename _Value>
 	auto tick (_Host&& master, word addr, _Value&& data);
 
-	template<typename _Host>
-	qword runUntil (_Host&& master, i64 ticks_);
-
 	template <typename _Host>
 	bool step (_Host&& tick_, std::size_t count_ = 1u);
 
@@ -130,8 +127,8 @@ struct RicohCPU
 private:
 	State q;
 
-	static inline const constexpr word vectors [] = 
-	{	
+	static inline const constexpr word vectors [] =
+	{
 		InterruptVec,
 		InterruptVec,
 		NonMaskableVec,
