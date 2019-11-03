@@ -11,7 +11,7 @@
 #include <functional>
 
 struct RicohCPU
-	: public CoreConfig
+: public CoreConfig
 {
 	static constexpr byte NonMaskableBit = 0x01u;
 	static constexpr byte ResetBit = 0x02u;
@@ -82,6 +82,7 @@ struct RicohCPU
 			Bitfield<3, 1> stall;
 			Bitfield<4, 1> dmaStart;
 			Bitfield<5, 1> dmaCycle;
+			Bitfield<6, 1> wait;
 		}
 		mode;
 

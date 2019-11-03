@@ -5,6 +5,7 @@
 template <BusOperation _Operation, typename _Host, typename _Value>
 inline auto RicohCPU::tick (_Host&& m, word addr, _Value&& data)
 {
+
 	byte discard = 0;
 	if constexpr (_Operation == kDummyPeek)
 		return tick<kPeek> (m, addr, discard);
@@ -32,8 +33,8 @@ inline bool RicohCPU::step (_Host&& m, std::size_t s)
 	{
 		word next = 0u;
 		bool cross = false;
-
-		if (q.mode.stall)
+	
+		if (q.mode.stall)		
 			continue;
 		else if (q.mode.dmaStart)
 		{
@@ -60,14 +61,18 @@ inline bool RicohCPU::step (_Host&& m, std::size_t s)
 		else if (q.mode.irq && !q.p.i)
 			next = 0x100u;
 		else
+		{
+			if (q.mode.wait)
+				continue;
 			tick<kPeek> (m, q.pc.w++, next);
+		}
 
 		switch (next)
 		{
 		case 0x000:// BRK
 		case 0x100:// IRQ			
 		case 0x200:// NMI			
-		case 0x300:// RST
+		case 0x300:// RST		
 			break;
 				// Implied
 		case 0x40:
@@ -101,6 +106,7 @@ inline bool RicohCPU::step (_Host&& m, std::size_t s)
 		case 0xAA:
 		case 0xBA:
 		case 0xCA:
+		case 0xCB:
 		case 0xDA:
 		case 0xEA:
 		case 0xFA:
@@ -288,6 +294,7 @@ inline bool RicohCPU::step (_Host&& m, std::size_t s)
 		case 0x7B:
 		case 0x99:
 		case 0xB9:
+		case 0xBB:
 		case 0xBE:
 		case 0xBF:
 		case 0xD9:
@@ -1108,6 +1115,18 @@ inline bool RicohCPU::step (_Host&& m, std::size_t s)
 			q.a = q.tmp1.l;
 			break;
 
+		case 0xBB:
+			if (cross)
+				tick<kDummyPeek>(m, q.addr.w, q.tmp0.l);
+			q.tmp0.l &= q.s;
+			q.a = q.tmp0.l;
+			q.x = q.tmp0.l;
+			q.s = q.tmp0.l;
+			q.p.z = !q.tmp0.l;
+			q.p.n = !!(q.tmp0.l & 0x80);
+			tick<kDummyPeek>(m, q.addr.w, q.tmp0.l);						
+			break;
+
 			// NOP
 		case 0x1C:
 		case 0x3C:
@@ -1136,6 +1155,10 @@ inline bool RicohCPU::step (_Host&& m, std::size_t s)
 		case 0xDA:
 		case 0xEA:
 		case 0xFA:
+			break;
+
+		case 0xCB:
+			q.mode.wait = 1;
 			break;
 
 		default:

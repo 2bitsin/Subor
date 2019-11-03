@@ -8,114 +8,122 @@ struct MapperMMC1
 {
 	MapperMMC1 (const ProgramROM& iNes);
 
-	void write_control (const byte reg)
-	{
-		const auto data = _load.value ();
-		_load.value (0);
-		_bits = 0u;
-		switch (reg)
-		{
-		case 0:
-			{
-				const auto [m, p, c] = bits::unpack_as_tuple<2, 2, 1> (data);
-				set_mirroring (m);
-				_chrMode = c;
-				_prgMode = p;
-				break;
-			}
-		case 1:
-			if (!_chrMode)
-			{
-				_chrBank0 = (data & 0b11110);
-				_chrBank1 = (data & 0b11110) + 1u;
-			}
-			else
-				_chrBank0 = data;
-			break;
-		case 2:
-			if (_chrMode)
-				_chrBank1 = data;
-			break;
-		case 3:
-			{
-				const auto [bank, ramd] = bits::unpack_as_tuple<4, 1>(data);
-				if (_prgMode & 0b10)
-				{
-					if (_prgMode & 1u)
-					{
-						_prgBank0 = bank;
-						_prgBank1 = _prgCount - 1u;
-					}
-					else
-					{
-						_prgBank0 = 0;
-						_prgBank1 = bank;
-					}
-				}
-				else
-				{
-					_prgBank0 = (bank & 0b1110);
-					_prgBank1 = (bank & 0b1110) + 1u;
-				}
-				_ramDisable = !!ramd;
-				break;
-			}
-		}
-	}
-
-	void set_mirroring (byte m)
-	{
-		switch (m)
-		{
-		case 0u: _mirroring = kSingleLow; break;
-		case 1u: _mirroring = kSingleHigh; break;
-		case 2u: _mirroring = kVertical; break;
-		case 3u: _mirroring = kHorizontal; break;
-		}
-	}
+	void write_control (byte reg);
+	void set_mirroring (byte m);
 
 	template <BusOperation _Operation, typename _Host, typename _Value>
 	auto tick (_Host&& host, word addr, _Value&& data)
 	{
 		if constexpr (_Operation == kPoke)
 		{
-			const auto [reset_bit, _, data_bit] = bits::unpack_as_tuple<1, 6, 1> (data);
-			const auto reg = bits::extract<2, 13> (addr);
-			if (reset_bit)
-				write_control (reg);
+			if (addr < 0x6000u)
+			{
+			}
+			else if (addr < 0x8000u)
+			{
+				if (!_ramDisable)
+				{
+					addr -= 0x6000u;
+					_ramBits [_ramBank][addr] = byte (data);
+				}
+			}
 			else
 			{
-				_load.left (data_bit);
-				if (++_bits >= 5u)
+				const auto [reset_bit, _, data_bit] = bits::unpack_as_tuple<1, 6, 1> (data);
+				const auto reg = bits::extract<2, 13> (addr);
+				if (reset_bit)
 					write_control (reg);
+				else
+				{
+					_load.left (data_bit);
+					if (++_bits >= 5u)
+						write_control (reg);
+				}
 			}
 		}
 
 		if constexpr (_Operation == kPeek)
 		{
+			if (addr < 0x6000u)
+			{
+			}
+			else if (addr < 0x8000u)
+			{
+				if (!_ramDisable)
+				{
+					addr -= 0x6000u;
+					data = _ramBits [_ramBank][addr];
+				}
+			}
+			else if (addr < 0xC000u)
+			{
+				addr -= 0x8000u;
+				data = _prgBits [_prgBank0][addr];
+			}
+			else
+			{
+				addr -= 0xC000u;
+				data = _prgBits [_prgBank1][addr];
+			}
 		}
 	}
 
 	template <BusOperation _Operation, typename _Host, typename _Value>
 	auto ppuTick (_Host&&, word addr, _Value&& data)
-	{}
+	{
+		if constexpr (_Operation == kPeek)
+		{
+			if (addr < 0x1000u)
+			{
+				data = _chrBits [_chrBank0][addr];
+			}
+			else if (addr < 0x2000u)
+			{
+				addr -= 0x1000u;
+				data = _chrBits [_chrBank1][addr];
+			}
+		}
+	}
 
 	word ppuMirror (word addr) const;
 
 	template <ResetType _Type>
 	void reset ()
-	{}
+	{
+		_prgBank0 = 0;
+		_prgBank1 = 0;
+		_chrBank0 = 0;
+		_chrBank1 = 0;
+		_prgMode = 0;
+		_chrMode = 0;
+		_ramDisable = false;
+		_ramBank = 0;
+		_load.bits = 0;
+		_bits = 0;
+
+		if (_Type == kHardReset)
+		{
+			for (auto&& bank : _ramBits)
+				for (auto&& cell : bank)
+					cell = 0u;
+		}
+	}
 
 private:
 	Mirroring _mirroring{kFourScreen};
 	byte _chrBank0{0};
 	byte _chrBank1{0};
+
 	byte _prgBank0{0};
 	byte _prgBank1{0};
+
 	byte _prgCount{0};
+
 	byte _prgMode{0};
 	byte _chrMode{0};
+
 	bool _ramDisable{false};
+	byte _ramBank = 0;
 
 	Bitarray<1, 5> _load{0};
 	byte _bits{0};

@@ -118,6 +118,25 @@
         "tests/nestest"
       ],
       "env": "DEBUG_DATA_PATH=${projectDir}\\Data\\"
+    },
+    {
+      "type": "default",
+      "project": "CMakeLists.txt",
+      "name": "launch with TLZ p",
+      "args": [
+        "tlz p"
+      ],
+      "env": "DEBUG_DATA_PATH=${projectDir}\\Data\\"
+    },
+    {
+      "type": "default",
+      "project": "CMakeLists.txt",
+      "name": "launch with TLZ r",
+      "args": [
+        "tlz r"
+      ],
+      "env": "DEBUG_DATA_PATH=${projectDir}\\Data\\"
     }
+
   ]
 }

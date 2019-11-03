@@ -155,6 +155,7 @@ int main (int argc,
 	//return nestest::NestestMain();
 
 	std::map<std::string, std::string> env;
+	std::vector<std::string> args{argv, argv+argc};
 	parse_env(envp, env);
 	auto DEBUG_DataPath = "./Data"s;
 	if (env.count("DEBUG_DATA_PATH"s))

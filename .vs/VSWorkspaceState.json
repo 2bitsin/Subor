@@ -2,15 +2,8 @@
   "ExpandedNodes": [
     "",
     "\\out",
-    "\\Sources",
-    "\\Sources\\core",
-    "\\Sources\\fileio",
-    "\\Sources\\input",
-    "\\Sources\\mapper",
-    "\\Sources\\test",
-    "\\Sources\\utils",
-    "\\Sources\\video"
+    "\\Sources"
   ],
-  "SelectedNode": "\\Sources\\test\\NestestMain.cpp",
+  "SelectedNode": "\\CMakeLists.txt",
   "PreviewInSolutionExplorer": false
 }
