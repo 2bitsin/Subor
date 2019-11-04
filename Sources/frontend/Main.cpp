@@ -4,6 +4,7 @@
 #include "test/Nestest.hpp"
 #include "utils/Bitfield.hpp"
 #include "audio/RicohApu.hpp"
+#include "Window.hpp"
 
 #include <cassert>
 #include <cmath>
@@ -15,14 +16,6 @@
 #include <unordered_map>
 #include <map>
 
-#define SDL_MAIN_HANDLED
-#if __has_include(<SDL.h>)
-	#include <SDL.h>
-#elif __has_include(<SDL2/SDL.h>)
-	#include <SDL2/SDL.h>
-#else
-	#error SDL2 wasn't found in the include path
-#endif
 
 #if __has_include("Config.hpp")
 	#include "Config.hpp"
@@ -150,6 +143,11 @@ int main (int argc,
 	const ccptr_t<char> argv, 
 	const ccptr_t<char> envp)
 {
+
+	SDL_Init (SDL_INIT_EVERYTHING);
+	std::atexit (SDL_Quit);
+
+
 	using namespace std::chrono;
 	using namespace std::string_literals;
 	//return nestest::NestestMain();
@@ -185,15 +183,11 @@ int main (int argc,
 	want.callback = nullptr;
 	want.userdata = nullptr;
 
-	SDL_Init (SDL_INIT_EVERYTHING);
-	std::atexit (SDL_Quit);
-
-
 	const auto q = SDL_WINDOWPOS_CENTERED;
-	auto window = SDL_CreateWindow (nullptr, q, q, 3u*console->width (), 3u*console->height (), 0u);
-	auto buffer = SDL_GetWindowSurface (window);
+	auto window = Window(args);
 	auto screen = SDL_CreateRGBSurfaceWithFormat (0u, console->width (), console->height (), 0u, SDL_PIXELFORMAT_ARGB8888);
 	auto audiod = SDL_OpenAudioDevice(nullptr, 0, &want, &have, 0);
+	auto audiob = AudioBuffer<float>{ CoreConfig::ctSamplesPerFrame };
 	if (!audiod)
 		std::printf("Failed to open audio device, sound disabled!\n");
 	SDL_PauseAudioDevice(audiod, 0);
@@ -236,28 +230,21 @@ int main (int argc,
 
 		input.next (*console);
 		SDL_LockSurface (screen);
-		console->frame 
-		(	[screen] (auto x, auto y, auto c) {
-				auto dst = (dword*)screen->pixels;
-				assert (int(x) < screen->w && int(y) < screen->h && x >= 0 && y >= 0);
-				dst[(screen->pitch >> 2)*y + x] = c;
-			}, 
-			[audiod] (auto&& buff) {
-				auto len = (Uint32)(buff.size() * sizeof(buff[0]));
-				SDL_QueueAudio(audiod, (std::uint8_t*)buff.data(), len);
-			});
+		console->frame (*screen, audiob);
 		SDL_UnlockSurface (screen);
-		SDL_BlitScaled (screen, nullptr, buffer, nullptr);
-		SDL_UpdateWindowSurface (window);
-
-		SDL_Event event;
+		SDL_BlitScaled (screen, nullptr, SDL_GetWindowSurface (window.handle()), nullptr);
+		SDL_UpdateWindowSurface (window.handle());
+		SDL_QueueAudio(audiod, (std::uint8_t*)audiob.data(), (Uint32)(audiob.size() * sizeof(audiob[0])));
+		audiob.clear();
+		SDL_Event event {};
 		auto t1 = high_resolution_clock::now ();
-		do
+
+		while (high_resolution_clock::now () < tt 
+			&& event.type != SDL_QUIT)
 		{
-			if (SDL_PollEvent (&event))
-				continue;
-		} while (high_resolution_clock::now () < tt 
-					&& event.type != SDL_QUIT);
+			SDL_PollEvent (&event);
+		}
+
 		if (event.type == SDL_QUIT)
 			break;
 		tt += dt;
@@ -267,8 +254,9 @@ int main (int argc,
 		SDL_GameControllerClose (xctrl);
 	SDL_CloseAudioDevice(audiod);
 	SDL_FreeSurface (screen);
-	SDL_DestroyWindow (window);
 	
+	window.close();
+
 	return 0;
 }
 

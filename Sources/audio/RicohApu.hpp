@@ -21,7 +21,7 @@
 #include <tuple>
 
 struct RicohAPU
-	: public CoreConfig
+: public CoreConfig
 {
 	RicohAPU ()
 	{}
@@ -43,7 +43,7 @@ struct RicohAPU
 		if (_clock_seq.tick ())
 			_seq.step (host, _sq0ch, _sq1ch, _trich, _noich, _dmcch);
 
-		host.irq (_seq.irq () || _dmcch.irq());
+		host.irq (_seq.irq () || _dmcch.irq ());
 
 		if (addr >= 0x4000u && addr < 0x4200u)
 		{
@@ -76,12 +76,12 @@ struct RicohAPU
 				}
 				if constexpr (_Operation == kPeek)
 				{
-					byte sq0e = !!_sq0ch.status();
-					byte sq1e = !!_sq1ch.status();
-					byte trie = !!_trich.status();
-					byte noie = !!_noich.status();
-					byte dmce = !!_dmcch.status();
-					data = bits::pack<1,1,1,1,1,1,1,1>(sq0e, sq1e, trie, noie, dmce, 0, _seq.irq_rr(), _dmcch.irq());
+					byte sq0e = !!_sq0ch.status ();
+					byte sq1e = !!_sq1ch.status ();
+					byte trie = !!_trich.status ();
+					byte noie = !!_noich.status ();
+					byte dmce = !!_dmcch.status ();
+					data = bits::pack<1, 1, 1, 1, 1, 1, 1, 1> (sq0e, sq1e, trie, noie, dmce, 0, _seq.irq_rr (), _dmcch.irq ());
 				}
 				break;
 			case 0x16:
@@ -92,10 +92,10 @@ struct RicohAPU
 				break;
 			case 0x17:
 				if constexpr (_Operation == kPoke)
-				{	
-					auto [_, i, m] = bits::unpack_as_tuple<6,1,1>(latch);
-					_seq.mode5(m);
-					_seq.irqdi(i);
+				{
+					auto [_, i, m] = bits::unpack_as_tuple<6, 1, 1> (latch);
+					_seq.mode5 (m);
+					_seq.irqdi (i);
 				}
 				if constexpr (_Operation == kPeek)
 					_input.read<1> (data);
@@ -109,10 +109,14 @@ struct RicohAPU
 	void reset ()
 	{}
 
-	template <typename _Sink>
-	void grabFrame (_Sink&& sink)
+	auto&& mixer ()
 	{
-		_mix.grab (sink);
+		return _mix;
+	}
+
+	auto&& mixer ()const
+	{
+		return _mix;
 	}
 
 	template <typename... _Args>

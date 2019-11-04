@@ -3,9 +3,9 @@
     "",
     "\\out",
     "\\Sources",
-    "\\Sources\\input",
-    "\\Sources\\mapper"
+    "\\Sources\\backend",
+    "\\Sources\\frontend"
   ],
-  "SelectedNode": "\\CMakeLists.txt",
+  "SelectedNode": "\\Sources\\backend\\Backend.hpp",
   "PreviewInSolutionExplorer": false
 }
