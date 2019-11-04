@@ -2,7 +2,9 @@
   "ExpandedNodes": [
     "",
     "\\out",
-    "\\Sources"
+    "\\Sources",
+    "\\Sources\\input",
+    "\\Sources\\mapper"
   ],
   "SelectedNode": "\\CMakeLists.txt",
   "PreviewInSolutionExplorer": false
