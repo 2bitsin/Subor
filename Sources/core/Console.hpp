@@ -14,6 +14,7 @@ struct Console
 {
 	using Memory = StaticMemory<kReadWriteMemory, 0_K, 8_K, 2_K>;
 	using VideoMemory = StaticMemory<kReadWriteMemory, 8_K, 12_K>;
+	using AudioFrame = AudioBuffer<float>;
 
 	static constexpr auto _CPU_Cps = 1789773;
 	static constexpr auto _PPU_Cps = 3 * _CPU_Cps;
@@ -25,6 +26,8 @@ struct Console
 	Memory mem;
 	VideoMemory vmm;
 	Mapper mmc;
+
+	VideoFrame sVideoFrame;	
 
 	Console ()
 	: cpu{}
@@ -60,10 +63,16 @@ struct Console
 	template <typename _VideoSink, typename _AudioSink>
 	void frame (_VideoSink&& video, _AudioSink&& audio)
 	{
+		sVideoFrame.assign(video);
+		apu.mixer().assign(audio);
 		while (!ppu.ready ())
-			cpu.step (*this, 1u);
-		ppu.grabFrame (std::forward<_VideoSink> (video));
-		apu.grabFrame (std::forward<_AudioSink> (audio));
+			cpu.step (*this, 1u);		
+		ppu.clearReady();		
+	}
+
+	auto&& currVideoFrame()
+	{
+		return sVideoFrame;
 	}
 
 	template <typename _Sink>

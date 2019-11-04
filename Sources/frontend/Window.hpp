@@ -4,7 +4,7 @@
 #include <string>
 
 #include <core/CoreConfig.hpp>
-#include "SDL2.hpp"
+#include <utils/SDL2.hpp>
 
 struct Window: CoreConfig
 {

@@ -1,12 +1,13 @@
 #pragma once
 
-#include "utils/Types.hpp"
-#include "audio/HighPassFilter.hpp"
-#include "audio/LowPassFilter.hpp"
 #include "core/CoreConfig.hpp"
+#include "utils/Types.hpp"
+#include "AudioBuffer.hpp"
+#include "HighPassFilter.hpp"
+#include "LowPassFilter.hpp"
 
 struct Mixer
-: 	public CoreConfig
+: public CoreConfig
 {
 	template
 	<	typename _SQ0,
@@ -36,22 +37,28 @@ struct Mixer
 	template <typename _Host,typename... _Channel>
 	void step (_Host&& host, _Channel&&... ch)
 	{
-		auto s = mix((ch.value())...);
-		s = _hpf0.apply(s);
-		s = _hpf1.apply(s);
-		s = _lpf0.apply(s);
-		_buffer.emplace_back (s);
+		if (_buffer != nullptr)
+		{
+			auto s = mix((ch.value())...);
+			s = _hpf0.apply(s);
+			s = _hpf1.apply(s);
+			s = _lpf0.apply(s);
+			_buffer->emplace_back (s);
+		}
 	}
 
-	template <typename _Sink>
-	void grab (_Sink&& sink)
+	void assign(AudioBuffer<float>& buff)
 	{
-		sink (_buffer);
-		_buffer.clear ();
+		_buffer = &buff;
+	}
+
+	void unassign()
+	{		
+		_buffer = nullptr;
 	}
 
 private:
-	AudioBuffer<float> _buffer{ctSamplesPerFrame};
+	AudioBuffer<float>* _buffer{nullptr};
 	HighPassFilter<float, 1> _hpf0{90, ctSamplingRate};
 	HighPassFilter<float, 1> _hpf1{440, ctSamplingRate};
 	LowPassFilter<float, 2> _lpf0{14000, ctSamplingRate, 1.2f};

@@ -6,8 +6,8 @@
 #include "utils/Types.hpp"
 #include "utils/Bitfield.hpp"
 #include "utils/Bitarray.hpp"
-#include "utils/Image.hpp"
 #include "utils/Literals.hpp"
+#include "video/VideoFrame.hpp"
 #include "video/OAMemory.hpp"
 #include "video/Palette.hpp"
 
@@ -78,7 +78,6 @@ struct RicohPPU
 
 #pragma pack(pop)
 
-	Image<dword, ctHorizontalPixels, ctVerticalPixels> sPixels [2u];
 	Palette sPalette{ { 0 } };
 	qword sFrame = 0u;
 	qword sClock = 0u;
@@ -115,16 +114,7 @@ struct RicohPPU
 	constexpr auto width () const { return ctHorizontalPixels; }
 	constexpr auto height () const { return ctVerticalPixels; }
 	bool ready () const { return sFrameReady; }
-
-	template <typename _VideoSink>
-	void grabFrame (_VideoSink&& write)
-	{
-		auto& src = sPixels [(sFrame + 1u)&1u];
-		for (auto y = 0u; y < ctVerticalPixels; ++y)
-			for (auto x = 0u; x < ctHorizontalPixels; ++x)
-				write (x, y, src.value (x, y));
-		sFrameReady = 0u;
-	}
+	bool clearReady () { return std::exchange(sFrameReady, false); }
 
 	RicohPPU ()
 	{
@@ -389,7 +379,8 @@ struct RicohPPU
 		}
 	}
 
-	void finalComposite ()
+	template <typename _VideoFrame>
+	void finalComposite (_VideoFrame&& frame)
 	{
 		auto xScreen = sDotcycle - 1u;
 		auto yScreen = sScanline;
@@ -437,7 +428,7 @@ struct RicohPPU
 			if (!spIndex && sSpriteZeroActive [1u] && xScreen < 255u)
 				sStat.spriteZeroHit = 1u;
 		}
-		sPixels [sFrame & 1u].set (xScreen, yScreen, sPalette.rgba (color));
+		frame.set (xScreen, yScreen, sPalette.rgba (color));
 	}
 
 	template<typename _Host>
@@ -546,7 +537,7 @@ struct RicohPPU
 			if (sMask.showBackground || sMask.showSprites)
 			{
 				if (isVisibleScanline && isVisibleDotcycle)
-					finalComposite ();
+					finalComposite (host.currVideoFrame());
 
 				if (isVisibleScanline || isPrerenderScanline)
 				{

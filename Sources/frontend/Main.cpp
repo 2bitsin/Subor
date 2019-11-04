@@ -4,7 +4,7 @@
 #include "test/Nestest.hpp"
 #include "utils/Bitfield.hpp"
 #include "audio/RicohApu.hpp"
-#include "platform/Window.hpp"
+#include "Window.hpp"
 
 #include <cassert>
 #include <cmath>
@@ -187,6 +187,7 @@ int main (int argc,
 	auto window = Window(args);
 	auto screen = SDL_CreateRGBSurfaceWithFormat (0u, console->width (), console->height (), 0u, SDL_PIXELFORMAT_ARGB8888);
 	auto audiod = SDL_OpenAudioDevice(nullptr, 0, &want, &have, 0);
+	auto audiob = AudioBuffer<float>{ CoreConfig::ctSamplesPerFrame };
 	if (!audiod)
 		std::printf("Failed to open audio device, sound disabled!\n");
 	SDL_PauseAudioDevice(audiod, 0);
@@ -229,21 +230,14 @@ int main (int argc,
 
 		input.next (*console);
 		SDL_LockSurface (screen);
-		console->frame 
-		(	[screen] (auto x, auto y, auto c) {
-				auto dst = (dword*)screen->pixels;
-				assert (int(x) < screen->w && int(y) < screen->h && x >= 0 && y >= 0);
-				dst[(screen->pitch >> 2)*y + x] = c;
-			}, 
-			[audiod] (auto&& buff) {
-				auto len = (Uint32)(buff.size() * sizeof(buff[0]));
-				SDL_QueueAudio(audiod, (std::uint8_t*)buff.data(), len);
-			});
+		console->frame (*screen, audiob);
 		SDL_UnlockSurface (screen);
 		SDL_BlitScaled (screen, nullptr, SDL_GetWindowSurface (window.handle()), nullptr);
 		SDL_UpdateWindowSurface (window.handle());
-
-		SDL_Event event;
+		auto len = (Uint32)(audiob.size() * sizeof(audiob[0]));
+		SDL_QueueAudio(audiod, (std::uint8_t*)audiob.data(), len);
+		audiob.clear();
+		SDL_Event event {};
 		auto t1 = high_resolution_clock::now ();
 
 		while (high_resolution_clock::now () < tt 

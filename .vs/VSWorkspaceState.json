@@ -3,8 +3,9 @@
     "",
     "\\out",
     "\\Sources",
-    "\\Sources\\platform"
+    "\\Sources\\backend",
+    "\\Sources\\frontend"
   ],
-  "SelectedNode": "\\Sources\\platform\\Main.cpp",
+  "SelectedNode": "\\Sources\\backend\\Backend.hpp",
   "PreviewInSolutionExplorer": false
 }

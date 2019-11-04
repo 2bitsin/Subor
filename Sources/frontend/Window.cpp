@@ -14,8 +14,8 @@ void Window::open ()
 	if (!_handle)
 	{
 		const auto q = SDL_WINDOWPOS_CENTERED;
-		const auto w = CoreConfig::ctHorizontalPixels;
-		const auto h = CoreConfig::ctVerticalPixels;
+		const auto w = 3u*CoreConfig::ctHorizontalPixels;
+		const auto h = 3u*CoreConfig::ctVerticalPixels;
 		_handle = SDL_CreateWindow ("Subor", q, q, w, h, SDL_WINDOW_RESIZABLE);
 		SDL_SetWindowMinimumSize (_handle, w, h);
 	}
