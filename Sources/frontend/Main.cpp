@@ -234,8 +234,7 @@ int main (int argc,
 		SDL_UnlockSurface (screen);
 		SDL_BlitScaled (screen, nullptr, SDL_GetWindowSurface (window.handle()), nullptr);
 		SDL_UpdateWindowSurface (window.handle());
-		auto len = (Uint32)(audiob.size() * sizeof(audiob[0]));
-		SDL_QueueAudio(audiod, (std::uint8_t*)audiob.data(), len);
+		SDL_QueueAudio(audiod, (std::uint8_t*)audiob.data(), (Uint32)(audiob.size() * sizeof(audiob[0])));
 		audiob.clear();
 		SDL_Event event {};
 		auto t1 = high_resolution_clock::now ();
