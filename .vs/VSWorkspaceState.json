@@ -2,8 +2,9 @@
   "ExpandedNodes": [
     "",
     "\\out",
-    "\\Sources"
+    "\\Sources",
+    "\\Sources\\platform"
   ],
-  "SelectedNode": "\\CMakeLists.txt",
+  "SelectedNode": "\\Sources\\platform\\Main.cpp",
   "PreviewInSolutionExplorer": false
 }
