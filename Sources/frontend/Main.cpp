@@ -152,8 +152,8 @@ int main (int argc,
 	using namespace std::string_literals;
 	//return nestest::NestestMain();
 
-	std::map<std::string, std::string> env;
 	std::vector<std::string> args{argv, argv+argc};
+	std::map<std::string, std::string> env;
 	parse_env(envp, env);
 	auto DEBUG_DataPath = "./Data"s;
 	if (env.count("DEBUG_DATA_PATH"s))
@@ -161,19 +161,21 @@ int main (int argc,
 	if (argc < 2)
 		throw std::runtime_error ("No arguments"s);
 	const auto file_to_load = DEBUG_DataPath + argv [1] + ".nes"s;
+	bool rerecord_mode = argc >= 3 ? argv [2] == "r"s : false;
+	bool playback_mode = argc >= 3 ? argv [2] == "p"s : false;
 
 
+	auto window = Window(args);
+
+/*
 	auto console = std::make_unique<Console> ();
 
 	console->load(file_to_load);
 
-	bool rerecordMode = argc >= 3 ? argv [2] == "r"s : false;
-	bool playbackMode = argc >= 3 ? argv [2] == "p"s : false;
-
 	InputProxy input (
-		rerecordMode
+		rerecord_mode
 		? InputProxy::Recording
-		: (playbackMode
+		: (playback_mode
 			? InputProxy::Playback
 			: InputProxy::Passtrough),
 		DEBUG_DATA_PATH + argv [1] + ".input"s);
@@ -185,11 +187,9 @@ int main (int argc,
 	want.samples	= RicohAPU::ctSamplesPerFrame;
 	want.callback = nullptr;
 	want.userdata = nullptr;
-
-	const auto q = SDL_WINDOWPOS_CENTERED;
-	auto window = Window(args);
-	auto pixelb = PixelBuffer<dword>{ console->width (), console->height () };	
 	auto audiod = SDL_OpenAudioDevice(nullptr, 0, &want, &have, 0);
+
+	auto pixelb = PixelBuffer<dword>{ console->width (), console->height () };	
 	auto audiob = AudioBuffer<float>{ CoreConfig::ctSamplesPerFrame };
 	if (!audiod)
 		std::printf("Failed to open audio device, sound disabled!\n");
@@ -260,7 +260,7 @@ int main (int argc,
 	SDL_CloseAudioDevice(audiod);	
 	
 	window.close();
-
+	*/
 	return 0;
 }
 
