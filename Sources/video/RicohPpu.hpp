@@ -3,11 +3,11 @@
 #pragma once
 
 #include "core/CoreConfig.hpp"
+#include "core/Memory.hpp"
 #include "utils/Types.hpp"
 #include "utils/Bitfield.hpp"
 #include "utils/Bitarray.hpp"
 #include "utils/Literals.hpp"
-#include "video/VideoFrame.hpp"
 #include "video/OAMemory.hpp"
 #include "video/Palette.hpp"
 
@@ -379,8 +379,8 @@ struct RicohPPU
 		}
 	}
 
-	template <typename _VideoFrame>
-	void finalComposite (_VideoFrame&& frame)
+	template <typename _Surface>
+	void finalComposite (_Surface&& runSingleFrame)
 	{
 		auto xScreen = sDotcycle - 1u;
 		auto yScreen = sScanline;
@@ -428,7 +428,7 @@ struct RicohPPU
 			if (!spIndex && sSpriteZeroActive [1u] && xScreen < 255u)
 				sStat.spriteZeroHit = 1u;
 		}
-		frame.set (xScreen, yScreen, sPalette.rgba (color));
+		runSingleFrame.set (xScreen, yScreen, sPalette.rgba (color));
 	}
 
 	template<typename _Host>
@@ -537,7 +537,7 @@ struct RicohPPU
 			if (sMask.showBackground || sMask.showSprites)
 			{
 				if (isVisibleScanline && isVisibleDotcycle)
-					finalComposite (host.currVideoFrame());
+					finalComposite (host.pixelBuffer());
 
 				if (isVisibleScanline || isPrerenderScanline)
 				{

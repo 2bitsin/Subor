@@ -39,4 +39,7 @@ struct AudioBuffer
 		if (_leng_hint > 0ul)
 			this->reserve(_leng_hint);
 	}
+
+	void lock() {}
+	void unlock() {}
 };

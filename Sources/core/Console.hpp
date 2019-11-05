@@ -5,6 +5,7 @@
 #include "core/RicohCpu.hpp"
 #include "core/StaticMemory.hpp"
 #include "video/RicohPPU.hpp"
+#include "video/PixelBuffer.hpp"
 #include "audio/RicohApu.hpp"
 #include "mapper/Mapper.hpp"
 #include "utils/Literals.hpp"
@@ -27,7 +28,8 @@ struct Console
 	VideoMemory vmm;
 	Mapper mmc;
 
-	VideoFrame sVideoFrame;	
+	PixelBuffer<dword>* pixels{nullptr};
+	AudioBuffer<float>* audios{nullptr};
 
 	Console ()
 	: cpu{}
@@ -60,28 +62,46 @@ struct Console
 		mmc.ppuTick<_Operation> (*this, addr, data);
 	}
 
-	template <typename _VideoSink, typename _AudioSink>
-	void frame (_VideoSink&& video, _AudioSink&& audio)
+	void assignPixelBuffer(PixelBuffer<dword>* pbuff)
 	{
-		sVideoFrame.assign(video);
-		apu.mixer().assign(audio);
-		
-		cpu.stepUntil (*this, [ppu = &ppu] (auto&&...) { 
-			return ppu->ready (); 
-		});		
-		ppu.clearReady();		
+		pixels = pbuff;
 	}
 
-	auto&& currVideoFrame()
+	void assignAudioBuffer(AudioBuffer<float>* abuff)
 	{
-		return sVideoFrame;
+		audios = abuff;
 	}
 
-	template <typename _Sink>
-	auto audio (_Sink&& sink)
+	void runSingleFrame ()
 	{
-		return apu.grabFrame (std::forward<_Sink> (sink));
+		assert (pixels != nullptr);
+		assert (audios != nullptr);
+
+		audios->lock();
+		pixels->lock();
+
+		cpu.stepUntil (*this, [this] (auto&&...)
+		{
+			return ppu.ready ();
+		});
+		ppu.clearReady ();
+
+		pixels->unlock();
+		audios->unlock();
 	}
+
+	auto&& pixelBuffer ()
+	{
+		assert (pixels != nullptr);
+		return *pixels;
+	}
+
+	auto&& audioBuffer ()
+	{
+		assert (audios != nullptr);
+		return *audios;	
+	}
+
 
 	word ppuMirror (word addr) const;
 

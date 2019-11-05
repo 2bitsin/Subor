@@ -37,31 +37,15 @@ struct Mixer
 	template <typename _Host,typename... _Channel>
 	void step (_Host&& host, _Channel&&... ch)
 	{
-		if (_buffer != nullptr)
-		{
-			auto s = mix((ch.value())...);
-			s = _hpf0.apply(s);
-			s = _hpf1.apply(s);
-			s = _lpf0.apply(s);
-			_buffer->emplace_back (s);
-		}
-	}
-
-	void assign(AudioBuffer<float>& buff)
-	{
-		_buffer = &buff;
-	}
-
-	void unassign()
-	{		
-		_buffer = nullptr;
+		auto s = mix((ch.value())...);
+		s = _hpf0.apply(s);
+		s = _hpf1.apply(s);
+		s = _lpf0.apply(s);
+		host.audioBuffer().emplace_back (s);
 	}
 
 private:
-	AudioBuffer<float>* _buffer{nullptr};
 	HighPassFilter<float, 1> _hpf0{90, ctSamplingRate};
 	HighPassFilter<float, 1> _hpf1{440, ctSamplingRate};
 	LowPassFilter<float, 2> _lpf0{14000, ctSamplingRate, 1.2f};
-
-
 };

@@ -115,9 +115,9 @@ struct InputProxy
 	{
 		if (empty ())
 			return;
-		auto&& frame = frames [findex];
-		m.input ((byte)frame.port [0].bits, (byte)frame.port [1].bits, byte{ }, byte{ });
-		if (frame.signals.reset)
+		auto&& runSingleFrame = frames [findex];
+		m.input ((byte)runSingleFrame.port [0].bits, (byte)runSingleFrame.port [1].bits, byte{ }, byte{ });
+		if (runSingleFrame.signals.reset)
 			m.template reset<kSoftReset> ();
 		++findex;
 	}
@@ -160,9 +160,12 @@ int main (int argc,
 		DEBUG_DataPath = env["DEBUG_DATA_PATH"s];
 	if (argc < 2)
 		throw std::runtime_error ("No arguments"s);
+	const auto file_to_load = DEBUG_DataPath + argv [1] + ".nes"s;
+
+
 	auto console = std::make_unique<Console> ();
 
-	console->load(DEBUG_DataPath + argv [1] + ".nes"s);
+	console->load(file_to_load);
 
 	bool rerecordMode = argc >= 3 ? argv [2] == "r"s : false;
 	bool playbackMode = argc >= 3 ? argv [2] == "p"s : false;
@@ -185,7 +188,7 @@ int main (int argc,
 
 	const auto q = SDL_WINDOWPOS_CENTERED;
 	auto window = Window(args);
-	auto screen = SDL_CreateRGBSurfaceWithFormat (0u, console->width (), console->height (), 0u, SDL_PIXELFORMAT_ARGB8888);
+	auto pixelb = PixelBuffer<dword>{ console->width (), console->height () };	
 	auto audiod = SDL_OpenAudioDevice(nullptr, 0, &want, &have, 0);
 	auto audiob = AudioBuffer<float>{ CoreConfig::ctSamplesPerFrame };
 	if (!audiod)
@@ -229,10 +232,12 @@ int main (int argc,
 		input.pushFrame (controller);
 
 		input.next (*console);
-		SDL_LockSurface (screen);
-		console->frame (*screen, audiob);
-		SDL_UnlockSurface (screen);
-		SDL_BlitScaled (screen, nullptr, SDL_GetWindowSurface (window.handle()), nullptr);
+
+		console->assignAudioBuffer(&audiob);
+		console->assignPixelBuffer(&pixelb);
+		console->runSingleFrame ();
+
+		SDL_BlitScaled (pixelb.handle(), nullptr, SDL_GetWindowSurface (window.handle()), nullptr);
 		SDL_UpdateWindowSurface (window.handle());
 		SDL_QueueAudio(audiod, (std::uint8_t*)audiob.data(), (Uint32)(audiob.size() * sizeof(audiob[0])));
 		audiob.clear();
@@ -252,8 +257,7 @@ int main (int argc,
 
 	if (xctrl != nullptr)
 		SDL_GameControllerClose (xctrl);
-	SDL_CloseAudioDevice(audiod);
-	SDL_FreeSurface (screen);
+	SDL_CloseAudioDevice(audiod);	
 	
 	window.close();
 
