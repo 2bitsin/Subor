@@ -78,7 +78,7 @@ int nestest::NestestMain ()
 		auto&& cpuState = cpu.state ();
 		AssertState (logState, cpuState);
 		std::printf ("PASS\nNEXT: (%02X) %s ... ", logState.opbytes [0], logState.instruction);
-		cpu.step (test);
+		cpu.stepUntil (test, [i = 0] (auto&&... ) mutable { return i++ > 0; });
 	}
 	
 	return 0;

@@ -1,11 +1,16 @@
 {
   "ExpandedNodes": [
     "",
-    "\\out",
     "\\Sources",
-    "\\Sources\\backend",
-    "\\Sources\\frontend"
+    "\\Sources\\audio",
+    "\\Sources\\core",
+    "\\Sources\\fileio",
+    "\\Sources\\input",
+    "\\Sources\\mapper",
+    "\\Sources\\test",
+    "\\Sources\\utils",
+    "\\Sources\\video"
   ],
-  "SelectedNode": "\\Sources\\backend\\Backend.hpp",
+  "SelectedNode": "\\Sources\\input",
   "PreviewInSolutionExplorer": false
 }

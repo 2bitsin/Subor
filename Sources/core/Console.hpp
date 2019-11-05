@@ -65,8 +65,10 @@ struct Console
 	{
 		sVideoFrame.assign(video);
 		apu.mixer().assign(audio);
-		while (!ppu.ready ())
-			cpu.step (*this, 1u);		
+		
+		cpu.stepUntil (*this, [ppu = &ppu] (auto&&...) { 
+			return ppu->ready (); 
+		});		
 		ppu.clearReady();		
 	}
 

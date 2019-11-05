@@ -25,11 +25,11 @@ inline auto RicohCPU::tick (_Host&& m, word addr, _Value&& data)
 	return	m.template tick<_Operation> (*this, addr, data);
 }
 
-template <typename _Host>
-inline bool RicohCPU::step (_Host&& m, std::size_t s)
+template <typename _Host, typename _ShouldStop>
+inline bool RicohCPU::stepUntil (_Host&& m, _ShouldStop&& s)
 {
 
-	for (auto i = 0u; i < s; ++i)
+	while (!s(*this, m))
 	{
 		word next = 0u;
 		bool cross = false;
