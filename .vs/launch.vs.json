@@ -5,138 +5,24 @@
     {
       "type": "default",
       "project": "CMakeLists.txt",
-      "name": "launch with SMB p",
+      "name": "launch with Super Mario Bros (Playback)",
       "args": [
-        "smb p"
+        "--load",
+        "smb.nes",
+        "--playback"
       ],
-      "env": "DEBUG_DATA_PATH=${projectDir}\\Data\\"
+      "env": "SUBOR_DATA_PATH=${projectDir}/Data/"
     },
     {
       "type": "default",
       "project": "CMakeLists.txt",
-      "name": "launch with IC p",
+      "name": "launch with Super Mario Bros (Recording)",
       "args": [
-        "ic p"
+        "--load",
+        "smb.nes",
+        "--record"
       ],
-      "env": "DEBUG_DATA_PATH=${projectDir}\\Data\\"
-    },
-    {
-      "type": "default",
-      "project": "CMakeLists.txt",
-      "name": "launch with CTRU p",
-      "args": [
-        "ctru p"
-      ],
-      "env": "DEBUG_DATA_PATH=${projectDir}\\Data\\"
-    },
-    {
-      "type": "default",
-      "project": "CMakeLists.txt",
-      "name": "launch with BOS r",
-      "args": [
-        "bos r"
-      ],
-      "env": "DEBUG_DATA_PATH=${projectDir}\\Data\\"
-    },
-    {
-      "type": "default",
-      "project": "CMakeLists.txt",
-      "name": "launch with BOS p",
-      "args": [
-        "bos p"
-      ],
-      "env": "DEBUG_DATA_PATH=${projectDir}\\Data\\"
-    },
-    {
-      "type": "default",
-      "project": "CMakeLists.txt",
-      "name": "launch with TAF r",
-      "args": [
-        "taf r"
-      ],
-      "env": "DEBUG_DATA_PATH=${projectDir}\\Data\\"
-    },
-    {
-      "type": "default",
-      "project": "CMakeLists.txt",
-      "name": "launch with TAF p",
-      "args": [
-        "taf p"
-      ],
-      "env": "DEBUG_DATA_PATH=${projectDir}\\Data\\"
-    },
-    {
-      "type": "default",
-      "project": "CMakeLists.txt",
-      "name": "launch with apu_tests",
-      "args": [
-        "tests/apu_test"
-      ],
-      "env": "DEBUG_DATA_PATH=${projectDir}\\Data\\"
-    },
-    {
-      "type": "default",
-      "project": "CMakeLists.txt",
-      "name": "launch with BM p",
-      "args": [
-        "bm p"
-      ],
-      "env": "DEBUG_DATA_PATH=${projectDir}\\Data\\"
-    },
-    {
-      "type": "default",
-      "project": "CMakeLists.txt",
-      "name": "launch with BF p",
-      "args": [
-        "bf p"
-      ],
-      "env": "DEBUG_DATA_PATH=${projectDir}\\Data\\"
-    },
-    {
-      "type": "default",
-      "project": "CMakeLists.txt",
-      "name": "launch with DK p",
-      "args": [
-        "dk p"
-      ],
-      "env": "DEBUG_DATA_PATH=${projectDir}\\Data\\"
-    },
-    {
-      "type": "default",
-      "project": "CMakeLists.txt",
-      "name": "launch with LR p",
-      "args": [
-        "lr p"
-      ],
-      "env": "DEBUG_DATA_PATH=${projectDir}\\Data\\"
-    },
-    {
-      "type": "default",
-      "project": "CMakeLists.txt",
-      "name": "launch with NESTEST",
-      "args": [
-        "tests/nestest"
-      ],
-      "env": "DEBUG_DATA_PATH=${projectDir}\\Data\\"
-    },
-    {
-      "type": "default",
-      "project": "CMakeLists.txt",
-      "name": "launch with TLZ p",
-      "args": [
-        "tlz p"
-      ],
-      "env": "DEBUG_DATA_PATH=${projectDir}\\Data\\"
-    },
-    {
-      "type": "default",
-      "project": "CMakeLists.txt",
-      "name": "launch with TLZ r",
-      "args": [
-        "tlz r"
-      ],
-      "env": "DEBUG_DATA_PATH=${projectDir}\\Data\\"
+      "env": "SUBOR_DATA_PATH=${projectDir}/Data/"
     }
-
   ]
 }

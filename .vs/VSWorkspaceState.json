@@ -2,15 +2,15 @@
   "ExpandedNodes": [
     "",
     "\\Sources",
-    "\\Sources\\audio",
-    "\\Sources\\core",
+    "\\Sources\\backend",
     "\\Sources\\fileio",
+    "\\Sources\\frontend",
     "\\Sources\\input",
     "\\Sources\\mapper",
     "\\Sources\\test",
     "\\Sources\\utils",
     "\\Sources\\video"
   ],
-  "SelectedNode": "\\Sources\\input",
+  "SelectedNode": "\\Sources\\frontend\\Main.cpp",
   "PreviewInSolutionExplorer": false
 }
