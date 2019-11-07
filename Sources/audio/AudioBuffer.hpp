@@ -40,6 +40,6 @@ struct AudioBuffer
 			this->reserve(_leng_hint);
 	}
 
-	void lock() {}
+	void lock() { clear() ; }
 	void unlock() {}
 };

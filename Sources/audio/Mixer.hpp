@@ -37,15 +37,20 @@ struct Mixer
 	template <typename _Host,typename... _Channel>
 	void step (_Host&& host, _Channel&&... ch)
 	{
-		auto s = mix((ch.value())...);
-		s = _hpf0.apply(s);
-		s = _hpf1.apply(s);
-		s = _lpf0.apply(s);
-		host.audioBuffer().emplace_back (s);
+		_value = mix((ch.value())...);
+		_value = _hpf0.apply(_value);
+		_value = _hpf1.apply(_value);
+		_value = _lpf0.apply(_value);
+	}
+
+	auto value() const 
+	{
+		return _value;
 	}
 
 private:
 	HighPassFilter<float, 1> _hpf0{90, ctSamplingRate};
 	HighPassFilter<float, 1> _hpf1{440, ctSamplingRate};
 	LowPassFilter<float, 2> _lpf0{14000, ctSamplingRate, 1.2f};
+	float _value {0.0f};
 };

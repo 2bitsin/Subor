@@ -2,14 +2,15 @@
 // PVS-Studio Static Code Analyzer for C, C++, C#, and Java: http://www.viva64.com
 #pragma once
 
-#include "core/CoreConfig.hpp"
-#include "core/Memory.hpp"
-#include "utils/Types.hpp"
-#include "utils/Bitfield.hpp"
-#include "utils/Bitarray.hpp"
-#include "utils/Literals.hpp"
-#include "video/OAMemory.hpp"
-#include "video/Palette.hpp"
+#include <core/CoreConfig.hpp>
+#include <core/Memory.hpp>
+#include <utils/Types.hpp>
+#include <utils/Bitfield.hpp>
+#include <utils/Bitarray.hpp>
+#include <utils/Literals.hpp>
+#include <video/OAMemory.hpp>
+#include <video/Palette.hpp>
+#include <video/PixelBuffer.hpp>
 
 #include <cstdio>
 #include <chrono>
@@ -74,9 +75,9 @@ struct RicohPPU
 		Bitfield<0, 2> atrIndex;
 		Bitfield<2, 6> objIndex;
 	};
-
-
 #pragma pack(pop)
+
+	PixelBuffer<dword>* pixel_buffer { nullptr };
 
 	Palette sPalette{ { 0 } };
 	qword sFrame = 0u;
@@ -115,6 +116,16 @@ struct RicohPPU
 	constexpr auto height () const { return ctVerticalPixels; }
 	bool ready () const { return sFrameReady; }
 	bool clearReady () { return std::exchange(sFrameReady, false); }
+
+	void assign(PixelBuffer<dword>& buff)
+	{
+		pixel_buffer = &buff;
+	}
+
+	void unassign()
+	{
+		pixel_buffer = nullptr;
+	}
 
 	RicohPPU ()
 	{
@@ -379,8 +390,7 @@ struct RicohPPU
 		}
 	}
 
-	template <typename _Surface>
-	void finalComposite (_Surface&& runSingleFrame)
+	void finalComposite ()
 	{
 		auto xScreen = sDotcycle - 1u;
 		auto yScreen = sScanline;
@@ -426,9 +436,11 @@ struct RicohPPU
 		{
 			color = spPriority ? bgColor : spColor;			
 			if (!spIndex && sSpriteZeroActive [1u] && xScreen < 255u)
-				sStat.spriteZeroHit = 1u;
+				sStat.spriteZeroHit = 1u;		
 		}
-		runSingleFrame.set (xScreen, yScreen, sPalette.rgba (color));
+		if (pixel_buffer == nullptr)
+			return;
+		pixel_buffer->set (xScreen, yScreen, sPalette.rgba (color));
 	}
 
 	template<typename _Host>
@@ -537,7 +549,7 @@ struct RicohPPU
 			if (sMask.showBackground || sMask.showSprites)
 			{
 				if (isVisibleScanline && isVisibleDotcycle)
-					finalComposite (host.pixelBuffer());
+					finalComposite ();
 
 				if (isVisibleScanline || isPrerenderScanline)
 				{

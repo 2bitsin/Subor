@@ -28,9 +28,6 @@ struct Console
 	VideoMemory vmm;
 	Mapper mmc;
 
-	PixelBuffer<dword>* pixels{nullptr};
-	AudioBuffer<float>* audios{nullptr};
-
 	Console ()
 	: cpu{}
 	, ppu{}
@@ -40,7 +37,7 @@ struct Console
 	, mmc{}
 	{}
 
-	void load (std::string p);
+	void load (const ProgramROM& r);
 
 	template <BusOperation _Operation, typename _Slave, typename _Value>
 	auto tick (_Slave&& slave, word addr, _Value&& data)
@@ -62,44 +59,29 @@ struct Console
 		mmc.ppuTick<_Operation> (*this, addr, data);
 	}
 
-	void assignPixelBuffer(PixelBuffer<dword>* pbuff)
+	
+	void emulate (
+		AudioBuffer<float>& audio_buff,
+		PixelBuffer<dword>& pixel_buff)
 	{
-		pixels = pbuff;
-	}
+		audio_buff.lock();
+		pixel_buff.lock();		
 
-	void assignAudioBuffer(AudioBuffer<float>* abuff)
-	{
-		audios = abuff;
-	}
-
-	void runSingleFrame ()
-	{
-		assert (pixels != nullptr);
-		assert (audios != nullptr);
-
-		audios->lock();
-		pixels->lock();
+		ppu.assign(pixel_buff);
+		apu.assign(audio_buff);
 
 		cpu.stepUntil (*this, [this] (auto&&...)
 		{
 			return ppu.ready ();
 		});
+
 		ppu.clearReady ();
 
-		pixels->unlock();
-		audios->unlock();
-	}
+		ppu.unassign();
+		apu.unassign();
 
-	auto&& pixelBuffer ()
-	{
-		assert (pixels != nullptr);
-		return *pixels;
-	}
-
-	auto&& audioBuffer ()
-	{
-		assert (audios != nullptr);
-		return *audios;	
+		pixel_buff.unlock();
+		audio_buff.unlock();
 	}
 
 

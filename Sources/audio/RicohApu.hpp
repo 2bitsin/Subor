@@ -2,20 +2,20 @@
 // PVS-Studio Static Code Analyzer for C, C++, C#, and Java: http://www.viva64.com
 #pragma once
 
-#include "core/Memory.hpp"
-#include "core/CoreConfig.hpp"
-#include "utils/Types.hpp"
-#include "utils/ClockDivider.hpp"
-#include "input/InputPort.hpp"
-#include "video/RicohPPU.hpp"
-#include "audio/Sequencer.hpp"
-#include "audio/AudioBuffer.hpp"
-#include "audio/AudioChannel.hpp"
-#include "audio/Mixer.hpp"
-#include "audio/PulseChannel.hpp"
-#include "audio/TriangleChannel.hpp"
-#include "audio/NoiseChannel.hpp"
-#include "audio/DMCChannel.hpp"
+#include <core/Memory.hpp>
+#include <core/CoreConfig.hpp>
+#include <utils/Types.hpp>
+#include <utils/ClockDivider.hpp>
+#include <input/InputPort.hpp>
+#include <video/RicohPPU.hpp>
+#include <audio/Sequencer.hpp>
+#include <audio/AudioBuffer.hpp>
+#include <audio/AudioChannel.hpp>
+#include <audio/Mixer.hpp>
+#include <audio/PulseChannel.hpp>
+#include <audio/TriangleChannel.hpp>
+#include <audio/NoiseChannel.hpp>
+#include <audio/DMCChannel.hpp>				
 
 #include <vector>
 #include <tuple>
@@ -39,7 +39,12 @@ struct RicohAPU
 		}
 
 		if (_clock_mix.tick ())
+		{
 			_mix.step (host, _sq0ch, _sq1ch, _trich, _noich, _dmcch);
+			if (audio_buffer != nullptr)
+				audio_buffer->emplace_back (_mix.value());
+		}
+
 		if (_clock_seq.tick ())
 			_seq.step (host, _sq0ch, _sq1ch, _trich, _noich, _dmcch);
 
@@ -109,14 +114,14 @@ struct RicohAPU
 	void reset ()
 	{}
 
-	auto&& mixer ()
+	void assign(AudioBuffer<float>& buff)
 	{
-		return _mix;
+		audio_buffer = &buff;
 	}
 
-	auto&& mixer ()const
+	void unassign()
 	{
-		return _mix;
+		audio_buffer = nullptr;
 	}
 
 	template <typename... _Args>
@@ -141,4 +146,6 @@ private:
 	TriangleChannel _trich;
 
 	Mixer _mix;
+
+	AudioBuffer<float>* audio_buffer{nullptr};
 };

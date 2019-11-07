@@ -19,12 +19,10 @@ int main (int argc, Options::cca argv, Options::cca envp)
 
 	auto options = Options {argc, argv, envp};
 
-	auto backend = Backend {options};
 	auto frontend = Frontend {options};
-	
-	
+	auto backend = Backend {options, frontend};	
 
-	return 0;
+	return frontend.mainThread();
 }
 
 

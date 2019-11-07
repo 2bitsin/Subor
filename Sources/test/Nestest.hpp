@@ -2,7 +2,8 @@
 // PVS-Studio Static Code Analyzer for C, C++, C#, and Java: http://www.viva64.com
 #pragma once
 
-#include "utils/Types.hpp"
+#include <utils/Types.hpp>
+#include <fileio/ProgramROM.hpp>
 
 namespace nestest
 {
@@ -32,4 +33,6 @@ namespace nestest
 	auto LOG_Len() -> std::size_t;
 
 	int NestestMain ();
+
+	ProgramROM AsProgramROM();
 }

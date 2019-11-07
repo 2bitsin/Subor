@@ -65,6 +65,11 @@ struct PixelBuffer
 		return _surface;
 	}
 
+	void blit_to (SDL_Window* window) const
+	{
+		SDL_BlitScaled(_surface, nullptr, SDL_GetWindowSurface(window), nullptr);
+	}
+
 private:
 	SDL_Surface* _surface;
 };

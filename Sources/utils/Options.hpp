@@ -4,6 +4,7 @@
 #include <vector>
 #include <unordered_map>
 #include <experimental/generator>
+#include <optional>
 
 #if __has_include("Config.hpp")
 	#include "Config.hpp"
@@ -73,20 +74,27 @@ public:
 			auto s = _args[i];
 			if(s == "--load"s)
 			{
-				_game_full_path = _game_base_path;
-				_game_full_path += arg_value_or(i + 1u, ""s);
-				i += 1u;
+				_game_full_path = arg_value_or(i + 1u, ""s);
+				if (!_game_full_path.empty ())
+				{
+					_game_full_path 
+						= _game_base_path 
+						+ _game_full_path;
+					++i;
+				}
 			}
 			else if (s == "--record"s)
 				_flag_record = true;
-			else if (s == "--playback"s);
+			else if (s == "--playback"s)
 				_flag_playback = true;
 		}
 	}
 
-	auto&& loadrom () const
+	std::optional<std::string> cmd_load () const
 	{
-		return _game_full_path;
+		if (!_game_full_path.empty())
+			return _game_full_path;
+		return {};
 	}
 
 	auto mode () const
