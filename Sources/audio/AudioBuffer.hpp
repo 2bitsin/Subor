@@ -1,9 +1,10 @@
 #pragma once
 
-#include "utils/Types.hpp"
+#include <utils/Types.hpp>
 
 #include <tuple>
 #include <vector>
+#include <cassert>
 
 namespace detail
 {
@@ -29,17 +30,46 @@ namespace detail
 }
 
 template <typename _Value_type>
-struct AudioBuffer
-:	public std::vector<detail::sample<_Value_type>>
+struct AudioBufferT
 {
 	using value_type = _Value_type;
+	using sample_type = detail::sample<value_type>;
 
-	AudioBuffer(std::size_t _leng_hint)
+	AudioBufferT(std::size_t len)
+	:	_buffer{std::make_unique<sample_type[]> (len)},
+		_length{len},
+		_index{0u}
+	{}
+
+	void lock () { clear(); }	
+	void unlock	() {}
+
+	void append(sample_type s)
 	{
-		if (_leng_hint > 0ul)
-			this->reserve(_leng_hint);
+		assert(_index < _length);
+		if (_index < _length)
+			_buffer[_index++] = s;
 	}
 
-	void lock() { clear() ; }
-	void unlock() {}
+	void clear()
+	{
+		_index = 0;
+	}
+
+	const auto* data() const
+	{
+		return _buffer.get();
+	}
+
+	auto size() const
+	{
+		return _length;
+	}
+
+private:
+	std::unique_ptr<sample_type[]> _buffer;
+	std::size_t _length = 0u;
+	std::size_t _index = 0u;
 };
+
+using AudioBuffer = AudioBufferT<float>;

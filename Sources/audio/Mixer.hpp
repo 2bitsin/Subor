@@ -7,7 +7,6 @@
 #include "LowPassFilter.hpp"
 
 struct Mixer
-: public CoreConfig
 {
 	template
 	<	typename _SQ0,
@@ -49,8 +48,8 @@ struct Mixer
 	}
 
 private:
-	HighPassFilter<float, 1> _hpf0{90, ctSamplingRate};
-	HighPassFilter<float, 1> _hpf1{440, ctSamplingRate};
-	LowPassFilter<float, 2> _lpf0{14000, ctSamplingRate, 1.2f};
+	HighPassFilter<float, 1> _hpf0{90, CoreConfig::ctSamplingRate};
+	HighPassFilter<float, 1> _hpf1{440, CoreConfig::ctSamplingRate};
+	LowPassFilter<float, 2> _lpf0{14000, CoreConfig::ctSamplingRate, 1.2f};
 	float _value {0.0f};
 };

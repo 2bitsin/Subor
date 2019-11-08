@@ -21,7 +21,6 @@
 #include <tuple>
 
 struct RicohAPU
-: public CoreConfig
 {
 	RicohAPU ()
 	{}
@@ -42,7 +41,7 @@ struct RicohAPU
 		{
 			_mix.step (host, _sq0ch, _sq1ch, _trich, _noich, _dmcch);
 			if (audio_buffer != nullptr)
-				audio_buffer->emplace_back (_mix.value());
+				audio_buffer->append (_mix.value());
 		}
 
 		if (_clock_seq.tick ())
@@ -114,7 +113,7 @@ struct RicohAPU
 	void reset ()
 	{}
 
-	void assign(AudioBuffer<float>& buff)
+	void assign(AudioBuffer& buff)
 	{
 		audio_buffer = &buff;
 	}
@@ -133,9 +132,9 @@ struct RicohAPU
 private:
 
 	byte latch{0u};
-	ClockDivider<ctCPUTicksPerSecond, ctSamplingRate> _clock_mix;
-	ClockDivider<ctCPUTicksPerSecond, ctSEQTicksPerSecond> _clock_seq;
-	ClockDivider<ctCPUTicksPerSecond, ctCPUTicksPerSecond / 2> _clock_osc;
+	ClockDivider<CoreConfig::ctCPUTicksPerSecond, CoreConfig::ctSamplingRate> _clock_mix;
+	ClockDivider<CoreConfig::ctCPUTicksPerSecond, CoreConfig::ctSEQTicksPerSecond> _clock_seq;
+	ClockDivider<CoreConfig::ctCPUTicksPerSecond, CoreConfig::ctCPUTicksPerSecond / 2> _clock_osc;
 	InputPort	_input;
 	Sequencer _seq;
 	PulseChannel<0> _sq0ch;
@@ -147,5 +146,5 @@ private:
 
 	Mixer _mix;
 
-	AudioBuffer<float>* audio_buffer{nullptr};
+	AudioBuffer* audio_buffer{nullptr};
 };

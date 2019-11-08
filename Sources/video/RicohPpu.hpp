@@ -16,7 +16,6 @@
 #include <chrono>
 
 struct RicohPPU
-:	public CoreConfig
 {
 #pragma pack(push, 1)
 	union VideoAddress
@@ -77,7 +76,7 @@ struct RicohPPU
 	};
 #pragma pack(pop)
 
-	PixelBuffer<dword>* pixel_buffer { nullptr };
+	PixelBuffer* pixel_buffer { nullptr };
 
 	Palette sPalette{ { 0 } };
 	qword sFrame = 0u;
@@ -112,12 +111,12 @@ struct RicohPPU
 	Bitarray<4, 8> sSpritePatterns [8u];
 	byte sSpritePositions [8u];
 
-	constexpr auto width () const { return ctHorizontalPixels; }
-	constexpr auto height () const { return ctVerticalPixels; }
+	constexpr auto width () const { return CoreConfig::ctHorizontalPixels; }
+	constexpr auto height () const { return CoreConfig::ctVerticalPixels; }
 	bool ready () const { return sFrameReady; }
 	bool clearReady () { return std::exchange(sFrameReady, false); }
 
-	void assign(PixelBuffer<dword>& buff)
+	void assign(PixelBuffer& buff)
 	{
 		pixel_buffer = &buff;
 	}
@@ -156,7 +155,7 @@ struct RicohPPU
 	{
 		sPreviousNmiState.left (nmiState ());
 		if (sPreviousNmiState.extract (0, 2u) == 1u)
-			sNmiTimeout = ctNmiTimeout;
+			sNmiTimeout = CoreConfig::ctNmiTimeout;
 	}
 
 	void nmiUpdate (byte newState)
@@ -532,8 +531,8 @@ struct RicohPPU
 	template <typename _Host>
 	auto tickInternal (_Host&& host)
 	{
-		sScanline = sClock / ctHorizontalTicks;
-		sDotcycle = sClock % ctHorizontalTicks;
+		sScanline = sClock / CoreConfig::ctHorizontalTicks;
+		sDotcycle = sClock % CoreConfig::ctHorizontalTicks;
 
 		auto isRenderingEnabled = sMask.showBackground || sMask.showSprites;
 		auto isVisibleScanline = sScanline <= 239u && sScanline >= 0u;
@@ -541,8 +540,8 @@ struct RicohPPU
 		auto isPrefetchDotcycle = sDotcycle >= 321u && sDotcycle <= 336u;
 		auto isTileFetchDotcycle = isPrefetchDotcycle || isVisibleDotcycle;
 		auto isSpriteFetchDotcycle = sDotcycle >= 257u && sDotcycle <= 320u;
-		auto isPrerenderScanline = sScanline == ctVerticalTicks - 1u;
-		auto isVblankScanline = sScanline == ctVblankScanline;
+		auto isPrerenderScanline = sScanline == CoreConfig::ctVerticalTicks - 1u;
+		auto isVblankScanline = sScanline == CoreConfig::ctVblankScanline;
 
 		if (isRenderingEnabled)
 		{
@@ -566,7 +565,7 @@ struct RicohPPU
 	void timingUpdate (bool isRenderingEnabled)
 	{
 		auto skipTicks = isRenderingEnabled ? (sFrame & 1u) : 0u;
-		const auto limitTicks = ctTotalTicks - skipTicks;
+		const auto limitTicks = CoreConfig::ctTotalTicks - skipTicks;
 		sClock = (sClock + 1u) % limitTicks;
 		sFrame += !sClock;
 		sFrameReady += !sClock;

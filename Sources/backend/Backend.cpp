@@ -7,22 +7,13 @@
 Backend::Backend (const Options& args, Frontend& frontend)
 : _frontend{frontend},
 	_console{std::make_unique<Console> ()},
-	_audio_buff{
-		AudioBuffer<float>{CoreConfig::ctSamplesPerFrame},
-		AudioBuffer<float>{CoreConfig::ctSamplesPerFrame}
-	},
-	_pixel_buff{
-		PixelBuffer<dword>{_console->width (), _console->height ()},
-		PixelBuffer<dword>{_console->width (), _console->height ()}
-	},
-	_buff_index{0},
 	_quit{false}
 {
 	if (args.cmd_load ().has_value ())
 		_console->load (args.cmd_load ().value ());
 	else
 		_console->load (nestest::AsProgramROM ());
-	_emu_thread = std::thread{[this] ()
+	_emuThread = std::thread{[this] ()
 	{
 		emulate ();
 	}};
@@ -31,9 +22,8 @@ Backend::Backend (const Options& args, Frontend& frontend)
 Backend::~Backend ()
 {
 	_quit.store (true);
-	_emu_thread.join ();
+	_emuThread.join ();
 }
-
 
 void Backend::emulate ()
 {
@@ -46,10 +36,11 @@ void Backend::emulate ()
 	auto tn = t0 + dt;
 
 	while (!_quit.load ())	
-	{	
-		_console->emulate (_audio_buff [_buff_index], _pixel_buff [_buff_index]);
-		_frontend.pushFrame (_audio_buff [_buff_index], _pixel_buff [_buff_index]);
-		_buff_index = (_buff_index + 1u) % ct_buffer_count;
+	{			
+		auto& frame = _frame [_index % ctFrameCount];
+		_console->emulate (frame);
+		if (_frontend.notifyFrame(frame))
+			++_index;
 		std::this_thread::sleep_until(tn);
 		t0 = tn;
 		tn = t0 + dt;

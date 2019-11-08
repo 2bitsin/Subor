@@ -77,8 +77,8 @@ int main (int argc, Options::cca argv, Options::cca envp)
 	want.userdata = nullptr;
 	auto audiod = SDL_OpenAudioDevice(nullptr, 0, &want, &have, 0);
 
-	auto pixelb = PixelBuffer<dword>{ console->width (), console->height () };
-	auto audiob = AudioBuffer<float>{ CoreConfig::ctSamplesPerFrame };
+	auto pixelb = PixelBuffer{ console->width (), console->height () };
+	auto audiob = AudioBuffer{ CoreConfig::ctSamplesPerFrame };
 	if (!audiod)
 		std::printf("Failed to open audio device, sound disabled!\n");
 	SDL_PauseAudioDevice(audiod, 0);

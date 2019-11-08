@@ -1,83 +1,74 @@
 #include "Frontend.hpp"
+#include <backend/Backend.hpp>
 
 Frontend::Frontend (const Options& args)
 	: _window{nullptr}
 {
-	open ();
+	const auto q = SDL_WINDOWPOS_CENTERED;
+	const auto w = 1u * CoreConfig::ctHorizontalPixels;
+	const auto h = 1u * CoreConfig::ctVerticalPixels;
+	_window = SDL_CreateWindow ("Subor", q, q, w, h, SDL_WINDOW_RESIZABLE);
+	SDL_SetWindowMinimumSize (_window, w, h);
+	SDL_AddEventWatch ([] (auto data, auto event)
+	{
+		auto& fe = *(Frontend*)data;
+		return fe.dispatch (*event);
+	}, this);
 }
 
 Frontend::~Frontend ()
 {
-	if (_window)
-		close ();
+	SDL_DestroyWindow (_window);
+	_window = nullptr;
 }
 
-void Frontend::open ()
+bool Frontend::notifyFrame (const AudioVideoFrame& frame)
 {
-	if (!_window)
+	if (_lockFrame.try_lock ())
 	{
-		const auto q = SDL_WINDOWPOS_CENTERED;
-		const auto w = 1u * CoreConfig::ctHorizontalPixels;
-		const auto h = 1u * CoreConfig::ctVerticalPixels;
-		_window = SDL_CreateWindow ("Subor", q, q, w, h, SDL_WINDOW_RESIZABLE);
-		SDL_SetWindowMinimumSize (_window, w, h);
+		_frame = &frame;
+		_lockFrame.unlock ();
+		return true;
+	}
+	return false;
+}
+
+void Frontend::frameConsume ()
+{
+	if (!_frame)
+		return;
+	if (_lockFrame.try_lock ())
+	{
+		_frame->video.blit_to (_window);
+		SDL_UpdateWindowSurface (_window);
+		_frame = nullptr;
+		_lockFrame.unlock ();
 	}
 }
 
-void Frontend::close ()
+int Frontend::dispatch (const SDL_Event& ev)
 {
-	if (_window)
-	{
-		SDL_DestroyWindow (_window);
-		_window = nullptr;
-	}
+	frameConsume();
+	return 0;
 }
 
-void Frontend::pushFrame (const AudioBuffer<float>& audio,
-	const PixelBuffer<dword>& video)
+SDL_Window* Frontend::handle () const
 {
-	if (_mutex_buff.try_lock())
-	{
-		_audio_buff = &audio;
-		_pixel_buff = &video;
-		_mutex_buff.unlock();
-	}
+	return _window;
 }
 
 int Frontend::mainThread ()
 {
+
 	SDL_Event event;
-
-	bool update_window = false;
-
 	for (;;)
 	{
-		if (update_window)
-		{
-			SDL_UpdateWindowSurface(_window);
-			update_window = false;
-		}
-
 		if (SDL_PollEvent (&event))
 		{
 			if (event.type == SDL_QUIT)
 				break;
 		}
-		
-		std::lock_guard _ {_mutex_buff};
-
-		if (_pixel_buff)
-		{
-			_pixel_buff->blit_to(_window);
-			_pixel_buff = nullptr;
-			update_window = true;
-		}
-
-		if (_audio_buff)
-		{	
-			// Consume audio
-			_audio_buff = nullptr;
-		}
+		frameConsume();
 	}
 
 	return 0;

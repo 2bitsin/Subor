@@ -2,15 +2,15 @@
   "ExpandedNodes": [
     "",
     "\\Sources",
-    "\\Sources\\backend",
+    "\\Sources\\audio",
+    "\\Sources\\core",
     "\\Sources\\fileio",
-    "\\Sources\\frontend",
     "\\Sources\\input",
     "\\Sources\\mapper",
     "\\Sources\\test",
     "\\Sources\\utils",
     "\\Sources\\video"
   ],
-  "SelectedNode": "\\Sources\\frontend\\Main.cpp",
+  "SelectedNode": "\\CMakeLists.txt",
   "PreviewInSolutionExplorer": false
 }

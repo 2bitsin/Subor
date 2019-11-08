@@ -11,7 +11,6 @@
 #include <functional>
 
 struct RicohCPU
-: public CoreConfig
 {
 	static constexpr byte NonMaskableBit = 0x01u;
 	static constexpr byte ResetBit = 0x02u;

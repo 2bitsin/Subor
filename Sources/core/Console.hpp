@@ -2,20 +2,19 @@
 // PVS-Studio Static Code Analyzer for C, C++, C#, and Java: http://www.viva64.com
 #pragma once
 
-#include "core/RicohCpu.hpp"
-#include "core/StaticMemory.hpp"
-#include "video/RicohPPU.hpp"
-#include "video/PixelBuffer.hpp"
-#include "audio/RicohApu.hpp"
-#include "mapper/Mapper.hpp"
-#include "utils/Literals.hpp"
-
+#include <core/RicohCpu.hpp>
+#include <core/StaticMemory.hpp>
+#include <video/RicohPPU.hpp>
+#include <audio/RicohApu.hpp>
+#include <mapper/Mapper.hpp>
+#include <utils/Literals.hpp>
+#include <core/AudioVideoFrame.hpp>
 
 struct Console
 {
 	using Memory = StaticMemory<kReadWriteMemory, 0_K, 8_K, 2_K>;
 	using VideoMemory = StaticMemory<kReadWriteMemory, 8_K, 12_K>;
-	using AudioFrame = AudioBuffer<float>;
+	using AudioFrame = AudioBuffer;
 
 	static constexpr auto _CPU_Cps = 1789773;
 	static constexpr auto _PPU_Cps = 3 * _CPU_Cps;
@@ -60,15 +59,13 @@ struct Console
 	}
 
 	
-	void emulate (
-		AudioBuffer<float>& audio_buff,
-		PixelBuffer<dword>& pixel_buff)
+	void emulate (AudioVideoFrame& frame)
 	{
-		audio_buff.lock();
-		pixel_buff.lock();		
+		frame.audio.lock();
+		frame.video.lock();		
 
-		ppu.assign(pixel_buff);
-		apu.assign(audio_buff);
+		ppu.assign(frame.video);
+		apu.assign(frame.audio);
 
 		cpu.stepUntil (*this, [this] (auto&&...)
 		{
@@ -80,8 +77,8 @@ struct Console
 		ppu.unassign();
 		apu.unassign();
 
-		pixel_buff.unlock();
-		audio_buff.unlock();
+		frame.audio.unlock();
+		frame.video.unlock();
 	}
 
 

@@ -1,33 +1,34 @@
 #pragma once
 
-#include <core/CoreConfig.hpp>
 #include <utils/Options.hpp>
 #include <utils/SDL2.hpp>
-#include <video/PixelBuffer.hpp>
-#include <audio/AudioBuffer.hpp>
+#include <core/CoreConfig.hpp>
+#include <core/AudioVideoFrame.hpp>
 
 #include <vector>
 #include <string>
 #include <mutex>
 
-struct Frontend: CoreConfig
+struct Backend;
+
+struct Frontend
 {
+
 	Frontend (const Options& options);
 	~Frontend ();
 
-	void open ();
-	void close ();
+	SDL_Window* handle () const;
+	int mainThread();
 
-	auto handle() const { return _window; }
+	bool notifyFrame(const AudioVideoFrame&);
 
-	void pushFrame(const AudioBuffer<float>&, const PixelBuffer<dword>&);
-
-	int mainThread() ;
+	void frameConsume ();
 
 private:
+	int dispatch (const SDL_Event& ev);
 
+private:
 	SDL_Window* _window{nullptr};
-	std::mutex _mutex_buff;
-	const AudioBuffer<float>* _audio_buff{nullptr};
-	const PixelBuffer<dword>* _pixel_buff{nullptr};
+	const AudioVideoFrame* _frame{nullptr};
+	std::mutex _lockFrame;
 };

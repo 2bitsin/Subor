@@ -2,9 +2,10 @@
 
 #include <utils/Types.hpp>
 #include <utils/SDL2.hpp>
+#include <cassert>
 
 template <typename _PixelType>
-struct PixelBuffer
+struct PixelBufferT
 {
 	using pixel_type = _PixelType;
 
@@ -18,11 +19,11 @@ struct PixelBuffer
 		((pixel_type*)dst)[x] = pixel;
 	}
 
-	PixelBuffer(dword w, dword h)
+	PixelBufferT(dword w, dword h)
 	: _surface(SDL_CreateRGBSurfaceWithFormat (0u, w, h, 0u, SDL_PIXELFORMAT_ARGB8888)) 
 	{}
 
-	PixelBuffer(const PixelBuffer& rvalue)
+	PixelBufferT(const PixelBufferT& rvalue)
 	: _surface(SDL_CreateRGBSurfaceWithFormat (
 			0u, rvalue._surface.w, 
 			rvalue._surface.h, 0u, 
@@ -32,21 +33,21 @@ struct PixelBuffer
 		SDL_BlitSurface(rvalue._surface, nullptr, _surface, nullptr);
 	}
 
-	auto& operator = (const PixelBuffer& rvalue) 
+	auto& operator = (const PixelBufferT& rvalue) 
 	{
-		this->~PixelBuffer();
-		new (this) PixelBuffer(rvalue);
+		this->~PixelBufferT();
+		new (this) PixelBufferT(rvalue);
 		return *this;	
 	}
 
-	PixelBuffer(PixelBuffer&& xvalue)
+	PixelBufferT(PixelBufferT&& xvalue)
 	: _surface (std::exchange(xvalue._surface, nullptr))
 	{}
 
-	auto& operator = (PixelBuffer&& xvalue)
+	auto& operator = (PixelBufferT&& xvalue)
 	{
-		this->~PixelBuffer();
-		new (this) PixelBuffer(std::move(xvalue));
+		this->~PixelBufferT();
+		new (this) PixelBufferT(std::move(xvalue));
 		return *this;
 	}
 
@@ -73,3 +74,5 @@ struct PixelBuffer
 private:
 	SDL_Surface* _surface;
 };
+
+using PixelBuffer = PixelBufferT<dword>;

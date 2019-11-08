@@ -2,8 +2,7 @@
 
 #include <utils/Options.hpp>
 #include <core/Console.hpp>
-#include <audio/AudioBuffer.hpp>
-#include <video/PixelBuffer.hpp>
+#include <core/AudioVideoFrame.hpp>
 
 #include <thread>
 #include <atomic>
@@ -15,23 +14,22 @@ struct Frontend;
 
 struct Backend
 {
-	inline static constexpr auto ct_buffer_count = 2u;
+
+	inline static constexpr auto ctFrameCount = 2u;
 
 	Backend (const Options&, Frontend&);
 	~Backend ();
 
-private:
+protected:
 	void emulate ();
 
 private:
 	Frontend& _frontend;
-
 	std::unique_ptr<Console> _console;
-	std::array<AudioBuffer<float>, ct_buffer_count> _audio_buff;
-	std::array<PixelBuffer<dword>, ct_buffer_count> _pixel_buff;
-	byte _buff_index;
 
 	std::atomic<bool>	_quit;
-	std::thread	_emu_thread;
+	std::thread	_emuThread;
 
+	std::array<AudioVideoFrame, ctFrameCount> _frame;
+	std::atomic<dword> _index{0};
 };
