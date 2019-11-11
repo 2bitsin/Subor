@@ -2,20 +2,20 @@
 // PVS-Studio Static Code Analyzer for C, C++, C#, and Java: http://www.viva64.com
 #pragma once
 
-#include "core/CoreConfig.hpp"
-#include "utils/Types.hpp"
-#include "utils/Bitfield.hpp"
-#include "utils/Bitarray.hpp"
-#include "utils/Literals.hpp"
-#include "video/VideoFrame.hpp"
-#include "video/OAMemory.hpp"
-#include "video/Palette.hpp"
+#include <core/CoreConfig.hpp>
+#include <core/Memory.hpp>
+#include <utils/Types.hpp>
+#include <utils/Bitfield.hpp>
+#include <utils/Bitarray.hpp>
+#include <utils/Literals.hpp>
+#include <video/OAMemory.hpp>
+#include <video/Palette.hpp>
+#include <video/PixelBuffer.hpp>
 
 #include <cstdio>
 #include <chrono>
 
 struct RicohPPU
-:	public CoreConfig
 {
 #pragma pack(push, 1)
 	union VideoAddress
@@ -74,9 +74,9 @@ struct RicohPPU
 		Bitfield<0, 2> atrIndex;
 		Bitfield<2, 6> objIndex;
 	};
-
-
 #pragma pack(pop)
+
+	PixelBuffer* pixel_buffer { nullptr };
 
 	Palette sPalette{ { 0 } };
 	qword sFrame = 0u;
@@ -111,10 +111,20 @@ struct RicohPPU
 	Bitarray<4, 8> sSpritePatterns [8u];
 	byte sSpritePositions [8u];
 
-	constexpr auto width () const { return ctHorizontalPixels; }
-	constexpr auto height () const { return ctVerticalPixels; }
+	constexpr auto width () const { return CoreConfig::ctHorizontalPixels; }
+	constexpr auto height () const { return CoreConfig::ctVerticalPixels; }
 	bool ready () const { return sFrameReady; }
 	bool clearReady () { return std::exchange(sFrameReady, false); }
+
+	void assign(PixelBuffer& buff)
+	{
+		pixel_buffer = &buff;
+	}
+
+	void unassign()
+	{
+		pixel_buffer = nullptr;
+	}
 
 	RicohPPU ()
 	{
@@ -145,7 +155,7 @@ struct RicohPPU
 	{
 		sPreviousNmiState.left (nmiState ());
 		if (sPreviousNmiState.extract (0, 2u) == 1u)
-			sNmiTimeout = ctNmiTimeout;
+			sNmiTimeout = CoreConfig::ctNmiTimeout;
 	}
 
 	void nmiUpdate (byte newState)
@@ -379,8 +389,7 @@ struct RicohPPU
 		}
 	}
 
-	template <typename _VideoFrame>
-	void finalComposite (_VideoFrame&& frame)
+	void finalComposite ()
 	{
 		auto xScreen = sDotcycle - 1u;
 		auto yScreen = sScanline;
@@ -426,9 +435,11 @@ struct RicohPPU
 		{
 			color = spPriority ? bgColor : spColor;			
 			if (!spIndex && sSpriteZeroActive [1u] && xScreen < 255u)
-				sStat.spriteZeroHit = 1u;
+				sStat.spriteZeroHit = 1u;		
 		}
-		frame.set (xScreen, yScreen, sPalette.rgba (color));
+		if (pixel_buffer == nullptr)
+			return;
+		pixel_buffer->set (xScreen, yScreen, sPalette.rgba (color));
 	}
 
 	template<typename _Host>
@@ -520,8 +531,8 @@ struct RicohPPU
 	template <typename _Host>
 	auto tickInternal (_Host&& host)
 	{
-		sScanline = sClock / ctHorizontalTicks;
-		sDotcycle = sClock % ctHorizontalTicks;
+		sScanline = sClock / CoreConfig::ctHorizontalTicks;
+		sDotcycle = sClock % CoreConfig::ctHorizontalTicks;
 
 		auto isRenderingEnabled = sMask.showBackground || sMask.showSprites;
 		auto isVisibleScanline = sScanline <= 239u && sScanline >= 0u;
@@ -529,15 +540,15 @@ struct RicohPPU
 		auto isPrefetchDotcycle = sDotcycle >= 321u && sDotcycle <= 336u;
 		auto isTileFetchDotcycle = isPrefetchDotcycle || isVisibleDotcycle;
 		auto isSpriteFetchDotcycle = sDotcycle >= 257u && sDotcycle <= 320u;
-		auto isPrerenderScanline = sScanline == ctVerticalTicks - 1u;
-		auto isVblankScanline = sScanline == ctVblankScanline;
+		auto isPrerenderScanline = sScanline == CoreConfig::ctVerticalTicks - 1u;
+		auto isVblankScanline = sScanline == CoreConfig::ctVblankScanline;
 
 		if (isRenderingEnabled)
 		{
 			if (sMask.showBackground || sMask.showSprites)
 			{
 				if (isVisibleScanline && isVisibleDotcycle)
-					finalComposite (host.currVideoFrame());
+					finalComposite ();
 
 				if (isVisibleScanline || isPrerenderScanline)
 				{
@@ -554,7 +565,7 @@ struct RicohPPU
 	void timingUpdate (bool isRenderingEnabled)
 	{
 		auto skipTicks = isRenderingEnabled ? (sFrame & 1u) : 0u;
-		const auto limitTicks = ctTotalTicks - skipTicks;
+		const auto limitTicks = CoreConfig::ctTotalTicks - skipTicks;
 		sClock = (sClock + 1u) % limitTicks;
 		sFrame += !sClock;
 		sFrameReady += !sClock;

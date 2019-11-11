@@ -2,19 +2,19 @@
 // PVS-Studio Static Code Analyzer for C, C++, C#, and Java: http://www.viva64.com
 #pragma once
 
-#include "core/RicohCpu.hpp"
-#include "core/StaticMemory.hpp"
-#include "video/RicohPPU.hpp"
-#include "audio/RicohApu.hpp"
-#include "mapper/Mapper.hpp"
-#include "utils/Literals.hpp"
-
+#include <core/RicohCpu.hpp>
+#include <core/StaticMemory.hpp>
+#include <video/RicohPPU.hpp>
+#include <audio/RicohApu.hpp>
+#include <mapper/Mapper.hpp>
+#include <utils/Literals.hpp>
+#include <core/AudioVideoFrame.hpp>
 
 struct Console
 {
 	using Memory = StaticMemory<kReadWriteMemory, 0_K, 8_K, 2_K>;
 	using VideoMemory = StaticMemory<kReadWriteMemory, 8_K, 12_K>;
-	using AudioFrame = AudioBuffer<float>;
+	using AudioFrame = AudioBuffer;
 
 	static constexpr auto _CPU_Cps = 1789773;
 	static constexpr auto _PPU_Cps = 3 * _CPU_Cps;
@@ -27,8 +27,6 @@ struct Console
 	VideoMemory vmm;
 	Mapper mmc;
 
-	VideoFrame sVideoFrame;	
-
 	Console ()
 	: cpu{}
 	, ppu{}
@@ -38,7 +36,7 @@ struct Console
 	, mmc{}
 	{}
 
-	void load (std::string p);
+	void load (const ProgramROM& r);
 
 	template <BusOperation _Operation, typename _Slave, typename _Value>
 	auto tick (_Slave&& slave, word addr, _Value&& data)
@@ -60,26 +58,29 @@ struct Console
 		mmc.ppuTick<_Operation> (*this, addr, data);
 	}
 
-	template <typename _VideoSink, typename _AudioSink>
-	void frame (_VideoSink&& video, _AudioSink&& audio)
+	
+	void emulate (AudioVideoFrame& frame)
 	{
-		sVideoFrame.assign(video);
-		apu.mixer().assign(audio);
-		while (!ppu.ready ())
-			cpu.step (*this, 1u);		
-		ppu.clearReady();		
+		frame.audio.lock();
+		frame.video.lock();		
+
+		ppu.assign(frame.video);
+		apu.assign(frame.audio);
+
+		cpu.stepUntil (*this, [this] (auto&&...)
+		{
+			return ppu.ready ();
+		});
+
+		ppu.clearReady ();
+
+		ppu.unassign();
+		apu.unassign();
+
+		frame.audio.unlock();
+		frame.video.unlock();
 	}
 
-	auto&& currVideoFrame()
-	{
-		return sVideoFrame;
-	}
-
-	template <typename _Sink>
-	auto audio (_Sink&& sink)
-	{
-		return apu.grabFrame (std::forward<_Sink> (sink));
-	}
 
 	word ppuMirror (word addr) const;
 

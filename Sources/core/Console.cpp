@@ -1,8 +1,8 @@
 #include "Console.hpp"
 
-void Console::load (std::string p)
+void Console::load (const ProgramROM& r)
 {
-	mmc.load (ProgramROM{p});
+	mmc.load (r);
 }
 
 word Console::ppuMirror (word addr) const

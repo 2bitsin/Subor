@@ -30,104 +30,58 @@ private:
 	bool _trainerPresent{};
 public:
 
-	ProgramROM ()
-	{}
+	ProgramROM ();
+	ProgramROM (const std::string& filePath);
+	ProgramROM (const byte* header, const byte* prgbit, const byte* chrbit, const byte* trainr);
 
-	ProgramROM (const std::string& filePath)
-	{
-		load (*this, filePath);
-	}
+	dword prgSize () const;
+	dword chrSize () const;
+	dword ramSize () const;
+	bool hasTrainer () const;
+	bool hasBattery () const;
+	Mirroring mirroring () const;
+	byte chr (std::size_t i) const;
+	byte prg (std::size_t i) const;
+	byte trainer (std::size_t i) const;
+	byte idMapper () const;
 
-	dword prgSize () const
+	template <typename _Target>
+	auto prgTransfer (_Target& dst) const
 	{
-		return dword(_prgBits.size ());
-	}
-
-	dword chrSize () const
-	{
-		return dword(_chrBits.size ());
-	}
-
-	dword ramSize () const
-	{
-		return _ramSize;
-	}
-
-	bool hasTrainer () const
-	{
-		return _trainerPresent;
-	}
-
-	bool hasBattery () const
-	{
-		return _batteryBacked;
-	}
-
-	Mirroring mirroring () const
-	{
-		return _mirroring;
-	}
-
-	auto&& chr (std::size_t i) const
-	{
-		assert (chrSize () > 0);
-		return _chrBits [i % chrSize ()];
-	}
-
-	auto&& prg (std::size_t i) const
-	{
-		assert (prgSize () > 0);
-		return _prgBits [i % prgSize ()];
-	}
-
-	auto&& trainer (std::size_t i) const
-	{
-		assert (_trainer.size () > 0);
-		return _trainer [i % _trainer.size ()];
+		if (prgSize () > 0u)
+			copy (dst, _prgBits, _prgBits.size ());
 	}
 
 	template <typename _Target>
-	auto prgTransfer(_Target& dst) const
+	auto chrTransfer (_Target& dst) const
 	{
-		if (prgSize() > 0u)
-			copy(dst, _prgBits, _prgBits.size());
+		if (chrSize () > 0u)
+			copy (dst, _chrBits, _chrBits.size ());
 	}
 
 	template <typename _Target>
-	auto chrTransfer(_Target& dst) const
-	{
-		if (chrSize() > 0u)
-			copy(dst, _chrBits, _chrBits.size());
-	}
-
-	template <typename _Target>
-	auto trainerTransfer(_Target& dst) const
+	auto trainerTransfer (_Target& dst) const
 	{
 		if (hasTrainer ())
-			copy(dst, _trainer, _trainer.size());
+			copy (dst, _trainer, _trainer.size ());
 	}
-
-	auto idMapper() const
-	{
-		return _mapperId;
-	}
-
+	
 	static bool load (ProgramROM& iNes, const std::string& filePath);
+	static bool load (ProgramROM& iNes, const byte* header, const byte* prgbit, const byte* chrbit, const byte* trainr);
 
 protected:
 	template <std::size_t _Size, typename _Source, typename _Length>
 	auto copy (byte (&dst) [_Size], _Source&& src, _Length&& len) const
 	{
 		for (auto indx = 0u; indx < _Size; ++indx)
-			dst[indx] = src[indx%len];
+			dst [indx] = src [indx % len];
 	}
-
 
 	template <std::size_t _Banks, std::size_t _Size, typename _Source, typename _Length>
 	auto copy (byte (&dst) [_Banks][_Size], _Source&& src, _Length&& len) const
 	{
 		for (auto bank = 0u; bank < _Banks; ++bank)
 			for (auto indx = 0u; indx < _Size; ++indx)
-				dst[bank][indx] = src[(_Size*bank + indx)%len];
+				dst [bank][indx] = src [(_Size * bank + indx) % len];
 	}
 };

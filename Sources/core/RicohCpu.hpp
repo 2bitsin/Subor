@@ -11,7 +11,6 @@
 #include <functional>
 
 struct RicohCPU
-: public CoreConfig
 {
 	static constexpr byte NonMaskableBit = 0x01u;
 	static constexpr byte ResetBit = 0x02u;
@@ -97,8 +96,8 @@ struct RicohCPU
 	template <BusOperation _Operation, typename _Host, typename _Value>
 	auto tick (_Host&& master, word addr, _Value&& data);
 
-	template <typename _Host>
-	bool step (_Host&& tick_, std::size_t count_ = 1u);
+	template <typename _Host, typename _ShouldStop>
+	bool stepUntil (_Host&& tick_, _ShouldStop&& stop_);
 
 	auto&& state ()
 	{

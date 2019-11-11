@@ -7,7 +7,6 @@
 #include "LowPassFilter.hpp"
 
 struct Mixer
-: public CoreConfig
 {
 	template
 	<	typename _SQ0,
@@ -37,31 +36,20 @@ struct Mixer
 	template <typename _Host,typename... _Channel>
 	void step (_Host&& host, _Channel&&... ch)
 	{
-		if (_buffer != nullptr)
-		{
-			auto s = mix((ch.value())...);
-			s = _hpf0.apply(s);
-			s = _hpf1.apply(s);
-			s = _lpf0.apply(s);
-			_buffer->emplace_back (s);
-		}
+		_value = mix((ch.value())...);
+		_value = _hpf0.apply(_value);
+		_value = _hpf1.apply(_value);
+		_value = _lpf0.apply(_value);
 	}
 
-	void assign(AudioBuffer<float>& buff)
+	auto value() const 
 	{
-		_buffer = &buff;
-	}
-
-	void unassign()
-	{		
-		_buffer = nullptr;
+		return _value;
 	}
 
 private:
-	AudioBuffer<float>* _buffer{nullptr};
-	HighPassFilter<float, 1> _hpf0{90, ctSamplingRate};
-	HighPassFilter<float, 1> _hpf1{440, ctSamplingRate};
-	LowPassFilter<float, 2> _lpf0{14000, ctSamplingRate, 1.2f};
-
-
+	HighPassFilter<float, 1> _hpf0{90, CoreConfig::ctSamplingRate};
+	HighPassFilter<float, 1> _hpf1{440, CoreConfig::ctSamplingRate};
+	LowPassFilter<float, 2> _lpf0{14000, CoreConfig::ctSamplingRate, 1.2f};
+	float _value {0.0f};
 };
