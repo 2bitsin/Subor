@@ -36,6 +36,6 @@ private:
 	std::atomic<bool>	_quit;
 	std::thread	_emuThread;
 
-	std::array<AudioVideoFrame, ctFrameCount> _frame;
+	std::array<AudioVideoFrame, ctFrameCount> _video;
 	std::atomic<dword> _index{0};
 };

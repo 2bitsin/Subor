@@ -5,6 +5,7 @@
 #include <tuple>
 #include <vector>
 #include <cassert>
+#include <memory>
 
 namespace detail
 {
@@ -62,6 +63,11 @@ struct AudioBufferT
 	}
 
 	auto size() const
+	{
+		return _length * sizeof (sample_type);
+	}
+
+	auto length() const
 	{
 		return _length;
 	}

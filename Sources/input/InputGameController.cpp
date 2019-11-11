@@ -49,14 +49,14 @@ auto InputGameController::read () const -> InputFrame
 	InputFrame result;
 	if (_handle == nullptr)
 		return result;
-	result.a = read (InputFrame::Button::A);
-	result.b = read (InputFrame::Button::B);
+	result.a			= read (InputFrame::Button::A);
+	result.b			= read (InputFrame::Button::B);
 	result.select = read (InputFrame::Button::Select);
-	result.start = read (InputFrame::Button::Start);
-	result.up = read (InputFrame::Button::Up);
-	result.down = read (InputFrame::Button::Down);
-	result.left = read (InputFrame::Button::Left);
-	result.right = read (InputFrame::Button::Right);
+	result.start	= read (InputFrame::Button::Start);
+	result.up			= read (InputFrame::Button::Up);
+	result.down		= read (InputFrame::Button::Down);
+	result.left		= read (InputFrame::Button::Left);
+	result.right	= read (InputFrame::Button::Right);
 	return result;
 }
 

@@ -7,6 +7,7 @@
 #include <input/InputGameController.hpp>
 #include <core/CoreConfig.hpp>
 #include <core/AudioVideoFrame.hpp>
+#include <audio/AudioDevice.hpp>
 
 #include <vector>
 #include <string>
@@ -24,7 +25,7 @@ struct Frontend
 	~Frontend ();
 
 	auto handle () const -> SDL_Window*;
-	auto mainthread() -> int;
+	auto mainThread() -> int;
 	auto pushFrame(Backend&, const AudioVideoFrame&) -> bool;
 
 private:
@@ -33,10 +34,13 @@ private:
 
 private:
 	SDL_Window* _window{nullptr};
-	const AudioVideoFrame* _frame{nullptr};
+	const PixelBuffer* _video{nullptr};
 	std::mutex _lockFrame;
+
+	
 	std::optional<InputGameController> _gctrl0;
 	std::optional<InputGameController> _gctrl1;
 	std::atomic<byte> _inpst0{0};
 	std::atomic<byte> _inpst1{0};
+	AudioDevice _audio;
 };

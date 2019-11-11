@@ -2,7 +2,7 @@
   "ExpandedNodes": [
     "",
     "\\Sources",
-    "\\Sources\\backend",
+    "\\Sources\\core",
     "\\Sources\\fileio",
     "\\Sources\\frontend",
     "\\Sources\\input",
@@ -11,6 +11,6 @@
     "\\Sources\\utils",
     "\\Sources\\video"
   ],
-  "SelectedNode": "\\Sources\\backend\\Backend.cpp",
+  "SelectedNode": "\\CMakeLists.txt",
   "PreviewInSolutionExplorer": false
 }

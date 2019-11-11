@@ -22,7 +22,7 @@ int main (int argc, Options::cca argv, Options::cca envp)
 	auto frontend = Frontend {options};
 	auto backend = Backend {options, frontend};	
 
-	return frontend.mainthread();
+	return frontend.mainThread();
 }
 
 

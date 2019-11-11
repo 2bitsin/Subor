@@ -18,19 +18,22 @@ Frontend::Frontend (const Options& args)
 		_gctrl0.emplace(0);
 	if (SDL_IsGameController(1))
 		_gctrl1.emplace(1);
+	_audio.start();
 }
 
 Frontend::~Frontend ()
 {
+	_audio.stop();
 	SDL_DestroyWindow (_window);
 	_window = nullptr;
 }
 
 bool Frontend::pushFrame (Backend& backend, const AudioVideoFrame& frame)
 {
+	_audio.queue(frame.audio);
 	if (_lockFrame.try_lock ())
 	{
-		_frame = &frame;
+		_video = &frame.video;
 		_lockFrame.unlock ();
 		backend.input(_inpst0.load(), _inpst1.load());
 		return true;
@@ -40,19 +43,20 @@ bool Frontend::pushFrame (Backend& backend, const AudioVideoFrame& frame)
 
 void Frontend::consume ()
 {
-	if (!_frame)
+	if (!_video)
 		return;
 	if (_lockFrame.try_lock ())
 	{
-		_frame->video.blit_to (_window);
-		SDL_UpdateWindowSurface (_window);
-		_frame = nullptr;
+		_video->blit_to (_window);
+		_video = nullptr;
 		_lockFrame.unlock ();
+		SDL_UpdateWindowSurface (_window);		
 	}
 }
 
 int Frontend::dispatch (const SDL_Event& ev)
 {
+	consume();
 	switch(ev.type)
 	{
 	case SDL_CONTROLLERAXISMOTION:
@@ -66,8 +70,6 @@ int Frontend::dispatch (const SDL_Event& ev)
 			_inpst1.store (_gctrl1->read().bits);
 		break;
 	}
-
-	consume();
 	return 0;
 }
 
@@ -76,7 +78,7 @@ SDL_Window* Frontend::handle () const
 	return _window;
 }
 
-int Frontend::mainthread ()
+int Frontend::mainThread ()
 {
 
 	SDL_Event event;

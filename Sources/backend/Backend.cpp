@@ -37,7 +37,7 @@ void Backend::emulate ()
 
 	while (!_quit.load ())	
 	{			
-		auto& frame = _frame [_index % ctFrameCount];
+		auto& frame = _video [_index % ctFrameCount];
 		_console->emulate (frame);
 		if (_frontend.pushFrame(*this, frame))
 			++_index;

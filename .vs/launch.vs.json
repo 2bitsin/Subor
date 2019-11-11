@@ -23,6 +23,33 @@
         "--record"
       ],
       "env": "SUBOR_DATA_PATH=${projectDir}/Data/"
+    },
+    {
+      "type": "default",
+      "project": "CMakeLists.txt",
+      "name": "launch with Contra (Playback)",
+      "args": [
+        "--load",
+        "ctru.nes",
+        "--playback"
+      ],
+      "env": "SUBOR_DATA_PATH=${projectDir}/Data/"
+    },
+    {
+      "type": "default",
+      "project": "CMakeLists.txt",
+      "name": "launch with Contra (Recording)",
+      "args": [
+        "--load",
+        "ctru.nes",
+        "--record"
+      ],
+      "env": "SUBOR_DATA_PATH=${projectDir}/Data/"
+    },
+    {
+      "type": "default",
+      "project": "CMakeLists.txt",
+      "name": "CMakeLists.txt"
     }
   ]
 }
