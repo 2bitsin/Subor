@@ -22,7 +22,7 @@ int main (int argc, Options::cca argv, Options::cca envp)
 	auto frontend = Frontend {options};
 	auto backend = Backend {options, frontend};	
 
-	return frontend.mainThread();
+	return frontend.mainthread();
 }
 
 
@@ -96,14 +96,6 @@ int main (int argc, Options::cca argv, Options::cca envp)
 		InputProxy::Frame controller{ { } };
 		if (xctrl)
 		{
-			controller.port [0].a				= SDL_GameControllerGetButton (xctrl, SDL_CONTROLLER_BUTTON_A) || SDL_GameControllerGetButton (xctrl, SDL_CONTROLLER_BUTTON_Y);
-			controller.port [0].b				= SDL_GameControllerGetButton (xctrl, SDL_CONTROLLER_BUTTON_B) || SDL_GameControllerGetButton (xctrl, SDL_CONTROLLER_BUTTON_X);
-			controller.port [0].select	= SDL_GameControllerGetButton (xctrl, SDL_CONTROLLER_BUTTON_BACK);
-			controller.port [0].start		= SDL_GameControllerGetButton (xctrl, SDL_CONTROLLER_BUTTON_START);
-			controller.port [0].up			= SDL_GameControllerGetButton (xctrl, SDL_CONTROLLER_BUTTON_DPAD_UP);
-			controller.port [0].down		= SDL_GameControllerGetButton (xctrl, SDL_CONTROLLER_BUTTON_DPAD_DOWN);
-			controller.port [0].left		= SDL_GameControllerGetButton (xctrl, SDL_CONTROLLER_BUTTON_DPAD_LEFT);
-			controller.port [0].right		= SDL_GameControllerGetButton (xctrl, SDL_CONTROLLER_BUTTON_DPAD_RIGHT);
 		}
 		else
 		{

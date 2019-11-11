@@ -20,6 +20,12 @@ struct Backend
 	Backend (const Options&, Frontend&);
 	~Backend ();
 
+	template <typename... _Args>
+	void input(_Args&& ... args)
+	{
+		_console->input(args...);
+	}
+
 protected:
 	void emulate ();
 

@@ -39,7 +39,7 @@ void Backend::emulate ()
 	{			
 		auto& frame = _frame [_index % ctFrameCount];
 		_console->emulate (frame);
-		if (_frontend.notifyFrame(frame))
+		if (_frontend.pushFrame(*this, frame))
 			++_index;
 		std::this_thread::sleep_until(tn);
 		t0 = tn;
