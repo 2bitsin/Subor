@@ -1,5 +1,3 @@
-// This is a personal academic project. Dear PVS-Studio, please check it.
-// PVS-Studio Static Code Analyzer for C, C++, C#, and Java: http://www.viva64.com
 #pragma once
 
 #include "core/Memory.hpp"
@@ -33,7 +31,7 @@ struct RicohCPU
 	struct State
 	{
 		constexpr State (
-			i64 time = 0,
+			i64 cnt_clock = 0,
 			word pc = 0xc000,
 			byte a = 0,
 			byte x = 0,
@@ -41,7 +39,7 @@ struct RicohCPU
 			byte s = 0,
 			byte p = 0x24u,
 			byte mode = 0x2u)
-		: time{time},
+		: cnt_clock{cnt_clock},
 			pc{pc},
 			a{a},
 			x{x},
@@ -55,7 +53,7 @@ struct RicohCPU
 			rDma{0}
 		{}
 
-		long long time;
+		long long cnt_clock;
 		Word pc;
 		byte a, x, y, s;
 		union

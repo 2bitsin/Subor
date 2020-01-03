@@ -1,5 +1,3 @@
-// This is a personal academic project. Dear PVS-Studio, please check it.
-// PVS-Studio Static Code Analyzer for C, C++, C#, and Java: http://www.viva64.com
 #pragma once
 
 #include <cstdint>
@@ -85,8 +83,8 @@ namespace __bits_hidden__
 			if constexpr (sizeof...(_Args) && sizeof...(_Length))
 				Unpacker<Q, _Length...>::unpack(q >> _L0, std::forward<_Args>(args)...);
 		}
-		template <typename U, std::size_t... _Index>
-		static constexpr auto unpack_tuple(Q q, U&& u, std::index_sequence<_Index...>)
+		template <typename _Color, std::size_t... _Index>
+		static constexpr auto unpack_tuple(Q q, _Color&& u, std::index_sequence<_Index...>)
 		{
 			Unpacker<Q, _L0, _Length...>::unpack(q, std::get<_Index>(u)...);
 		}

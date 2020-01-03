@@ -1,10 +1,9 @@
 #pragma once
 
-#include "core/CoreConfig.hpp"
-#include "utils/Types.hpp"
-#include "AudioBuffer.hpp"
-#include "HighPassFilter.hpp"
-#include "LowPassFilter.hpp"
+#include <core/CoreConfig.hpp>
+#include <utils/Types.hpp>
+#include <audio/HighPassFilter.hpp>
+#include <audio/LowPassFilter.hpp>
 
 struct Mixer
 {
@@ -14,7 +13,7 @@ struct Mixer
 		typename _TRI,
 		typename _NOI,
 		typename _DMC>
-		float mix (_SQ0&& sq0, _SQ1&& sq1, _TRI&& tri, _NOI&& noi, _DMC&& dmc)
+	float mix (_SQ0&& sq0, _SQ1&& sq1, _TRI&& tri, _NOI&& noi, _DMC&& dmc)
 	{
 		float g0 = 0.0f;
 		if (tri || noi || dmc)

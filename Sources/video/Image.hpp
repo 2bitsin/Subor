@@ -1,26 +1,26 @@
-// This is a personal academic project. Dear PVS-Studio, please check it.
-// PVS-Studio Static Code Analyzer for C, C++, C#, and Java: http://www.viva64.com
 #pragma once
 
+#include <utils/types.hpp>
 
-template <typename U, std::size_t W, std::size_t H>
+template <typename _Color, dword _SizeX, dword _SizeH>
 struct Image
 {
-	static constexpr const auto width = W;
-	static constexpr const auto height = H;
-	U data [W*H];
+	using color_type = _Color;
+	static constexpr const auto width		= _SizeX;
+	static constexpr const auto height	= _SizeH;
+	color_type data [_SizeX*_SizeH];
 
-	void set (std::size_t x, std::size_t y, U c)
+	constexpr void set (dword x, dword y, color_type color)
 	{
-		if (x < 0 || x >= W || y < 0 || y >= H)
+		if (x >= width || y >= height)
 			return;
-		data [x+y*W] = c;
+		data [x + y*width] = color;
 	}
 
-	auto value (std::size_t x, std::size_t y) const
+	constexpr auto value (dword x, dword y) const
 	{
-		if (x < 0 || x >= W || y < 0 || y >= H)
-			return U{0};
-		return data[x+y*W];
+		if (x >= width || y >= height)
+			return color_type{0};
+		return data [x + y*width];
 	}
 };

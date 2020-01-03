@@ -3,7 +3,6 @@
 #include <string>
 #include <vector>
 #include <unordered_map>
-#include <experimental/generator>
 #include <optional>
 
 #if __has_include("Config.hpp")
@@ -15,7 +14,6 @@
 struct Options
 {
 	using cca = const char* const* const;
-
 	enum EmulatorMode
 	{
 		Normal,

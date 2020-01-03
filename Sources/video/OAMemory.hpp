@@ -1,5 +1,3 @@
-// This is a personal academic project. Dear PVS-Studio, please check it.
-// PVS-Studio Static Code Analyzer for C, C++, C#, and Java: http://www.viva64.com
 #pragma once
 
 #include "utils/Types.hpp"
@@ -61,13 +59,14 @@ struct OAMemory
 	{
 		if ((addr >> 2u) >= _Size)
 			return;
+		data &= 0xffu;
 		auto& o = objects [addr >> 2u];
 		switch (addr & 3u)
 		{
-		case 0u: o.y = data & 0xffu; return;
-		case 1u: o.tile = data & 0xffu; return;
-		case 2u: o.attr.bits = data & 0xffu; return;
-		case 3u: o.x = data & 0xffu; return;
+		case 0u: o.y					= data; return;
+		case 1u: o.tile				= data; return;
+		case 2u: o.attr.bits	= data; return;
+		case 3u: o.x					= data; return;
 		}
 		assert (!"This shouldn't happen.");
 	}

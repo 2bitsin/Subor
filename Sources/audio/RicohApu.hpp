@@ -1,5 +1,3 @@
-// This is a personal academic project. Dear PVS-Studio, please check it.
-// PVS-Studio Static Code Analyzer for C, C++, C#, and Java: http://www.viva64.com
 #pragma once
 
 #include <core/Memory.hpp>
@@ -9,7 +7,6 @@
 #include <input/InputPort.hpp>
 #include <video/RicohPPU.hpp>
 #include <audio/Sequencer.hpp>
-#include <audio/AudioBuffer.hpp>
 #include <audio/AudioChannel.hpp>
 #include <audio/Mixer.hpp>
 #include <audio/PulseChannel.hpp>
@@ -20,6 +17,7 @@
 #include <vector>
 #include <tuple>
 
+template <typename _AudioBuffer>
 struct RicohAPU
 {
 	RicohAPU ()
@@ -90,9 +88,9 @@ struct RicohAPU
 				break;
 			case 0x16:
 				if constexpr (_Operation == kPoke)
-					_input.write (latch);
+					_input.write (host, latch);
 				if constexpr (_Operation == kPeek)
-					_input.read<0> (data);
+					_input.read<0> (host, data);
 				break;
 			case 0x17:
 				if constexpr (_Operation == kPoke)
@@ -102,7 +100,7 @@ struct RicohAPU
 					_seq.irqdi (i);
 				}
 				if constexpr (_Operation == kPeek)
-					_input.read<1> (data);
+					_input.read<1> (host, data);
 				break;
 			}
 		}
@@ -113,7 +111,7 @@ struct RicohAPU
 	void reset ()
 	{}
 
-	void assign(AudioBuffer& buff)
+	void assign(_AudioBuffer& buff)
 	{
 		audio_buffer = &buff;
 	}
@@ -123,10 +121,9 @@ struct RicohAPU
 		audio_buffer = nullptr;
 	}
 
-	template <typename... _Args>
-	auto input (_Args&& ... args)
+	void push_input(const std::array<byte, 4> &w = {0, 0, 0, 0})
 	{
-		return _input.set (std::forward<_Args> (args)...);
+		_input.set(w);
 	}
 
 private:
@@ -146,5 +143,5 @@ private:
 
 	Mixer _mix;
 
-	AudioBuffer* audio_buffer{nullptr};
+	_AudioBuffer* audio_buffer{nullptr};
 };

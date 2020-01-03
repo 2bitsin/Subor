@@ -1,5 +1,3 @@
-// This is a personal academic project. Dear PVS-Studio, please check it.
-// PVS-Studio Static Code Analyzer for C, C++, C#, and Java: http://www.viva64.com
 #pragma once
 
 #include "Bitcommon.hpp"
@@ -80,10 +78,10 @@ struct Bitshifter
 		return bits & Mask;
 	}
 
-	template <typename U = value_type>
-	U extract(std::size_t o, std::size_t s) const
+	template <typename _Color = value_type>
+	_Color extract(std::size_t o, std::size_t s) const
 	{
-		return U(((bits & Mask) >> o) & ((value_type(1u) << s) - value_type(1u)));
+		return _Color(((bits & Mask) >> o) & ((value_type(1u) << s) - value_type(1u)));
 	}
 
 	auto replace(value_type v, std::size_t o, std::size_t s)

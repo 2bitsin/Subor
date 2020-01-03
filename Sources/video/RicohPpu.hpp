@@ -1,5 +1,3 @@
-// This is a personal academic project. Dear PVS-Studio, please check it.
-// PVS-Studio Static Code Analyzer for C, C++, C#, and Java: http://www.viva64.com
 #pragma once
 
 #include <core/CoreConfig.hpp>
@@ -167,7 +165,7 @@ struct RicohPPU
 	bool nmiState () const
 	{
 		return sStat.nmiSignaled
-			&& sCtrl.nmiEnabled;
+				&& sCtrl.nmiEnabled;
 	}
 
 	template <typename _Host>
@@ -206,7 +204,7 @@ struct RicohPPU
 
 
 	template <BusOperation _Operation, typename _Host, typename _Value>
-	auto tickRegister (_Host&& host, word addr, _Value&& data)
+	auto regsUpdate (_Host&& host, word addr, _Value&& data)
 	{
 		if constexpr (_Operation == kPoke)
 			sRegBuffer = (byte)data;
@@ -296,7 +294,7 @@ struct RicohPPU
 	void tick (_Host&& host, word addr, _Value&& data)
 	{
 		if (addr >= 0x2000u && addr < 0x4000u)
-			tickRegister<_Operation> (host, addr, data);
+			regsUpdate<_Operation> (host, addr, data);
 		tickInternal (host);
 		tickInternal (host);
 		tickInternal (host);
@@ -439,7 +437,8 @@ struct RicohPPU
 		}
 		if (pixel_buffer == nullptr)
 			return;
-		pixel_buffer->set (xScreen, yScreen, sPalette.rgba (color));
+		const auto rgba = sPalette.rgba (color);
+		pixel_buffer->set (xScreen, yScreen, rgba);
 	}
 
 	template<typename _Host>

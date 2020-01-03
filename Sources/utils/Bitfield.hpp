@@ -1,5 +1,3 @@
-// This is a personal academic project. Dear PVS-Studio, please check it.
-// PVS-Studio Static Code Analyzer for C, C++, C#, and Java: http://www.viva64.com
 #pragma once
 
 #include "Bitcommon.hpp"
@@ -38,43 +36,43 @@ struct Bitfield
 	}
 
 
-	template <typename U, ei<U> = 0> constexpr auto& operator += (U val) { return *this = U(*this) + val; }
-	template <typename U, ei<U> = 0> constexpr auto& operator -= (U val) { return *this = U(*this) - val; }
-	template <typename U, ei<U> = 0> constexpr auto& operator /= (U val) { return *this = U(*this) / val; }
-	template <typename U, ei<U> = 0> constexpr auto& operator *= (U val) { return *this = U(*this) * val; }
-	template <typename U, ei<U> = 0> constexpr auto& operator |= (U val) { return *this = U(*this) | val; }
-	template <typename U, ei<U> = 0> constexpr auto& operator ^= (U val) { return *this = U(*this) ^ val; }
-	template <typename U, ei<U> = 0> constexpr auto& operator &= (U val) { return *this = U(*this) & val; }
-	template <typename U, ei<U> = 0> friend constexpr auto operator == (const Bitfield& a, U b) { return value_type(a) == b; }
-	template <typename U, ei<U> = 0> friend constexpr auto operator != (const Bitfield& a, U b) { return value_type(a) != b; }
-	template <typename U, ei<U> = 0> friend constexpr auto operator <= (const Bitfield& a, U b) { return value_type(a) <= b; }
-	template <typename U, ei<U> = 0> friend constexpr auto operator >= (const Bitfield& a, U b) { return value_type(a) >= b; }
-	template <typename U, ei<U> = 0> friend constexpr auto operator  < (const Bitfield& a, U b) { return value_type(a)  < b; }
-	template <typename U, ei<U> = 0> friend constexpr auto operator  > (const Bitfield& a, U b) { return value_type(a)  > b; }
-	template <typename U, ei<U> = 0> friend constexpr auto operator  + (const Bitfield& a, U b) { return value_type(a)  + b; }
-	template <typename U, ei<U> = 0> friend constexpr auto operator  - (const Bitfield& a, U b) { return value_type(a)  - b; }
-	template <typename U, ei<U> = 0> friend constexpr auto operator  / (const Bitfield& a, U b) { return value_type(a)  / b; }
-	template <typename U, ei<U> = 0> friend constexpr auto operator  * (const Bitfield& a, U b) { return value_type(a)  * b; }
-	template <typename U, ei<U> = 0> friend constexpr auto operator  ^ (const Bitfield& a, U b) { return value_type(a)  ^ b; }
-	template <typename U, ei<U> = 0> friend constexpr auto operator  & (const Bitfield& a, U b) { return value_type(a)  & b; }
-	template <typename U, ei<U> = 0> friend constexpr auto operator  | (const Bitfield& a, U b) { return value_type(a)  | b; }
-	template <typename U, ei<U> = 0> friend constexpr auto operator >> (const Bitfield& a, U b) { return value_type(a) >> b; }
-	template <typename U, ei<U> = 0> friend constexpr auto operator << (const Bitfield& a, U b) { return value_type(a) << b; }
-	template <typename U, ei<U> = 0> friend constexpr auto operator == (U a, const Bitfield& b) { return a == value_type(b); }
-	template <typename U, ei<U> = 0> friend constexpr auto operator != (U a, const Bitfield& b) { return a != value_type(b); }
-	template <typename U, ei<U> = 0> friend constexpr auto operator <= (U a, const Bitfield& b) { return a <= value_type(b); }
-	template <typename U, ei<U> = 0> friend constexpr auto operator >= (U a, const Bitfield& b) { return a >= value_type(b); }
-	template <typename U, ei<U> = 0> friend constexpr auto operator  < (U a, const Bitfield& b) { return a  < value_type(b); }
-	template <typename U, ei<U> = 0> friend constexpr auto operator  > (U a, const Bitfield& b) { return a  > value_type(b); }
-	template <typename U, ei<U> = 0> friend constexpr auto operator  + (U a, const Bitfield& b) { return a  + value_type(b); }
-	template <typename U, ei<U> = 0> friend constexpr auto operator  - (U a, const Bitfield& b) { return a  - value_type(b); }
-	template <typename U, ei<U> = 0> friend constexpr auto operator  * (U a, const Bitfield& b) { return a  * value_type(b); }
-	template <typename U, ei<U> = 0> friend constexpr auto operator  / (U a, const Bitfield& b) { return a  / value_type(b); }
-	template <typename U, ei<U> = 0> friend constexpr auto operator  ^ (U a, const Bitfield& b) { return a  ^ value_type(b); }
-	template <typename U, ei<U> = 0> friend constexpr auto operator  & (U a, const Bitfield& b) { return a  & value_type(b); }
-	template <typename U, ei<U> = 0> friend constexpr auto operator  | (U a, const Bitfield& b) { return a  | value_type(b); }
-	template <typename U, ei<U> = 0> friend constexpr auto operator << (U a, const Bitfield& b) { return a << value_type(b); }
-	template <typename U, ei<U> = 0> friend constexpr auto operator >> (U a, const Bitfield& b) { return a >> value_type(b); }
+	template <typename _Color, ei<_Color> = 0> constexpr auto& operator += (_Color val) { return *this = _Color(*this) + val; }
+	template <typename _Color, ei<_Color> = 0> constexpr auto& operator -= (_Color val) { return *this = _Color(*this) - val; }
+	template <typename _Color, ei<_Color> = 0> constexpr auto& operator /= (_Color val) { return *this = _Color(*this) / val; }
+	template <typename _Color, ei<_Color> = 0> constexpr auto& operator *= (_Color val) { return *this = _Color(*this) * val; }
+	template <typename _Color, ei<_Color> = 0> constexpr auto& operator |= (_Color val) { return *this = _Color(*this) | val; }
+	template <typename _Color, ei<_Color> = 0> constexpr auto& operator ^= (_Color val) { return *this = _Color(*this) ^ val; }
+	template <typename _Color, ei<_Color> = 0> constexpr auto& operator &= (_Color val) { return *this = _Color(*this) & val; }
+	template <typename _Color, ei<_Color> = 0> friend constexpr auto operator == (const Bitfield& a, _Color b) { return value_type(a) == b; }
+	template <typename _Color, ei<_Color> = 0> friend constexpr auto operator != (const Bitfield& a, _Color b) { return value_type(a) != b; }
+	template <typename _Color, ei<_Color> = 0> friend constexpr auto operator <= (const Bitfield& a, _Color b) { return value_type(a) <= b; }
+	template <typename _Color, ei<_Color> = 0> friend constexpr auto operator >= (const Bitfield& a, _Color b) { return value_type(a) >= b; }
+	template <typename _Color, ei<_Color> = 0> friend constexpr auto operator  < (const Bitfield& a, _Color b) { return value_type(a)  < b; }
+	template <typename _Color, ei<_Color> = 0> friend constexpr auto operator  > (const Bitfield& a, _Color b) { return value_type(a)  > b; }
+	template <typename _Color, ei<_Color> = 0> friend constexpr auto operator  + (const Bitfield& a, _Color b) { return value_type(a)  + b; }
+	template <typename _Color, ei<_Color> = 0> friend constexpr auto operator  - (const Bitfield& a, _Color b) { return value_type(a)  - b; }
+	template <typename _Color, ei<_Color> = 0> friend constexpr auto operator  / (const Bitfield& a, _Color b) { return value_type(a)  / b; }
+	template <typename _Color, ei<_Color> = 0> friend constexpr auto operator  * (const Bitfield& a, _Color b) { return value_type(a)  * b; }
+	template <typename _Color, ei<_Color> = 0> friend constexpr auto operator  ^ (const Bitfield& a, _Color b) { return value_type(a)  ^ b; }
+	template <typename _Color, ei<_Color> = 0> friend constexpr auto operator  & (const Bitfield& a, _Color b) { return value_type(a)  & b; }
+	template <typename _Color, ei<_Color> = 0> friend constexpr auto operator  | (const Bitfield& a, _Color b) { return value_type(a)  | b; }
+	template <typename _Color, ei<_Color> = 0> friend constexpr auto operator >> (const Bitfield& a, _Color b) { return value_type(a) >> b; }
+	template <typename _Color, ei<_Color> = 0> friend constexpr auto operator << (const Bitfield& a, _Color b) { return value_type(a) << b; }
+	template <typename _Color, ei<_Color> = 0> friend constexpr auto operator == (_Color a, const Bitfield& b) { return a == value_type(b); }
+	template <typename _Color, ei<_Color> = 0> friend constexpr auto operator != (_Color a, const Bitfield& b) { return a != value_type(b); }
+	template <typename _Color, ei<_Color> = 0> friend constexpr auto operator <= (_Color a, const Bitfield& b) { return a <= value_type(b); }
+	template <typename _Color, ei<_Color> = 0> friend constexpr auto operator >= (_Color a, const Bitfield& b) { return a >= value_type(b); }
+	template <typename _Color, ei<_Color> = 0> friend constexpr auto operator  < (_Color a, const Bitfield& b) { return a  < value_type(b); }
+	template <typename _Color, ei<_Color> = 0> friend constexpr auto operator  > (_Color a, const Bitfield& b) { return a  > value_type(b); }
+	template <typename _Color, ei<_Color> = 0> friend constexpr auto operator  + (_Color a, const Bitfield& b) { return a  + value_type(b); }
+	template <typename _Color, ei<_Color> = 0> friend constexpr auto operator  - (_Color a, const Bitfield& b) { return a  - value_type(b); }
+	template <typename _Color, ei<_Color> = 0> friend constexpr auto operator  * (_Color a, const Bitfield& b) { return a  * value_type(b); }
+	template <typename _Color, ei<_Color> = 0> friend constexpr auto operator  / (_Color a, const Bitfield& b) { return a  / value_type(b); }
+	template <typename _Color, ei<_Color> = 0> friend constexpr auto operator  ^ (_Color a, const Bitfield& b) { return a  ^ value_type(b); }
+	template <typename _Color, ei<_Color> = 0> friend constexpr auto operator  & (_Color a, const Bitfield& b) { return a  & value_type(b); }
+	template <typename _Color, ei<_Color> = 0> friend constexpr auto operator  | (_Color a, const Bitfield& b) { return a  | value_type(b); }
+	template <typename _Color, ei<_Color> = 0> friend constexpr auto operator << (_Color a, const Bitfield& b) { return a << value_type(b); }
+	template <typename _Color, ei<_Color> = 0> friend constexpr auto operator >> (_Color a, const Bitfield& b) { return a >> value_type(b); }
 	constexpr auto& operator ++ () { return *this = value_type(*this) + 1u; }
 	constexpr auto& operator -- () { return *this = value_type(*this) - 1u; }
 	constexpr auto operator ++ (int) { auto p = *this; *this = value_type(*this) + 1u; return p; }

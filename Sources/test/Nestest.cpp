@@ -1,5 +1,3 @@
-// This is a personal academic project. Dear PVS-Studio, please check it.
-// PVS-Studio Static Code Analyzer for C, C++, C#, and Java: http://www.viva64.com
 #include <iterator>
 
 #include <core/StaticMemory.hpp>
@@ -38,7 +36,7 @@ void nestest::CPU_Poke (word addr, byte data)
 }
 
 
-ProgramROM nestest::AsProgramROM ()
+ProgramROM nestest::get_rom ()
 {
 	return ProgramROM(_hdr, _prg.bits.data(), _chr.bits.data(), nullptr);
 }

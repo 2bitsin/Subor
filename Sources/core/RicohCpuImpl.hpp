@@ -1,5 +1,3 @@
-// This is a personal academic project. Dear PVS-Studio, please check it.
-// PVS-Studio Static Code Analyzer for C, C++, C#, and Java: http://www.viva64.com
 #include "RicohCpu.hpp"
 
 template <BusOperation _Operation, typename _Host, typename _Value>
@@ -12,7 +10,7 @@ inline auto RicohCPU::tick (_Host&& m, word addr, _Value&& data)
 	if constexpr (_Operation == kDummyPoke)
 		return tick<kPoke> (m, addr, data);
 
-	++q.time;
+	++q.cnt_clock;
 	if constexpr (_Operation == kPoke)
 	{
 		if (addr == 0x4014u)
@@ -28,7 +26,7 @@ inline auto RicohCPU::tick (_Host&& m, word addr, _Value&& data)
 template <typename _Host, typename _ShouldStop>
 inline bool RicohCPU::stepUntil (_Host&& m, _ShouldStop&& s)
 {
-
+	byte discard;
 	while (!s(*this, m))
 	{
 		word next = 0u;
@@ -39,7 +37,7 @@ inline bool RicohCPU::stepUntil (_Host&& m, _ShouldStop&& s)
 		else if (q.mode.dmaStart)
 		{
 			tick<kDummyPeek> (m, q.rDma.w, next);
-			if (q.time & 1u)
+			if (q.cnt_clock & 1u)
 				tick<kDummyPeek> (m, q.rDma.w, next);
 			q.rDma.l = 0x0u;
 			q.mode.dmaStart = 0;
@@ -106,27 +104,53 @@ inline bool RicohCPU::stepUntil (_Host&& m, _ShouldStop&& s)
 		case 0xAA:
 		case 0xBA:
 		case 0xCA:
-		case 0xCB:
 		case 0xDA:
 		case 0xEA:
 		case 0xFA:
-			tick<kPeek> (m, q.pc.w, q.tmp0.l);
+			tick<kDummyPeek> (m, q.pc.w, discard);
 			break;
 
 			// Immediate
+		case 0x02:
+		case 0x12:
+		case 0x22:
+		case 0x32:
+		case 0x42:
+		case 0x52:
+		case 0x62:
+		case 0x72:
+		case 0x82:
+		case 0x92:
+		case 0xA2:
+		case 0xB2:
+		case 0xC2:
+		case 0xD2:
+		case 0xE2:
+		case 0xF2:
+
+		case 0x0B:
+		case 0x2B:
+		case 0x4B:
+		case 0x6B:
+		case 0x8B:
+		case 0xAB:
+		case 0xCB:
+		case 0xEB:
+
 		case 0x09:
 		case 0x29:
 		case 0x49:
 		case 0x69:
 		case 0x80:
+		case 0x89:
 		case 0xC0:
 		case 0xC9:
 		case 0xA0:
-		case 0xA2:
 		case 0xA9:
 		case 0xE0:
 		case 0xE9:
-		case 0xEB:
+
+
 			q.addr.w = q.pc.w++;
 			break;
 
@@ -197,7 +221,7 @@ inline bool RicohCPU::stepUntil (_Host&& m, _ShouldStop&& s)
 		case 0xF7:
 			tick<kPeek> (m, q.pc.w++, q.addr.w);
 			q.addr.l += q.x;
-			tick<kDummyPeek> (m, q.addr.w, q.tmp0.w);
+			tick<kDummyPeek> (m, q.addr.w, discard);
 			break;
 
 			// Zero Page, Y
@@ -207,7 +231,7 @@ inline bool RicohCPU::stepUntil (_Host&& m, _ShouldStop&& s)
 		case 0xB6:
 			tick<kPeek> (m, q.pc.w++, q.addr.w);
 			q.addr.l += q.y;
-			tick<kDummyPeek> (m, q.addr.w, q.tmp0.w);
+			tick<kDummyPeek> (m, q.addr.w, discard);
 			break;
 
 			// Absolute
@@ -264,6 +288,7 @@ inline bool RicohCPU::stepUntil (_Host&& m, _ShouldStop&& s)
 		case 0x7D:
 		case 0x7E:
 		case 0x7F:
+		case 0x9C: // SYA
 		case 0x9D:
 		case 0xBC:
 		case 0xBD:
@@ -275,11 +300,10 @@ inline bool RicohCPU::stepUntil (_Host&& m, _ShouldStop&& s)
 		case 0xFD:
 		case 0xFE:
 		case 0xFF:
-			tick<kPeek> (m, q.pc.w++, q.tmp0.l);
-			tick<kPeek> (m, q.pc.w++, q.tmp0.h);
-			q.addr.w = q.tmp0.w;
-			q.addr.w += q.x;
-			q.tmp0.l += q.x;
+			tick<kPeek> (m, q.pc.w++, q.addr.l);
+			tick<kPeek> (m, q.pc.w++, q.addr.h);
+			q.tmp0.w = q.addr.w;
+			q.addr.w += q.x;			
 			cross = q.addr.h != q.tmp0.h;
 			break;
 
@@ -293,6 +317,9 @@ inline bool RicohCPU::stepUntil (_Host&& m, _ShouldStop&& s)
 		case 0x79:
 		case 0x7B:
 		case 0x99:
+		case 0x9B:
+		case 0x9E:	// SXA
+		case 0x9F:	// AXA
 		case 0xB9:
 		case 0xBB:
 		case 0xBE:
@@ -301,20 +328,22 @@ inline bool RicohCPU::stepUntil (_Host&& m, _ShouldStop&& s)
 		case 0xDB:
 		case 0xF9:
 		case 0xFB:
-			tick<kPeek> (m, q.pc.w++, q.tmp0.l);
-			tick<kPeek> (m, q.pc.w++, q.tmp0.h);
-			q.addr.w = q.tmp0.w;
+			tick<kPeek> (m, q.pc.w++, q.addr.l);
+			tick<kPeek> (m, q.pc.w++, q.addr.h);
+			q.tmp0.w = q.addr.w;
 			q.addr.w += q.y;
-			q.tmp0.l += q.y;
 			cross = q.addr.h != q.tmp0.h;
 			break;
 
 			// (Indirect)
 		case 0x6C:
-			tick<kPeek> (m, q.pc.w++, q.tmp0.l);
-			tick<kPeek> (m, q.pc.w++, q.tmp0.h);
-			tick<kPeek> (m, q.tmp0.w, q.addr.l);
-			tick<kPeek> (m, (++q.tmp0.l, q.tmp0.w), q.addr.h);
+			tick<kPeek> (m, q.pc.w++, q.addr.l);
+			tick<kPeek> (m, q.pc.w++, q.addr.h);
+
+			tick<kPeek> (m, q.addr.w, q.tmp0.l);
+			q.addr.l += 1u;				  
+			tick<kPeek> (m, q.addr.w, q.tmp0.h);
+			q.addr.w = q.tmp0.w;
 			break;
 
 			// (Indirect, X)
@@ -335,8 +364,11 @@ inline bool RicohCPU::stepUntil (_Host&& m, _ShouldStop&& s)
 		case 0xE1:
 		case 0xE3:
 			tick<kPeek> (m, q.pc.w++, q.addr.w);
-			tick<kPeek> (m, q.addr.w += q.x, q.tmp0.l);
-			tick<kPeek> (m, q.addr.l++, q.tmp0.l);
+			q.addr.w += q.x;
+			tick<kDummyPeek> (m, q.addr.w, discard);
+
+			tick<kPeek> (m, q.addr.l, q.tmp0.l);
+			q.addr.l += 1u;
 			tick<kPeek> (m, q.addr.l, q.tmp0.h);
 			q.addr.w = q.tmp0.w;
 			break;
@@ -351,6 +383,7 @@ inline bool RicohCPU::stepUntil (_Host&& m, _ShouldStop&& s)
 		case 0x71:
 		case 0x73:
 		case 0x91:
+		case 0x93: // AXA
 		case 0xB1:
 		case 0xB3:
 		case 0xD1:
@@ -358,13 +391,14 @@ inline bool RicohCPU::stepUntil (_Host&& m, _ShouldStop&& s)
 		case 0xF1:
 		case 0xF3:
 			tick<kPeek> (m, q.pc.w++, q.addr.w);
-			tick<kPeek> (m, q.addr.l, q.tmp0.l);
-			tick<kPeek> (m, ++q.addr.l, q.tmp0.h);
+
+			tick<kPeek> (m, q.addr.w, q.tmp0.l);
+			q.addr.l += 1u;
+			tick<kPeek> (m, q.addr.l, q.tmp0.h);
 			q.addr.w = q.tmp0.w;
-			q.addr.l += q.y;
-			q.tmp0.w += q.y;
+
+			q.addr.w += q.y;
 			cross = q.addr.h != q.tmp0.h;
-			q.addr.w = q.tmp0.w;
 			break;
 
 			// Relative
@@ -376,10 +410,9 @@ inline bool RicohCPU::stepUntil (_Host&& m, _ShouldStop&& s)
 		case 0xB0:
 		case 0xD0:
 		case 0xF0:
-			tick<kPeek> (m, q.pc.w++, q.tmp0.w);
-			q.addr.w = q.pc.w + q.tmp0.w;
-			if (q.tmp0.w >= 0x80)
-				q.addr.w -= 0x100;
+			tick<kPeek> (m, q.pc.w++, q.addr.w);
+			q.addr.w += q.pc.w - ((q.addr.w & 0x80) << 1u);
+
 			break;
 
 		default:
@@ -1155,10 +1188,6 @@ inline bool RicohCPU::stepUntil (_Host&& m, _ShouldStop&& s)
 		case 0xDA:
 		case 0xEA:
 		case 0xFA:
-			break;
-
-		case 0xCB:
-			q.mode.wait = 1;
 			break;
 
 		default:

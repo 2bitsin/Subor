@@ -1,13 +1,11 @@
-// This is a personal academic project. Dear PVS-Studio, please check it.
-// PVS-Studio Static Code Analyzer for C, C++, C#, and Java: http://www.viva64.com
 #include "test/Nestest.hpp"
 #include "core/RicohCpu.hpp"
 #include <string>
 #include <iostream>
 
 
-template <typename Q, typename U>
-static inline void AssertState (Q&& statelog, U&& state)
+template <typename Q, typename _Color>
+static inline void AssertState (Q&& statelog, _Color&& state)
 {
 	bool isok;
 	isok=(statelog.regs.a		== state.a)
@@ -16,7 +14,7 @@ static inline void AssertState (Q&& statelog, U&& state)
 		&& (statelog.regs.p	  == state.p.bits)
 		&& (statelog.regs.sp  == state.s)
 		&& (statelog.addr			== state.pc.w)
-		&& (statelog.cpuclock == state.time)
+		&& (statelog.cpuclock == state.cnt_clock)
 	;
 	if (isok != true)
 	{
@@ -36,7 +34,7 @@ static inline void AssertState (Q&& statelog, U&& state)
 			,state.y  
 			,state.p.bits
 			,state.s
-			,state.time
+			,state.cnt_clock
 		);
 		throw std::runtime_error("Failed nestest");
 	}
@@ -65,7 +63,7 @@ struct Test
 	}
 };
 
-int nestest::NestestMain ()
+int nestest::self_test ()
 {
 	using namespace nestest;
 	auto cpu = RicohCPU (RicohCPU::kTestState);
