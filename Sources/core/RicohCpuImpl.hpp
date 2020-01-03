@@ -1,5 +1,11 @@
 #include "RicohCpu.hpp"
 
+template <auto ... _Test, typename _Value>
+constexpr bool is_in (_Value&& value)
+{
+	return (... || (value == _Test));
+}
+
 template <BusOperation _Operation, typename _Host, typename _Value>
 inline auto RicohCPU::tick (_Host&& m, word addr, _Value&& data)
 {
@@ -53,9 +59,9 @@ inline bool RicohCPU::stepUntil (_Host&& m, _ShouldStop&& s)
 			continue;
 		}
 		else if (std::exchange(q.mode.nmi, 0u))
-			next = 0x200u;
+			next = 0x101u;
 		else if (std::exchange(q.mode.rst, 0u))
-			next = 0x300u;
+			next = 0x102u;
 		else if (q.mode.irq && !q.p.i)
 			next = 0x100u;
 		else
@@ -69,8 +75,8 @@ inline bool RicohCPU::stepUntil (_Host&& m, _ShouldStop&& s)
 		{
 		case 0x000:// BRK
 		case 0x100:// IRQ			
-		case 0x200:// NMI			
-		case 0x300:// RST		
+		case 0x101:// NMI			
+		case 0x102:// RST		
 			break;
 				// Implied
 		case 0x40:
@@ -109,7 +115,6 @@ inline bool RicohCPU::stepUntil (_Host&& m, _ShouldStop&& s)
 		case 0xFA:
 			tick<kDummyPeek> (m, q.pc.w, discard);
 			break;
-
 			// Immediate
 		case 0x02:
 		case 0x12:
@@ -412,23 +417,29 @@ inline bool RicohCPU::stepUntil (_Host&& m, _ShouldStop&& s)
 		case 0xF0:
 			tick<kPeek> (m, q.pc.w++, q.addr.w);
 			q.addr.w += q.pc.w - ((q.addr.w & 0x80) << 1u);
-
 			break;
 
 		default:
+
+			//if (is_in<0x40, 0x60, 0x08, 0x18, 0x28, 0x38, 0x48, 0x58, 0x68, 0x78, 0x88, 0x98, 0xA8, 0xB8, 0xC8, 0xD8, 0xE8, 0xF8, 0x0A, 0x1A, 0x2A, 0x3A, 0x4A, 0x5A, 0x6A, 0x7A, 0x8A, 0x9A, 0xAA, 0xBA, 0xCA, 0xDA, 0xEA, 0xFA>(next))
+			//{
+			//	tick<kDummyPeek> (m, q.pc.w, discard);
+			//}
+
+
 			assert (false);
 			break;
 		}
 
 		switch (next)
 		{			
-		case 0x100:// IRQ			
-		case 0x200:// NMI			
-		case 0x300:// RST			
 		case 0x000:// BRK
+		case 0x100:// IRQ			
+		case 0x101:// NMI			
+		case 0x102:// RST			
 			q.p.b = (next == 0x000u);
 			q.p.i = (next == 0x100u);
-			q.addr.w = vectors [next >> 8u];
+			q.addr.w = vectors [next & 0xFF];
 			tick<kDummyPeek> (m, q.pc.w, next);
 			tick<kDummyPeek> (m, q.pc.w, next);
 			tick<kPoke> (m, 0x100 + q.s--, q.pc.h);

@@ -128,7 +128,6 @@ private:
 	static inline const constexpr word vectors [] =
 	{
 		InterruptVec,
-		InterruptVec,
 		NonMaskableVec,
 		ResetVec,
 	};

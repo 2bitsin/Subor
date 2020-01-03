@@ -29,7 +29,7 @@ struct InputController
 
 	bool poll(byte index, SDL_GameControllerButton gcb, bool mask = true) const
 	{
-		if (index == 0u)
+		if (index != 0u)
 			return false;
 		constexpr auto q = &SDL_GameControllerGetButton;
 		return (q(handle, gcb) && mask);
