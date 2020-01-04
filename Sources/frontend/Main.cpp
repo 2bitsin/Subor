@@ -3,7 +3,7 @@
 int main (int argc, Options::cca argv, Options::cca envp)
 try
 {
-	//nestest::self_test();
+	nestest::self_test();
 	//return 0;
 
 	auto options = Options{argc, argv, envp};
@@ -20,3 +20,4 @@ catch (const std::exception & ex)
 	std::printf ("\nUnhandled exception : %s\n", ex.what ());
 	return -1;
 }
+
