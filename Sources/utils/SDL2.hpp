@@ -5,6 +5,8 @@
 	#include <SDL.h>
 #elif __has_include(<SDL2/SDL.h>)
 	#include <SDL2/SDL.h>
+#elif __has_include(<SDL/SDL.h>)
+	#include <SDL/SDL.h>
 #else
 	#error SDL2 wasn't found in the include path
 #endif
