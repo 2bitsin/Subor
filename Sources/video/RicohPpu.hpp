@@ -279,10 +279,10 @@ struct RicohPPU
 			if constexpr (_Operation == kPeek)
 			{
 				peek (host, sAddress.bits, data);
-				if ((sAddress.bits & 0x3fff) < 0x3f00)
-					std::swap (sBusBuffer, (byte&)data);
-				else
+				if ((sAddress.bits & 0x3fff) >= 0x3f00)
 					peek (host, sAddress.bits - 0x1000u, sBusBuffer);
+				else
+					std::swap (sBusBuffer, (byte&)data);
 			}
 			sAddress.bits += (1u << (sCtrl.inc*5u));
 			break;

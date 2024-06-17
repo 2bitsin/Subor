@@ -1,0 +1,7 @@
+function(set_stack_size target stack_size)
+  if(MSVC)
+    set_target_properties(${target} PROPERTIES LINK_FLAGS "/STACK:${stack_size}")
+  else()
+    set_target_properties(${target} PROPERTIES LINK_FLAGS "-Wl,-z,stack-size=${stack_size}")
+  endif()
+endfunction()

@@ -1,3 +1,4 @@
+include(cmake/StackSize.cmake)
 add_executable(Subor 
   core/Console.cpp
   fileio/ProgramROM.cpp
@@ -11,6 +12,7 @@ add_executable(Subor
   test/NestestMain.cpp
   test/NestestROM.cpp
 )
+set_stack_size(Subor 8388608)
 find_package(SDL2 CONFIG REQUIRED)
 target_link_libraries(Subor PRIVATE SDL2::SDL2 SDL2::SDL2main)
 target_compile_features(Subor PRIVATE cxx_std_23)
